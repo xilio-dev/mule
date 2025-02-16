@@ -1,0 +1,9 @@
+server:
+  port: 9856
+spring:
+  datasource:
+    url: jdbc:mysql://124.221.53.234:3306/xilio1024?serverTimezone=UTC
+    username: xilio1024
+    password: EbfSKppBwZMemEGW
+    driverClassName: com.mysql.cj.jdbc.Driver
+
