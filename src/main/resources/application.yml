@@ -10,8 +10,8 @@ spring:
     host: smtp.163.com
     ssl:
       enabled: false
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: xilio1024@163.com
+    password: WV5Db9gqbFKHn9hw
     port: 465
 
 
