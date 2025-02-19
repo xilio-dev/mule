@@ -6,4 +6,16 @@ spring:
     username: xilio1024
     password: EbfSKppBwZMemEGW
     driverClassName: com.mysql.cj.jdbc.Driver
+  mail:
+    host: smtp.163.com
+    ssl:
+      enabled: false
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 465
+
+
+
+
+
 
