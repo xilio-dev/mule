@@ -20,7 +20,6 @@ private MailService mailService;
     @PostMapping("send")
     public void sendEmail(@RequestBody @Valid SendEmailDTO sendEmailDTO) {
         String code = VerificationCodeGenerator.generateVerificationCode();
-
         mailService.sendHtmlMailWithCode(sendEmailDTO.getEmail(), "StackOak登陆验证码",code);
         System.out.println(sendEmailDTO);
     }

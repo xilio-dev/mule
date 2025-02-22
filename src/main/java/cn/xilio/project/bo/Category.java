@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xilio.cn
@@ -94,5 +94,5 @@ public class Category implements Serializable {
      * 1:领域系统分类；2:用户自定义分类
      */
     @TableField("show_type")
-    private Boolean showType;
+    private Integer showType;
 }

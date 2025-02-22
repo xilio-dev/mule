@@ -12,20 +12,15 @@ else
 fi
 
 # 切换到项目目录
-echo "切换到项目目录：/home/xilio1024/xilio-server"
-cd /home/xilio1024/xilio-server
-
-# 删除旧项目文件夹
-echo "删除旧项目文件夹..."
-rm -rf xilio-server
-
+echo "切换到项目目录：/home/xilio1024/"
+cd /home/xilio1024/
 # 克隆最新的项目代码
 echo "从 GitHub 克隆最新的项目代码..."
-git clone git@github.com:xilio1024/xilio-server.git
+git clone git@github.com:StackOak/stackoak-server.git
 
 # 进入项目目录
 echo "进入项目目录：/home/xilio1024/xilio-server"
-cd xilio-server
+cd stackoak-server
 
 # 使用 Maven 打包项目
 echo "使用 Maven 打包项目..."
@@ -38,7 +33,8 @@ rm -rf /home/xilio1024/test/project-1.0.0.jar
 # 将新的 JAR 文件复制到目标目录
 echo "将新的 JAR 文件复制到目标目录..."
 cp ./target/project-1.0.0.jar /home/xilio1024/test/
-
+rm -rf /home/xilio1024/stackoak-server
+echo "删除文件夹：/home/xilio1024/stackoak-server"
 # 切换到目标目录
 echo "切换到目标目录：/home/xilio1024/test"
 cd /home/xilio1024/test/
