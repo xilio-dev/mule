@@ -1,7 +1,13 @@
 package cn.xilio.project.service;
 
 import cn.xilio.project.bo.Article;
+import cn.xilio.project.domain.ArticleListDTO;
+import cn.xilio.project.domain.vo.ArticleBriefVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +19,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IArticleService extends IService<Article> {
 
+   public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO);
 }

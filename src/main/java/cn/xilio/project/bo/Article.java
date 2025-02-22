@@ -107,4 +107,10 @@ public class Article implements Serializable {
      */
     @TableField("member_id")
     private Long memberId;
+
+    /**
+     * 作者ID
+     */
+    @TableField("category_id")
+    private Long categoryId;
 }

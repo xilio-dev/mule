@@ -1,5 +1,6 @@
 package cn.xilio.project.bo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xilio.cn
@@ -24,4 +25,6 @@ public class Tag implements Serializable {
 
     @TableId("id")
     private Long id;
+    @TableField("name")
+    private String name;
 }

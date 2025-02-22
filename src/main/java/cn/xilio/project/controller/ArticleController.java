@@ -1,12 +1,13 @@
 package cn.xilio.project.controller;
 
 import cn.xilio.project.bo.Article;
-import cn.xilio.project.bo.Category;
+import cn.xilio.project.common.ex.BizException;
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.DelArticleDTO;
 import cn.xilio.project.service.IArticleService;
-import cn.xilio.project.service.ICategoryService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import cn.xilio.project.common.Result;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,9 +29,9 @@ public class ArticleController {
     private IArticleService articleService;
 
     @PostMapping("list")
-    @Cacheable(value = "articleList")
-    public Object list(@RequestBody ArticleListDTO articleListDTO) {
-        return articleService.list();
+   // @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
+    public Result list(@RequestBody @Valid ArticleListDTO dto) {
+        return Result.success(articleService.listByCategory(dto));
     }
 
     @PostMapping("search")
@@ -41,8 +42,8 @@ public class ArticleController {
 
     @GetMapping("detail/{id}")
     @Cacheable(value = "articleDetails", key = "#id")
-    public Object detail(@PathVariable Long id) {
-        return articleService.getById(id);
+    public Result<Article> detail(@PathVariable Long id) {
+        return Result.success(articleService.getById(id));
     }
 
     @DeleteMapping("del")
