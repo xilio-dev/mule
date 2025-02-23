@@ -8,11 +8,11 @@ import java.nio.file.Paths;
 
 public class GenCode {
     public static void main(String[] args) {
-        FastAutoGenerator.create("jdbc:mysql://localhost:3306/xilio1024?serverTimezone=UTC", "root", "root153212")
+        FastAutoGenerator.create("jdbc:mysql://124.221.53.234:3306/xilio1024?serverTimezone=UTC", "xilio1024", "EbfSKppBwZMemEGW")
                 .globalConfig(builder -> builder
                         .author("xilio.cn")
                         .dateType(DateType.TIME_PACK)
-                        .outputDir(Paths.get(System.getProperty("user.dir")) + "/src/main/java")
+                        .outputDir(Paths.get(System.getProperty("user.dir")) + "/gen")
                         .commentDate("yyyy-MM-dd")
 
                 )

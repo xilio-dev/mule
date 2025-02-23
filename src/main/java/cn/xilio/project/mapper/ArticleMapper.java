@@ -27,6 +27,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
     IPage<ArticleBriefVO> selectByCategoryAndRecent(@Param("page") Page<ArticleBriefVO> page, @Param("dto") ArticleListDTO articleListDTO);
 
-    ArticleDetailVO selectArticleDetail(@Param("id") Long id);
+    ArticleDetailVO selectArticleDetail(@Param("id") String id);
 }
 

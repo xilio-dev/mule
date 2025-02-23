@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan("cn.xilio.project.mapper")
+@MapperScan({"cn.xilio.project.mapper","com.baidu.fsg.uid.worker.dao"})
 public class MybatisPlusConfig {
 
     /**

@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author xilio.cn
- * @since 2025-02-15
+ * @since 2025-02-24
  */
 public interface IArticleTagService extends IService<ArticleTag> {
 

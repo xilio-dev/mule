@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xilio.cn
@@ -23,5 +23,5 @@ public class MemberConfig implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    private Long id;
+    private String id;
 }

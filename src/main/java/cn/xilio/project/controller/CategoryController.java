@@ -25,8 +25,8 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @GetMapping("list")
-    @Cacheable(value = "categories", key = "'showType_1'",sync = false) // 缓存名称和键
-    public Result list() {
+    @Cacheable(value = "systemCategoryList", key = "'showType_1'",sync = false) // 缓存名称和键
+    public Result systemCategoryList() {
         LambdaQueryWrapper<Category> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Category::getShowType,1);
         wrapper.orderByAsc(Category::getSort);

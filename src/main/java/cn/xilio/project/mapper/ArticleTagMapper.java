@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author xilio.cn
- * @since 2025-02-15
+ * @since 2025-02-24
  */
 public interface ArticleTagMapper extends BaseMapper<ArticleTag> {
 

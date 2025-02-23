@@ -23,7 +23,7 @@
         ORDER BY a.publish_time DESC
     </select>
     <resultMap id="ArticleDetailResultMap" type="cn.xilio.project.domain.vo.article.detail.ArticleDetailVO">
-        <result property="articleInfo.articleId" column="articleId"/>
+        <result property="articleInfo.id" column="articleId"/>
         <result property="articleInfo.title" column="title"/>
         <result property="articleInfo.content" column="content"/>
         <result property="articleInfo.cover" column="cover"/>
@@ -34,11 +34,19 @@
         <result property="articleInfo.publishTime" column="publishTime"/>
         <result property="articleInfo.collectCount" column="collectCount"/>
         <result property="articleInfo.contentCount" column="contentCount"/>
+        <result property="articleInfo.columnId" column="columnId"/>
+        <result property="articleInfo.visibleStatus" column="visibleStatus"/>
+        <result property="articleInfo.publishStatus" column="publishStatus"/>
+        <result property="articleInfo.creativeType" column="creativeType"/>
+        <result property="articleInfo.originalUrl" column="originalUrl"/>
+
         <result property="userInfo.userId" column="userId"/>
         <result property="userInfo.userName" column="userName"/>
         <result property="userInfo.avatar" column="avatar"/>
         <result property="category.categoryId" column="categoryId"/>
         <result property="category.categoryName" column="categoryName"/>
+
+
     </resultMap>
     <select id="selectArticleDetail" resultMap="ArticleDetailResultMap">
         SELECT
@@ -53,6 +61,11 @@
             a.publish_time AS publishTime,
             a.collect_count AS collectCount,
             a.content_count AS contentCount,
+            a.column_id as columnId,
+            a.visible_status as visibleStatus,
+            a.publish_status as publishStatus,
+            a.creative_type as creativeType,
+            a.original_url as originalUrl,
             m.id AS userId,
             m.username AS userName,
             m.avatar,

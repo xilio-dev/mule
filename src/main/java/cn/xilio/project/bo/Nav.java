@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xilio.cn
@@ -28,7 +28,7 @@ public class Nav implements Serializable {
      * 唯一编号
      */
     @TableId("id")
-    private Long id;
+    private String id;
 
     /**
      * 父菜单：0表示根目录

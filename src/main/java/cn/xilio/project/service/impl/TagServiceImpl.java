@@ -3,12 +3,13 @@ package cn.xilio.project.service.impl;
 import cn.xilio.project.bo.Tag;
 import cn.xilio.project.mapper.TagMapper;
 import cn.xilio.project.service.ITagService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author xilio.cn
@@ -17,4 +18,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagService {
 
+    @Override
+    public Tag getByName(String tagName) {
+        LambdaQueryWrapper<Tag> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Tag::getName, tagName);
+        return baseMapper.selectOne(wrapper);
+    }
 }

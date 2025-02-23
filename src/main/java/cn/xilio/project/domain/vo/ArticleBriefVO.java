@@ -12,7 +12,7 @@ public class ArticleBriefVO {
     /**
      * 编号
      */
-    private Long id;
+    private String id;
 
     /**
      * 标题
@@ -54,7 +54,7 @@ public class ArticleBriefVO {
     /**
      * 作者ID
      */
-    private Long userId;
+    private String userId;
     /**
      * 用户名
      */

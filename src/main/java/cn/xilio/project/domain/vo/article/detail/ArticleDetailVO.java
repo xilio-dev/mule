@@ -32,7 +32,7 @@ class ArticleInfoDTO {
     /**
      * 编号
      */
-    private Long articleId;
+    private Long id;
 
     /**
      * 标题
@@ -85,6 +85,26 @@ class ArticleInfoDTO {
      * 内容字数
      */
     private Integer contentCount;
+    /**
+     *
+     */
+    private Integer visibleStatus;
+    /**
+     *
+     */
+    private Integer publishStatus;
+    /**
+     *
+     */
+    private Long columnId;
+    /**
+     *
+     */
+    private Integer creativeType;
+    /**
+     *
+     */
+    private String originalUrl;
 
 }
 

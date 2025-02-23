@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITagService extends IService<Tag> {
 
+    Tag getByName(String tagName);
 }

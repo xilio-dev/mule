@@ -44,7 +44,7 @@ public class ArticleController {
 
     @GetMapping("detail/{id}")
     @Cacheable(value = "articleDetails", key = "#id")
-    public Result<ArticleDetailVO> detail(@PathVariable @Valid @NotNull Long id) {
+    public Result<ArticleDetailVO> detail(@PathVariable @Valid @NotNull String id) {
         return Result.success(articleService.detail(id));
     }
 
@@ -72,7 +72,7 @@ public class ArticleController {
     }
 
     @GetMapping("get/{id}")
-    public Result<GetArticleVO> get(@PathVariable @Valid @NotNull Long id) {
+    public Result<GetArticleVO> get(@PathVariable @Valid @NotNull String id) {
         return Result.success(articleService.getArticleById(id));
     }
     //清理整个articleDetails缓存

@@ -1,5 +1,6 @@
 package cn.xilio.project.bo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -27,8 +28,8 @@ public class Article implements Serializable {
     /**
      * 编号
      */
-    @TableId("id")
-    private Long id;
+    @TableId(value = "id", type=IdType.ASSIGN_UUID)
+    private String id;
 
     /**
      * 标题
@@ -83,6 +84,11 @@ public class Article implements Serializable {
      */
     @TableField("update_time")
     private LocalDateTime updateTime;
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private LocalDateTime createTime;
 
     /**
      * 区域
@@ -106,11 +112,50 @@ public class Article implements Serializable {
      * 作者ID
      */
     @TableField("member_id")
-    private Long memberId;
+    private String memberId;
 
     /**
      * 作者ID
      */
     @TableField("category_id")
-    private Long categoryId;
+    private String categoryId;
+
+    /**
+     * 可见状态
+     */
+    @TableField("visible_status")
+    private Integer visibleStatus;
+    /**
+     * 发布状态
+     */
+    @TableField("publish_status")
+    private Integer publishStatus;
+    /**
+     * 逻辑删除
+     */
+    @TableField("is_deleted")
+    private Integer deleted;
+
+    /**
+     * 分类专栏
+     */
+    @TableField("column_id")
+    private String columnId;
+    /**
+     * 创作类型：1原创；2转载；3翻译
+     */
+    @TableField("creative_type")
+    private Integer creativeType;
+
+    /**
+     *
+     */
+    @TableField("visit_password")
+    private String visitPassword;
+
+    /**
+     *
+     */
+    @TableField("original_url")
+    private String originalUrl;
 }

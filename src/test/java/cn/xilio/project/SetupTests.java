@@ -24,14 +24,8 @@ class SetupTests {
 
     @Test
     void contextLoads() throws Exception {
-      /*  ArticleListDTO dto = new ArticleListDTO();
-        dto.setCategoryId(0L);
-       dto.setCurrent(0L);
-       dto.setSize(10L);
-        IPage<ArticleBriefVO> articleBriefVOIPage = articleService.listByCategory(dto);
-        System.out.println(articleBriefVOIPage);*/
 
-        ArticleDetailVO detail = articleService.detail(101L);
+
     }
 
 }
