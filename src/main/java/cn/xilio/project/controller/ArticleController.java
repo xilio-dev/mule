@@ -1,13 +1,15 @@
 package cn.xilio.project.controller;
 
 import cn.xilio.project.bo.Article;
-import cn.xilio.project.common.ex.BizException;
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.DelArticleDTO;
+import cn.xilio.project.domain.vo.article.add.SaveArticleDTO;
+import cn.xilio.project.domain.vo.article.detail.ArticleDetailVO;
+import cn.xilio.project.domain.vo.article.get.GetArticleVO;
 import cn.xilio.project.service.IArticleService;
 import cn.xilio.project.common.Result;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,7 +31,7 @@ public class ArticleController {
     private IArticleService articleService;
 
     @PostMapping("list")
-   // @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
+    // @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
     public Result list(@RequestBody @Valid ArticleListDTO dto) {
         return Result.success(articleService.listByCategory(dto));
     }
@@ -42,8 +44,15 @@ public class ArticleController {
 
     @GetMapping("detail/{id}")
     @Cacheable(value = "articleDetails", key = "#id")
-    public Result<Article> detail(@PathVariable Long id) {
-        return Result.success(articleService.getById(id));
+    public Result<ArticleDetailVO> detail(@PathVariable @Valid @NotNull Long id) {
+        return Result.success(articleService.detail(id));
+    }
+
+    // 新增add方法，用于添加文章
+    @PostMapping("add")
+    public Result add(@RequestBody SaveArticleDTO article) {
+        articleService.addArticle(article);
+        return Result.success();
     }
 
     @DeleteMapping("del")
@@ -57,8 +66,14 @@ public class ArticleController {
 
     @PostMapping("/update")
     @CacheEvict(value = "articleDetails", key = "#article.id")
-    public Object update(@RequestBody Article article) {
-        return articleService.updateById(article);
+    public Result update(@RequestBody SaveArticleDTO article) {
+        articleService.updateArticle(article);
+        return Result.success();
+    }
+
+    @GetMapping("get/{id}")
+    public Result<GetArticleVO> get(@PathVariable @Valid @NotNull Long id) {
+        return Result.success(articleService.getArticleById(id));
     }
     //清理整个articleDetails缓存
 //    @CacheEvict(value = "articleDetails", allEntries = true)

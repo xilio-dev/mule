@@ -2,6 +2,7 @@ package cn.xilio.project;
 
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.vo.ArticleBriefVO;
+import cn.xilio.project.domain.vo.article.detail.ArticleDetailVO;
 import cn.xilio.project.service.IArticleService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -23,12 +24,14 @@ class SetupTests {
 
     @Test
     void contextLoads() throws Exception {
-        ArticleListDTO dto = new ArticleListDTO();
+      /*  ArticleListDTO dto = new ArticleListDTO();
         dto.setCategoryId(0L);
        dto.setCurrent(0L);
        dto.setSize(10L);
         IPage<ArticleBriefVO> articleBriefVOIPage = articleService.listByCategory(dto);
-        System.out.println(articleBriefVOIPage);
+        System.out.println(articleBriefVOIPage);*/
+
+        ArticleDetailVO detail = articleService.detail(101L);
     }
 
 }

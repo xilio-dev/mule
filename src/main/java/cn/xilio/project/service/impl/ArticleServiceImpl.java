@@ -6,14 +6,16 @@ import cn.xilio.project.common.ResultEnum;
 import cn.xilio.project.common.ex.BizException;
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.vo.ArticleBriefVO;
+import cn.xilio.project.domain.vo.article.TagInfoDTO;
+import cn.xilio.project.domain.vo.article.add.SaveArticleDTO;
+import cn.xilio.project.domain.vo.article.detail.ArticleDetailVO;
+import cn.xilio.project.domain.vo.article.get.GetArticleVO;
 import cn.xilio.project.mapper.ArticleMapper;
 import cn.xilio.project.service.IArticleService;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -65,5 +67,42 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         } else {
             throw new BizException(ResultEnum.BIZ_ERROR);
         }
+    }
+
+    @Override
+    public ArticleDetailVO detail(Long id) {
+        ArticleDetailVO articleDetail = articleMapper.selectArticleDetail(id);
+        if (articleDetail != null) {
+            String tagIdStr = articleDetail.getTagIds();
+            if (tagIdStr != null) {
+                String[] tagIds = articleDetail.getTagIds().split(",");
+                String[] tagNames = articleDetail.getTagNames().split(",");
+                List<TagInfoDTO> tags = IntStream.range(0, tagIds.length)
+                        .mapToObj(i -> {
+                            TagInfoDTO tag = new TagInfoDTO();
+                            tag.setId(Long.parseLong(tagIds[i]));
+                            tag.setName(tagNames[i]);
+                            return tag;
+                        })
+                        .collect(Collectors.toList());
+                articleDetail.setTags(tags);
+            }
+        }
+        return articleDetail;
+    }
+
+    @Override
+    public void addArticle(SaveArticleDTO article) {
+
+    }
+
+    @Override
+    public void updateArticle(SaveArticleDTO article) {
+
+    }
+
+    @Override
+    public GetArticleVO getArticleById(Long id) {
+        return null;
     }
 }

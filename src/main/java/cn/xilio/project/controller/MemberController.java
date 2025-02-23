@@ -22,6 +22,7 @@ public class MemberController {
     @GetMapping("get")
     public Result get() {
         Map<Object, Object> userInfo = new HashMap<>();
+        userInfo.put("userId", 1);
         userInfo.put("username", "StackOak");
         userInfo.put("avatar", "https://unifolm-cdn.unitree.com/forum/static/2025/2/6/8cfe6fead4254768b7d1168a7d9f2bc3_800x800.jpeg");
         return Result.success(userInfo);
