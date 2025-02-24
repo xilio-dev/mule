@@ -11,7 +11,7 @@
         <if test="dto.categoryId != null and dto.categoryId != 0">
             INNER JOIN category c ON a.category_id = c.id
         </if>
-        LEFT JOIN member m ON a.member_id = m.id
+        LEFT JOIN user m ON a.user_id = m.id
         LEFT JOIN article_tag at ON a.id = at.article_id
         LEFT JOIN tag t ON at.tag_id = t.id
         <where>
@@ -75,7 +75,7 @@
             GROUP_CONCAT(t.id) AS tagIds,
             GROUP_CONCAT(t.name) AS tagNames
         FROM article a
-                 LEFT JOIN member m ON a.member_id = m.id
+                 LEFT JOIN user m ON a.user_id = m.id
                  LEFT JOIN category c ON a.category_id = c.id
                  LEFT JOIN article_tag at ON a.id = at.article_id
             LEFT JOIN tag t ON at.tag_id = t.id

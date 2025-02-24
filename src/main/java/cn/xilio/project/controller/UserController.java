@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/user")
-public class MemberController {
+public class UserController {
     @GetMapping("get")
     public Result get() {
         Map<Object, Object> userInfo = new HashMap<>();

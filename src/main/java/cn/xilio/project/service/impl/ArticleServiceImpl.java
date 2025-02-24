@@ -132,9 +132,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         newArticle.setTitle(dto.getTitle());
         newArticle.setDescription(dto.getDescription());
         newArticle.setContent(dto.getContent());
-        newArticle.setMemberId("1");//todo user
-        //newArticle.setCover(dto.getCover());
-        newArticle.setCover("https://picsum.photos/1920/1080?random=1");
+        newArticle.setUserId("1");//todo user
+        newArticle.setCover(dto.getCover());
+        //todo test
+        if (!StringUtils.hasLength(dto.getCover())){
+            newArticle.setCover("https://picsum.photos/1920/1080?random=1");
+        }
         newArticle.setVisibleStatus(dto.getVisibleStatus());
         if (dto.getVisibleStatus() == 4) {
             if (!StringUtils.hasLength(dto.getVisitPassword())) {

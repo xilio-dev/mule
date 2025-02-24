@@ -1,6 +1,6 @@
 package cn.xilio.project.service;
 
-import cn.xilio.project.bo.Member;
+import cn.xilio.project.bo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author xilio.cn
  * @since 2025-02-15
  */
-public interface IMemberService extends IService<Member> {
+public interface IUserService extends IService<User> {
 
 }

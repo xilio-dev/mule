@@ -1,6 +1,6 @@
 package cn.xilio.project.mapper;
 
-import cn.xilio.project.bo.MemberConfig;
+import cn.xilio.project.bo.UserConfig;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 
@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author xilio.cn
  * @since 2025-02-15
  */
-public interface MemberConfigMapper extends BaseMapper<MemberConfig> {
+public interface UserConfigMapper extends BaseMapper<UserConfig> {
 
 }
 

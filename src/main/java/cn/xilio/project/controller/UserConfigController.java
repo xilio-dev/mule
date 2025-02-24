@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-02-15
  */
 @RestController
-@RequestMapping("/memberConfig")
-public class MemberConfigController {
+@RequestMapping("/userConfig")
+public class UserConfigController {
 
 }

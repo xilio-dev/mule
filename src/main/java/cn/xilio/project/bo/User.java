@@ -1,5 +1,6 @@
 package cn.xilio.project.bo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -17,11 +18,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@TableName("member_config")
-public class MemberConfig implements Serializable {
+@TableName("user")
+public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("id")
+    @TableId(value = "id", type= IdType.ASSIGN_ID)
     private String id;
 }

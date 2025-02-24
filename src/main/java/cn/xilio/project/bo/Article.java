@@ -111,8 +111,8 @@ public class Article implements Serializable {
     /**
      * 作者ID
      */
-    @TableField("member_id")
-    private String memberId;
+    @TableField("user_id")
+    private String userId;
 
     /**
      * 作者ID
