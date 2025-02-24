@@ -2,18 +2,29 @@ package cn.xilio.project;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
+import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import org.apache.ibatis.type.JdbcType;
 
 import java.nio.file.Paths;
 
 public class GenCode {
     public static void main(String[] args) {
         FastAutoGenerator.create("jdbc:mysql://124.221.53.234:3306/xilio1024?serverTimezone=UTC", "xilio1024", "EbfSKppBwZMemEGW")
+                .dataSourceConfig(builder ->
+                        builder.typeConvertHandler((globalConfig, typeRegistry, metaInfo) -> {
+                            // 兼容旧版本转换成Integer
+                            if (JdbcType.TINYINT == metaInfo.getJdbcType()) {
+                                return DbColumnType.INTEGER;
+                            }
+                            return typeRegistry.getColumnType(metaInfo);
+                        })
+                )
                 .globalConfig(builder -> builder
-                        .author("xilio.cn")
+                        .author("stackoak.com")
                         .dateType(DateType.TIME_PACK)
                         .outputDir(Paths.get(System.getProperty("user.dir")) + "/gen")
-                        .commentDate("yyyy-MM-dd")
+                        .commentDate("yyyy-MM-dd HH:mm:ss")
 
                 )
                 .packageConfig(builder -> builder
@@ -34,6 +45,7 @@ public class GenCode {
 
 
                 )
+
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();
     }

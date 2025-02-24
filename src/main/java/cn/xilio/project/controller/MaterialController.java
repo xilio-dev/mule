@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RestController;
  *  前端控制器
  * </p>
  *
- * @author xilio.cn
- * @since 2025-02-24
+ * @author stackoak.com
+ * @since 2025-02-24 18:00:56
  */
 @RestController
-@RequestMapping("/opensource")
-public class OpensourceController {
+@RequestMapping("/material")
+public class MaterialController {
 
 }

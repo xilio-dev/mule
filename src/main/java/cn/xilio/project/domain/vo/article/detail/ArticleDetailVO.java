@@ -32,7 +32,7 @@ class ArticleInfoDTO {
     /**
      * 编号
      */
-    private Long id;
+    private String id;
 
     /**
      * 标题
