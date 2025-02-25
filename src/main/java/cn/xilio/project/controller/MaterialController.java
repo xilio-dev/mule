@@ -53,7 +53,7 @@ public class MaterialController {
             String img = getPathFileName(StackOkaConfig.getUploadPath(), fileName);
 
             Material material = new Material();
-            material.setImg(img);
+            material.setImgUrl(img);
             material.setSpice(0);
             material.setTitle(fileName);
             material.setType(2);

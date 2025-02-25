@@ -62,13 +62,17 @@ public class ArticleBriefVO {
     /**
      * 标签列表
      */
-    List<Tag> tags;
+    private List<Tag> tags;
     /**
      * 标签ID列表
      */
-    String tagIds;
+    private String tagIds;
     /**
      * 标签名字列表
      */
-    String tagNames;
+    private String tagNames;
+    /**
+     * 可见状态
+     */
+    private Integer visibleStatus;
 }

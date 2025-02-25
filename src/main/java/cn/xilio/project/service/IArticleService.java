@@ -1,6 +1,7 @@
 package cn.xilio.project.service;
 
 import cn.xilio.project.bo.Article;
+import cn.xilio.project.domain.ArticleDetailDTO;
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.vo.ArticleBriefVO;
 import cn.xilio.project.domain.vo.article.add.SaveArticleDTO;
@@ -24,9 +25,9 @@ public interface IArticleService extends IService<Article> {
 
    public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO);
 
-   ArticleDetailVO detail(String id);
+   ArticleDetailVO detail(ArticleDetailDTO dto);
 
-    void addArticle(SaveArticleDTO article);
+    String addArticle(SaveArticleDTO article);
 
     void updateArticle(SaveArticleDTO article);
 

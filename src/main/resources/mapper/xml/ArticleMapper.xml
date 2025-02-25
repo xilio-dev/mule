@@ -4,9 +4,11 @@
     <select id="selectByCategoryAndRecent" resultType="cn.xilio.project.domain.vo.ArticleBriefVO">
         SELECT a.id, a.title, a.cover, a.like_count AS likeCount, a.view_count AS viewCount,
         a.collect_count AS collectCount, a.description, m.username, m.id AS userId,
+        a.visible_status as visibleStatus,
         a.publish_time AS publishTime,
         GROUP_CONCAT(t.id) AS tagIds,
         GROUP_CONCAT(t.name) AS tagNames
+
         FROM article a
         <if test="dto.categoryId != null and dto.categoryId != 0">
             INNER JOIN category c ON a.category_id = c.id

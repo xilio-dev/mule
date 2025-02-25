@@ -6,15 +6,16 @@ import cn.xilio.project.bo.Category;
 import cn.xilio.project.bo.Tag;
 import cn.xilio.project.common.ResultEnum;
 import cn.xilio.project.common.ex.BizException;
+import cn.xilio.project.domain.ArticleDetailDTO;
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.vo.ArticleBriefVO;
 import cn.xilio.project.domain.vo.article.TagInfoDTO;
 import cn.xilio.project.domain.vo.article.add.SaveArticleDTO;
 import cn.xilio.project.domain.vo.article.detail.ArticleDetailVO;
+
 import cn.xilio.project.domain.vo.article.get.GetArticleVO;
 import cn.xilio.project.mapper.ArticleMapper;
-import cn.xilio.project.mapper.ArticleTagMapper;
-import cn.xilio.project.mapper.TagMapper;
+
 import cn.xilio.project.service.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -83,8 +84,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public ArticleDetailVO detail(String id) {
-        ArticleDetailVO articleDetail = baseMapper.selectArticleDetail(id);
+    public ArticleDetailVO detail(ArticleDetailDTO dto) {
+        ArticleDetailVO articleDetail = baseMapper.selectArticleDetail(dto.getId());
         if (articleDetail != null) {
             String tagIdStr = articleDetail.getTagIds();
             if (tagIdStr != null) {
@@ -106,7 +107,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addArticle(SaveArticleDTO dto) {
+    public String addArticle(SaveArticleDTO dto) {
         String categoryId = dto.getCategoryId();
         List<String> tagNames = dto.getTagNames();
         List<String> columnNames = dto.getColumnNames();
@@ -168,6 +169,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //建立标签与文章的关联
         articleTagService.saveBatch(articleTagsList);
         //如果数据库没有专栏则创建专栏
+        return newArticle.getId();
     }
 
     @Override

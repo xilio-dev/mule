@@ -34,8 +34,8 @@ public class Material implements Serializable {
     @TableField("title")
     private String title;
 
-    @TableField("img")
-    private String img;
+    @TableField("img_url")
+    private String imgUrl;
 
     @TableField("small_img")
     private String smallImg;

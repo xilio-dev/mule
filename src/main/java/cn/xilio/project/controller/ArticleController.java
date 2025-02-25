@@ -3,6 +3,7 @@ package cn.xilio.project.controller;
 import cn.xilio.project.bo.Article;
 import cn.xilio.project.common.RestResult;
 import cn.xilio.project.config.StackOkaConfig;
+import cn.xilio.project.domain.ArticleDetailDTO;
 import cn.xilio.project.domain.ArticleListDTO;
 import cn.xilio.project.domain.DelArticleDTO;
 import cn.xilio.project.domain.vo.article.add.SaveArticleDTO;
@@ -49,17 +50,16 @@ public class ArticleController {
         return articleService.list();
     }
 
-    @GetMapping("detail/{id}")
-    @Cacheable(value = "articleDetails", key = "#id")
-    public Result<ArticleDetailVO> detail(@PathVariable @Valid @NotNull String id) {
-        return Result.success(articleService.detail(id));
+    @PostMapping("detail")
+    @Cacheable(value = "articleDetails", key = "#dto.id")
+    public Result<ArticleDetailVO> detail(@RequestBody @Valid ArticleDetailDTO dto) {
+        return Result.success(articleService.detail(dto));
     }
 
     // 新增add方法，用于添加文章
     @PostMapping("add")
     public Result add(@RequestBody SaveArticleDTO article) {
-        articleService.addArticle(article);
-        return Result.success();
+        return Result.success(articleService.addArticle(article));
     }
 
     @DeleteMapping("del")
