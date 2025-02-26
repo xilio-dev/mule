@@ -17,7 +17,7 @@ buildNumber.properties
 .classpath
 .idea
  gen
-script/rebuild.sh
+script/example/rebuild.sh
 application/target
 application/application.iml
 common/target

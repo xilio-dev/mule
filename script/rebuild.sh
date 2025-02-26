@@ -1,24 +1,20 @@
+#ssh root@124.221.53.234 "cd /www/wwwroot/xilio.cn/ && rm -rf *"
+#scp -r /Users/liuxin/Desktop/xilio-site/dist/* root@124.221.53.234:/www/wwwroot/xilio.cn/
+#ssh root@124.221.53.234 "cd /www/wwwroot/stackoak.com/ && rm -rf *"
+#pnpm build
 
-## 定义远程服务器的 IP 地址或主机名
-#REMOTE_HOST="124.221.53.234"
-#
-## 定义远程服务器的登录用户名
-#REMOTE_USER="root"
-#
-## 定义远程脚本的路径
-#REMOTE_SCRIPT_PATH="/home/xilio1024/run.sh"
-#
-## 执行远程脚本
-#ssh ${REMOTE_USER}@${REMOTE_HOST} "${REMOTE_SCRIPT_PATH}"
-
-
-#sshpass -p 'Y0su!@$SX%' ssh root@124.221.53.234
-
-
-
-REMOTE_HOST="124.221.53.234"
+# 远程服务器信息
 REMOTE_USER="root"
-PASSWORD="Y0su!@$SX%"
-REMOTE_SCRIPT="/home/xilio1024/run.sh"
+REMOTE_HOST="124.221.53.234"
+REMOTE_DIR="/www/wwwroot/stackoak.com/"
+PASSWORD="your_password"
 
-sshpass -p "$PASSWORD" ssh "$REMOTE_USER@$REMOTE_HOST" "$REMOTE_SCRIPT"
+# 本地文件路径
+LOCAL_DIR="/Users/liuxin/Desktop/stakoak-server/stackoak-site-vue/dist/*"
+
+# 清空远程目录
+sshpass -p "$PASSWORD" ssh "$REMOTE_USER@$REMOTE_HOST" "cd $REMOTE_DIR && rm -rf *"
+
+scp -r /Users/liuxin/Desktop/stakoak-server/stackoak-site-vue/dist/* root@124.221.53.234:/www/wwwroot/stackoak.com/
+#服务端打包
+ssh root@124.221.53.234
