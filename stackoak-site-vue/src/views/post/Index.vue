@@ -1,0 +1,297 @@
+<script setup lang="ts">
+import {QuestionCircleOutlined, CustomerServiceOutlined, UserOutlined} from "@ant-design/icons-vue";
+import {ref, onMounted, onUnmounted, onActivated, onUpdated, computed} from 'vue';
+import Markdown from "@/components/Markdown.vue";
+import {postDetail} from "@/api/post.ts";
+import {useRoute} from "vue-router";
+import {useUserStore} from "@/stores/user.ts";
+import router from "@/router";
+import {NumberUtils} from "../../utils/number-util.ts";
+
+const useUser = useUserStore()
+
+const comment_value = ref('')
+const mdValue = ref("");
+const route = useRoute()
+const isLoading = ref(true);
+const articleInfo = ref({})
+const userInfo = ref({})
+const tags = ref({})
+const category = ref({})
+
+async function fetchPostData() {
+  try {
+    const res = await postDetail({id:route.params.id})
+    articleInfo.value = res.articleInfo || {}
+    userInfo.value = res.userInfo || {}
+    tags.value = res.tags || []
+    category.value = res.category || {}
+    isLoading.value = false
+  } catch (err) {
+    isLoading.value = false
+  }
+}
+
+//如果用户已经登陆，而且是自己的文章，那么可以去编辑
+const onToEditEditor = (id: string) => {
+  router.push({path: '/editor', query: {id: id}});
+}
+onMounted(async () => {
+  await fetchPostData();
+});
+
+const needVisitPass=ref(true)
+</script>
+
+<template>
+
+  <a-flex v-if="needVisitPass" align="center" justify="center"  style="width: 100%;margin-top: 8%">
+   <a-flex vertical align="center" :gap="15">
+     <a-image src="/suo.svg" style="width: 100px;height: 100px;" :preview="false" />
+     <div style="font-size: 18px;color: gray">请输入访问密码</div>
+     <a-flex vertical>
+       <a-input style="width: 220px" v-model:value="visitPass" placeholder="请输入密码"></a-input>
+       <a-button @click="needVisitPass=false" style="width: 220px;margin-top: 10px">确定</a-button>
+     </a-flex>
+   </a-flex>
+  </a-flex>
+
+  <a-row :gutter="20" v-if="!needVisitPass">
+    <a-col :span="6">
+      <a-card style="height: 205px">
+        <a-row style="text-align: left;width: 100%">
+          <a-col :span="6">
+            <RouterLink to="/author">
+              <a-avatar :size="50" :src="userInfo.avatar"/>
+            </RouterLink>
+          </a-col>
+          <a-col :span="18" style="padding-left: 7px">
+            <a-row>
+              <RouterLink :to="`/author/${userInfo.userId}`">
+                <span style="font-size: 17px;color: black">{{ userInfo.userName }}</span>
+              </RouterLink>
+            </a-row>
+            <a-row>
+              <span style="font-size: 13px">后端开发工程师</span>
+            </a-row>
+          </a-col>
+        </a-row>
+        <a-flex :gap="6" justify="space-around" style="margin-top: 15px;" align="center">
+          <span>63</span>
+          <span>2k</span>
+          <span>2w</span>
+          <span>300</span>
+        </a-flex>
+        <a-flex :gap="6" justify="space-around" align="center">
+          <span>文章</span>
+          <span>获赞</span>
+          <span>粉丝</span>
+          <span>收藏</span>
+        </a-flex>
+        <a-row :gutter="10" style="margin-top: 15px;text-align: center">
+          <a-col :span="12">
+            <a-button type="default" style="width: 100%;">私信</a-button>
+          </a-col>
+          <a-col :span="12">
+            <a-button type="primary" style="width: 100%;">关注</a-button>
+          </a-col>
+        </a-row>
+
+      </a-card>
+
+      <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
+
+      </a-card>
+      <a-card title="精选内容" style="height: 260px; margin-top: 8px">
+
+      </a-card>
+      <a-card style="height: 120px; margin-top: 8px;background-color: #3eaabd">广告位置</a-card>
+    </a-col>
+    <a-col :span="18" style=" float: left">
+      <a-card style="border: none">
+        <h1>{{ articleInfo.title }}</h1>
+        <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px">
+          <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
+            <div style="color: #515767;">{{ userInfo.userName }}</div>
+            <div>{{ articleInfo.publishTime }}</div>
+            <div>12566</div>
+            <div>字数 {{ NumberUtils.formatNumber(articleInfo.contentCount) }}</div>
+            <div>领域: {{ category.categoryName }}</div>
+          </a-flex>
+          <a-button type="link" @click="onToEditEditor(articleInfo.id)"
+                    v-if="useUser.isLogin()&&userInfo.userId===useUser.userinfo.userId">编辑
+          </a-button>
+        </a-flex>
+        <Markdown v-if="!isLoading" md-id="1000" :preview="false" :value="articleInfo.content"/>
+        <a-flex justify="start" align="center" style="margin-top: 20px">
+          <span>标签：</span>
+          <a-flex justify="start" align="center" gap="small">
+            <a-tag v-for="tag in tags" :key="tag.id" :bordered="false" style="box-shadow: none">{{ tag.name }}</a-tag>
+          </a-flex>
+        </a-flex>
+      </a-card>
+      <a-card style="border: none;margin-top: 15px">专栏
+      </a-card>
+      <a-card style="border: none;margin-top: 15px">
+        <h3>评论33</h3>
+
+        <a-comment>
+          <template #avatar>
+            <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+          </template>
+          <template #content>
+            <a-form-item>
+              <a-textarea
+                  v-model:value="comment_value"
+                  placeholder="平等表达，友善交流"
+                  :auto-size="{ minRows: 5, maxRows: 10 }"
+              />
+            </a-form-item>
+            <a-form-item>
+              <!--              <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">-->
+              <!--                评论-->
+              <!--              </a-button>-->
+            </a-form-item>
+          </template>
+        </a-comment>
+        <a-comment>
+          <template #actions>
+            <span key="comment-nested-reply-to">回复</span>
+          </template>
+          <template #author>
+            <a>笑嘻嘻</a>
+          </template>
+          <template #avatar>
+            <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+          </template>
+          <template #content>
+            <p>
+              哥，你太厉害了，我实在佩服
+            </p>
+          </template>
+          <a-comment>
+            <template #actions>
+              <span>回复</span>
+            </template>
+            <template #author>
+              <a>阿牛哥</a>
+            </template>
+            <template #avatar>
+              <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+            </template>
+            <template #content>
+              <p>
+                不敢当，不敢当
+              </p>
+            </template>
+          </a-comment>
+          <a-comment>
+            <template #actions>
+              <span>回复</span>
+            </template>
+            <template #author>
+              <a>阿牛哥</a>
+            </template>
+            <template #avatar>
+              <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+            </template>
+            <template #content>
+              <p>
+                不敢当，不敢当
+              </p>
+            </template>
+          </a-comment>
+        </a-comment>
+      </a-card>
+      <a-card style="border: none;margin-top: 15px">推荐
+      </a-card>
+    </a-col>
+  </a-row>
+  <a-float-button-group v-if="!needVisitPass" shape="circle" style="position: fixed; right: 6%; bottom: 43%;">
+    <a-float-button shape="circle" :badge="{ count: '9', color: 'rgb(194, 200, 209)' }">
+      <template #icon>
+        <svg fill="#1e80ff" viewBox="64 64 896 896" focusable="false" data-icon="like" width="1em" height="1em"
+             aria-hidden="true">
+          <path
+              d="M885.9 533.7c16.8-22.2 26.1-49.4 26.1-77.7 0-44.9-25.1-87.4-65.5-111.1a67.67 67.67 0 00-34.3-9.3H572.4l6-122.9c1.4-29.7-9.1-57.9-29.5-79.4A106.62 106.62 0 00471 99.9c-52 0-98 35-111.8 85.1l-85.9 311h-.3v428h472.3c9.2 0 18.2-1.8 26.5-5.4 47.6-20.3 78.3-66.8 78.3-118.4 0-12.6-1.8-25-5.4-37 16.8-22.2 26.1-49.4 26.1-77.7 0-12.6-1.8-25-5.4-37 16.8-22.2 26.1-49.4 26.1-77.7-.2-12.6-2-25.1-5.6-37.1zM112 528v364c0 17.7 14.3 32 32 32h65V496h-65c-17.7 0-32 14.3-32 32z"></path>
+        </svg>
+      </template>
+    </a-float-button>
+    <a-float-button :style="{marginTop: '25px'}" :badge="{ count: '5k', color: 'rgb(194, 200, 209)' }">
+      <template #icon>
+        <svg t="1739882636550" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+             p-id="14147" width="20" height="20">
+          <path
+              d="M554.8 99.6l104.9 212.5c7 14.1 20.4 23.9 36 26.1l234.6 34.1c39.2 5.7 54.8 53.8 26.5 81.5L787 619.2a47.57 47.57 0 0 0-13.7 42.3l40.1 233.6c6.7 39-34.3 68.8-69.3 50.4L534.2 835.2c-13.9-7.3-30.5-7.3-44.5 0L280 945.5c-35 18.4-76-11.3-69.3-50.4l40.1-233.6c2.7-15.5-2.5-31.3-13.7-42.3L67.3 453.8c-28.4-27.6-12.7-75.8 26.5-81.5l234.6-34.1c15.6-2.3 29-12 36-26.1L469.2 99.6c17.5-35.5 68.1-35.5 85.6 0z"
+              p-id="14148" fill="#8a919f"></path>
+        </svg>
+      </template>
+    </a-float-button>
+    <a-float-button :style="{marginTop: '25px'}" :badge="{ count: '5w', color: 'rgb(194, 200, 209)' }">
+      <template #icon>
+        <svg viewBox="64 64 896 896" focusable="false" data-icon="message" width="1em"
+             height="1em" fill="#8a919f" aria-hidden="true">
+          <path
+              d="M924.3 338.4a447.57 447.57 0 00-96.1-143.3 443.09 443.09 0 00-143-96.3A443.91 443.91 0 00512 64h-2c-60.5.3-119 12.3-174.1 35.9a444.08 444.08 0 00-141.7 96.5 445 445 0 00-95 142.8A449.89 449.89 0 0065 514.1c.3 69.4 16.9 138.3 47.9 199.9v152c0 25.4 20.6 46 45.9 46h151.8a447.72 447.72 0 00199.5 48h2.1c59.8 0 117.7-11.6 172.3-34.3A443.2 443.2 0 00827 830.5c41.2-40.9 73.6-88.7 96.3-142 23.5-55.2 35.5-113.9 35.8-174.5.2-60.9-11.6-120-34.8-175.6zM312.4 560c-26.4 0-47.9-21.5-47.9-48s21.5-48 47.9-48 47.9 21.5 47.9 48-21.4 48-47.9 48zm199.6 0c-26.4 0-47.9-21.5-47.9-48s21.5-48 47.9-48 47.9 21.5 47.9 48-21.5 48-47.9 48zm199.6 0c-26.4 0-47.9-21.5-47.9-48s21.5-48 47.9-48 47.9 21.5 47.9 48-21.5 48-47.9 48z"></path>
+        </svg>
+      </template>
+    </a-float-button>
+    <a-float-button :style="{marginTop: '25px'}">
+      <template #icon>
+        <svg t="1739882171114" class="icon" viewBox="0 0 1127 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+             p-id="7991" width="20" height="20">
+          <path
+              d="M1108.468296 824.890547C1159.055032 910.219597 1097.227863 1024 990.429373 1024L130.432879 1024C29.258031 1024-32.574625 910.219597 18.012112 824.890547L450.825613 68.266574C473.306472 22.754136 518.276424 0 563.240888 0 608.209469 0 653.173934 22.754136 675.660283 68.266574L1108.468296 824.890547 1108.468296 824.890547 1108.468296 824.890547 1108.468296 824.890547ZM1020.384123 877.110641 1019.583053 875.735153 586.77504 119.111177 583.854223 113.62523C580.333998 106.500274 573.244216 102.4 563.240888 102.4 553.240806 102.4 546.151071 106.500212 542.636068 113.61633L539.710577 119.111663 106.096287 877.110641C95.301134 895.319767 109.937021 921.6 130.432879 921.6L990.429373 921.6C1016.30634 921.6 1031.298263 895.520476 1020.384123 877.110641L1020.384123 877.110641 1020.384123 877.110641 1020.384123 877.110641ZM558.08319 307.2C532.482248 307.2 512 322.819385 512 342.344809L512 579.251379C512 598.776801 532.482248 614.4 558.08319 614.4L568.321812 614.4C593.922749 614.4 614.4 598.776801 614.4 579.251379L614.4 342.344809C614.4 322.819385 593.922749 307.2 568.321812 307.2L558.08319 307.2 558.08319 307.2 558.08319 307.2 558.08319 307.2ZM512 766.885176C512 780.001705 517.522432 793.032632 526.999818 802.305669 536.477199 811.577487 549.797038 816.975247 563.200625 816.975247 576.602962 816.975247 589.927798 811.577487 599.405184 802.305669 608.882565 793.032632 614.4 780.001705 614.4 766.885176 614.4 753.772319 608.882565 740.741391 599.405184 731.469573 589.927798 722.19776 576.602962 716.8 563.200625 716.8 549.797038 716.8 536.477199 722.19776 526.999818 731.469573 517.522432 740.741391 512 753.772319 512 766.885176L512 766.885176 512 766.885176 512 766.885176Z"
+              fill="#979797" p-id="7992"></path>
+        </svg>
+      </template>
+    </a-float-button>
+    <a-float-button :style="{marginTop: '25px'}">
+      <template #icon>
+        <svg viewBox="64 64 896 896" focusable="false" data-icon="share-alt" width="1em"
+             height="1em" fill="#8a919f" aria-hidden="true">
+          <path
+              d="M752 664c-28.5 0-54.8 10-75.4 26.7L469.4 540.8a160.68 160.68 0 000-57.6l207.2-149.9C697.2 350 723.5 360 752 360c66.2 0 120-53.8 120-120s-53.8-120-120-120-120 53.8-120 120c0 11.6 1.6 22.7 4.7 33.3L439.9 415.8C410.7 377.1 364.3 352 312 352c-88.4 0-160 71.6-160 160s71.6 160 160 160c52.3 0 98.7-25.1 127.9-63.8l196.8 142.5c-3.1 10.6-4.7 21.8-4.7 33.3 0 66.2 53.8 120 120 120s120-53.8 120-120-53.8-120-120-120zm0-476c28.7 0 52 23.3 52 52s-23.3 52-52 52-52-23.3-52-52 23.3-52 52-52zM312 600c-48.5 0-88-39.5-88-88s39.5-88 88-88 88 39.5 88 88-39.5 88-88 88zm440 236c-28.7 0-52-23.3-52-52s23.3-52 52-52 52 23.3 52 52-23.3 52-52 52z"></path>
+        </svg>
+      </template>
+    </a-float-button>
+  </a-float-button-group>
+
+  <a-float-button-group shape="circle">
+    <a-float-button>
+      <template #icon>
+        <QuestionCircleOutlined/>
+      </template>
+    </a-float-button>
+
+    <a-float-button
+        shape="circle"
+        type="primary"
+        :style="{right: '94px'}">
+      <template #icon>
+        <CustomerServiceOutlined/>
+      </template>
+    </a-float-button>
+    <a-back-top/>
+  </a-float-button-group>
+</template>
+
+<style scoped>
+:deep(.ant-float-btn .ant-badge .ant-badge-count ) {
+  transform: translate(0, 0);
+  transform-origin: center;
+  top: -10px;
+  inset-inline-end: -13px;
+}
+
+:deep(.cherry-previewer) {
+  border-left: none;
+  padding: 0 10px 0 10px;
+}
+
+/* 卡片修改*/
+:deep(.ant-card .ant-card-head ) {
+  min-height: 40px;
+  padding: 0 8px;
+}
+</style>
