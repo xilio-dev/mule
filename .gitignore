@@ -17,4 +17,13 @@ buildNumber.properties
 .classpath
 .idea
  gen
- script/rebuild.sh
+script/rebuild.sh
+application/target
+application/application.iml
+common/target
+common/common.iml
+repository/target
+repository/repository.iml
+script/
+script
+
