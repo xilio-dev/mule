@@ -6,7 +6,6 @@
         <groupId>com.stackoka</groupId>
         <artifactId>stackoka</artifactId>
         <version>1.0.0</version>
-
     </parent>
     <artifactId>application</artifactId>
     <version>1.0.0</version>
@@ -19,8 +18,6 @@
             <groupId>com.stackoka</groupId>
             <artifactId>repository</artifactId>
         </dependency>
-
-
     </dependencies>
     <build>
         <plugins>

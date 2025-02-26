@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoka.stackoka.common.data.article.ArticleDO;
+import com.stackoka.stackoka.common.data.column.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -28,7 +29,7 @@ public interface IArticleService extends IService<ArticleDO> {
 
    ArticleDetailVO detail(ArticleDetailDTO dto);
 
-    String addArticle(SaveArticleDTO article);
+    String saveArticle(SaveArticleDTO article);
 
     void updateArticle(SaveArticleDTO article);
 

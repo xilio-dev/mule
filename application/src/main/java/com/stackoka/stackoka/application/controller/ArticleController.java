@@ -7,6 +7,7 @@ import com.stackoka.stackoka.common.data.article.SaveArticleDTO;
 import com.stackoka.stackoka.common.data.article.ArticleDetailVO;
 import com.stackoka.stackoka.common.data.article.GetArticleVO;
 import com.stackoka.stackoka.application.service.article.IArticleService;
+import com.stackoka.stackoka.common.message.RestResult;
 import com.stackoka.stackoka.common.message.Result;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,12 +27,12 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/article")
-public class ArticleController {
+public class ArticleController extends BaseController {
     @Autowired
     private IArticleService articleService;
 
     @PostMapping("list")
-    @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
+   // @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
     public Result list(@RequestBody @Valid ArticleListDTO dto) {
         return Result.success(articleService.listByCategory(dto));
     }
@@ -51,7 +52,7 @@ public class ArticleController {
     // 新增add方法，用于添加文章
     @PostMapping("add")
     public Result add(@RequestBody SaveArticleDTO article) {
-        return Result.success(articleService.addArticle(article));
+        return Result.success(articleService.saveArticle(article));
     }
 
     @DeleteMapping("del")
@@ -63,11 +64,10 @@ public class ArticleController {
         return articleService.removeById(delArticleDTO.getId());
     }
 
-    @PostMapping("/update")
-    @CacheEvict(value = "articleDetails", key = "#article.id")
-    public Result update(@RequestBody SaveArticleDTO article) {
-        articleService.updateArticle(article);
-        return Result.success();
+    @PutMapping("update")
+    //@CacheEvict(value = "articleDetails", key = "#article.id")
+    public RestResult update(@RequestBody SaveArticleDTO article) {
+        return RestResult.success(articleService.saveArticle(article));
     }
 
     @GetMapping("get/{id}")

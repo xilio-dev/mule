@@ -31,7 +31,7 @@ const creativeTypeList = ref([
   {id: 1, label: '原创'},
   {id: 2, label: '转载'}])
 // 判断是否是新增模式
-const isAdd = computed(() => route.query.id == undefined || route.query.id == '');
+const isAdd = computed(() => !route.query || route.query.id == undefined || route.query.id == '');
 const articleDetailVo = reactive({
   articleInfo: {
     title: undefined,
@@ -141,8 +141,8 @@ const showDrawer = () => {
 //发布对话框
 const openPublish = ref<boolean>(false);
 const showModal = () => {
-  if (!validateFieldAndLength(articleDetailVo.articleInfo.title, 5, '文章标题')) return;
-  if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
+  //todo if (!validateFieldAndLength(articleDetailVo.articleInfo.title, 5, '文章标题')) return;
+ // todo if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
   openPublish.value = true;
 };
 //发布文章
@@ -156,15 +156,15 @@ const onPublishArticle = () => {
   //发布新文章
   if (isAdd.value) {
     addArticle(body).then(articleId => {
-      router.push({path: `/post/${articleId}`})
+     router.push({path: `/post/${articleId}`})
     })
   } else {
     //更新文章
     updateArticle(body).then(articleId => {
-      router.push({path: `/post/${articleId}`})
+     router.push({path: `/post/${articleId}`})
     })
   }
-  openPublish.value = false;
+ openPublish.value = false;
 };
 
 //分类领域选择

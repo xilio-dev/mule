@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 /**
@@ -20,11 +21,17 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("columns")
+@NoArgsConstructor
 public class Column implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "id", type= IdType.ASSIGN_ID)
+    public Column(String name, String userId) {
+        this.name = name;
+        this.userId = userId;
+    }
+
+    @TableId(value = "id", type= IdType.ASSIGN_UUID)
     private String id;
 
     /**
@@ -43,7 +50,7 @@ public class Column implements Serializable {
      * 创建者
      */
     @TableField("user_id")
-    private Long userId;
+    private String userId;
 
     /**
      * 简介

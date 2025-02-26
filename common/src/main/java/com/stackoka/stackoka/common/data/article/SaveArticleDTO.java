@@ -9,6 +9,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SaveArticleDTO extends BaseDTO {
+    private static final long serialVersionUID = 1L;
+    private String id;
     private String title;
     private String description;
     private String content;

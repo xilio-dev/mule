@@ -1,4 +1,4 @@
-package cn.stackoka.stackoka;
+package com.stackoka.stackoka.application;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
@@ -28,12 +28,12 @@ public class GenCode {
 
                 )
                 .packageConfig(builder -> builder
-                        .parent("cn.xilio.project")
+                        .parent("com.stackoka.stackoka")
                         .entity("bo")
                         .mapper("mapper")
                         .service("service")
 
-                        .serviceImpl("service.impl")
+                        .serviceImpl("service")
                         .xml("mapper.xml")
                 )
                 .strategyConfig(builder -> builder

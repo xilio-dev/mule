@@ -11,7 +11,6 @@ import {NumberUtils} from "../../utils/number-util.ts";
 const useUser = useUserStore()
 
 const comment_value = ref('')
-const mdValue = ref("");
 const route = useRoute()
 const isLoading = ref(true);
 const articleInfo = ref({})
@@ -40,7 +39,7 @@ onMounted(async () => {
   await fetchPostData();
 });
 
-const needVisitPass=ref(true)
+const needVisitPass=ref(false)
 </script>
 
 <template>
