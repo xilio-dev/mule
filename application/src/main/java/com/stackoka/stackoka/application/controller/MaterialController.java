@@ -3,6 +3,7 @@ package com.stackoka.stackoka.application.controller;
 
 import com.stackoka.stackoka.common.data.Constants;
 import com.stackoka.stackoka.common.data.material.Material;
+import com.stackoka.stackoka.common.data.material.MaterialId;
 import com.stackoka.stackoka.common.message.RestResult;
 import com.stackoka.stackoka.application.config.StackOkaConfig;
 import com.stackoka.stackoka.application.service.material.IMaterialService;
@@ -32,11 +33,11 @@ public class MaterialController {
 
     @GetMapping("list")
     public RestResult list(){
-        return RestResult.success(this.materialService.list());
+        return RestResult.success(this.materialService.userMaterialList());
     }
-    @PostMapping("bind/{id}")
-    public RestResult bind(@PathVariable String id){
-        Material material =  materialService.getById(id);
+    @PutMapping("bind")
+    public RestResult bind(@RequestBody MaterialId materialId){
+        Material material =  materialService.getById(materialId.getId());
         material.setSpice(1);
         material.setUserId("1");//todo 用户信息获取
         materialService.updateById(material);

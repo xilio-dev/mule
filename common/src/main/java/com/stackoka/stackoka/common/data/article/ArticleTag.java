@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 /**
@@ -18,9 +19,15 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("article_tag")
+@NoArgsConstructor
 public class ArticleTag implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public ArticleTag(String articleId, String tagId) {
+        this.articleId = articleId;
+        this.tagId = tagId;
+    }
 
     @TableField("article_id")
     private String articleId;

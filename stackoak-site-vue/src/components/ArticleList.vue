@@ -104,7 +104,8 @@ const props = defineProps<{
               </div>
             </div>
           </div>
-          <img  style="width: 110px;height: 74px;object-fit: cover;" v-if="item.cover" :src="ImageUtils.getImgUrl(item.cover)" class="lazy thumb"
+          <img style="width: 110px;height: 74px;object-fit: cover;" v-if="item.cover"
+               :src="ImageUtils.getImgUrl(item.cover)" class="lazy thumb"
                loading="lazy" :alt="item.title">
         </div>
       </div>
@@ -200,7 +201,7 @@ const props = defineProps<{
 .abstract {
   margin-bottom: 4px;
   font-weight: 400;
-
+  color: #8a919f;
   width: 100%;
   display: -webkit-box;
   overflow: hidden;

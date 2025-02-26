@@ -20,7 +20,7 @@ import java.util.List;
  * @since 2025-02-23
  */
 @RestController
-@RequestMapping("/column")
+@RequestMapping("column")
 public class ColumnController {
     @Autowired
     private IColumnService columnService;

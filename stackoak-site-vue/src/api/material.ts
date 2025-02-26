@@ -8,6 +8,6 @@ const Api = {
 export function materialList() {
     return request.get(Api.LIST)
 }
-export function bindMaterial(id:string) {
-    return request.post(Api.BIND+`/${id}`)
+export function bindMaterial(materialId:object) {
+    return request.put(Api.BIND,materialId)
 }

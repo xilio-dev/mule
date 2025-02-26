@@ -26,7 +26,7 @@ const onConfirmSelect = () => {
   //保存到我的素材
   if (spice.value && uploadInfo.value.imgUrl !== '' && activeKey.value === '1') {
     //调用接口保存
-    bindMaterial(uploadInfo.value.id);
+    bindMaterial({id: uploadInfo.value.id});
     //刷新素材
     loadMaterialList();
   }
@@ -41,9 +41,9 @@ const clearAll = () => {
   //清空我的素材图片选择
   imageSelectRef.value.clear()
   //激活选项菜单1
-  activeKey.value='1'
+  activeKey.value = '1'
   //取消勾选保存到我的素材选项
-  spice.value=false
+  spice.value = false
 }
 const onCloseDrawer = () => {
   emit('close-drawer'); // 通知父组件抽屉已关闭

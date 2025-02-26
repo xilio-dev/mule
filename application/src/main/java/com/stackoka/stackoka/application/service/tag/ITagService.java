@@ -3,6 +3,8 @@ package com.stackoka.stackoka.application.service.tag;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoka.stackoka.common.data.tag.Tag;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -13,5 +15,7 @@ import com.stackoka.stackoka.common.data.tag.Tag;
  */
 public interface ITagService extends IService<Tag> {
 
-    Tag getByName(String tagName);
+    List<Tag> getTagsByArticleId(String id);
+
+    Tag getTagByName(String tagName);
 }

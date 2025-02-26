@@ -4,6 +4,8 @@ package com.stackoka.stackoka.repository.tag;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.stackoka.stackoka.common.data.tag.Tag;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -15,5 +17,6 @@ import com.stackoka.stackoka.common.data.tag.Tag;
  */
 public interface TagMapper extends BaseMapper<Tag> {
 
+    List<Tag> selectTagsByArticleId(String articleId);
 }
 

@@ -194,31 +194,53 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
         }
         /*--------------------------------------------------------------------------------------*/
         //如果数据库没有标签则创建标签
-        List<Tag> tagList = new ArrayList<>(5);
-        List<Tag> allTagList = new ArrayList<>(5);
-        tagNames.forEach(tagName -> {
-            Tag tag = tagService.getByName(tagName);
-            if (ObjectUtils.isEmpty(tag)) {
-                tag = new Tag();
-                tag.setName(tagName);
-                tagList.add(tag);
+        if (!isAdd && !tagNames.isEmpty()) {
+            // 更新文章：合并标签信息
+            List<Tag> oldTags = tagService.getTagsByArticleId(saveArticle.getId());
+            List<String> oldTagNames = oldTags.stream().map(Tag::getName).toList();
+
+            // 需要添加的标签
+            List<String> newTagsToAdd = tagNames.stream()
+                    .filter(name -> !oldTagNames.contains(name))
+                    .toList();
+
+            // 需要移除的标签
+            List<String> oldTagsToRemove = oldTagNames.stream()
+                    .filter(name -> !tagNames.contains(name))
+                    .toList();
+
+            // 添加新的标签并建立关联
+            createTagIfNotExist(userId, newTagsToAdd, saveArticle);
+
+            // 移除旧的标签关联
+            for (String tagName : oldTagsToRemove) {
+                Tag tag = oldTags.stream().filter(t -> t.getName().equals(tagName)).findFirst().orElse(null);
+                if (tag != null) {
+                    articleColumnMapper.deleteById(new ArticleTag( saveArticle.getId(),tag.getId()));
+                }
             }
-            allTagList.add(tag);
-        });
-        //批量创建标签
-        tagService.saveBatch(tagList);
-        //创建标签与文章的关联
-        List<ArticleTag> articleTagsList = new ArrayList<>(5);
-        allTagList.forEach(tag -> {
-            ArticleTag articleTag = new ArticleTag();
-            articleTag.setArticleId(saveArticle.getId());
-            articleTag.setTagId(tag.getId());
-            articleTagsList.add(articleTag);
-        });
-        //建立标签与文章的关联
-        articleTagService.saveBatch(articleTagsList);
+        } else {
+            // 新增文章：如果用户提交的标签名字已经在数据库则建立关联，不存在则创建后再关联
+            createTagIfNotExist(userId, tagNames, saveArticle);
+        }
         //如果数据库没有专栏则创建专栏
         return saveArticle.getId();
+    }
+
+
+    private void createTagIfNotExist(String userId, List<String> tagNames, ArticleDO saveArticle) {
+        for (String tagName : tagNames) {
+            Tag tag = tagService.getTagByName(tagName);
+            if (tag == null) {
+                // 如果标签不能存在则创建
+                tag= new Tag();
+                tag.setUserId(userId);
+                tag.setName(tagName);
+                tagService.save(tag);
+            }
+            // 建立文章与专栏的关联
+            articleTagService.save(new ArticleTag(saveArticle.getId(),tag.getId() ));
+        }
     }
 
     /**
@@ -234,13 +256,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
             Column column = columnService.getColumnByName(columnName,"1");
             if (column == null) {
                 // 如果专栏不存在，创建专栏
-                Column c = new Column();
-                c.setUserId(userId);
-                c.setName(columnName);
-                columnService.save(c);
+                column= new Column();
+                column.setUserId(userId);
+                column.setName(columnName);
+                columnService.save(column);
             }
             // 建立文章与专栏的关联
-            assert column != null;
             articleColumnMapper.insert(new ArticleColumn(column.getId(), saveArticle.getId()));
         }
     }

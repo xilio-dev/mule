@@ -14,6 +14,8 @@ import {nextTick} from 'vue';
 import {ImageUtils} from "@/utils/file.ts";
 import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
 import router from "@/router";
+import {tagList} from "@/api/tag.ts";
+import TagInput from '@/components/TagInput/index.vue'
 
 const useUser = useUserStore()
 const route = useRoute();
@@ -42,6 +44,8 @@ const articleDetailVo = reactive({
     categoryId: undefined
   }
 })
+const selectColumns = ref()
+const selectTags = ref()
 //获取文章详情数据
 const loadArticleDetail = async () => {
   try {
@@ -54,7 +58,8 @@ const loadArticleDetail = async () => {
       });
 
       isAuthorized.value = articleDetailVo.articleInfo.creativeType === 2 || false
-      tagState.tags = articleDetailVo.tags.map(tag => tag.name) || [];
+      //初始化标签
+      selectTags.value = articleDetailVo.tags.map(tag => tag.name) || [];
       isLoading.value = false
     }
   } catch (err) {
@@ -73,9 +78,14 @@ const loadCategorys = async () => {
   }
 };
 //获取用户的专栏列表
-const columns = ref([]);
+const columns = ref();
 const loadColumnList = async () => {
   columns.value = await columnList() || []
+}
+//分页获取系统中所有标签
+const tags = ref();
+const loadTagList = async () => {
+  tags.value = await tagList() || []
 }
 const initForm = () => {
   articleDetailVo.articleInfo.visibleStatus = 1
@@ -90,6 +100,7 @@ onMounted(async () => {
   isLoading.value = false
   await loadCategorys()
   await loadColumnList()
+  await loadTagList()
 })
 
 const rules: Record<string, Rule[]> = {
@@ -98,40 +109,6 @@ const rules: Record<string, Rule[]> = {
   creativeType: [{required: true, message: '文章类型', trigger: 'change'}],
 };
 
-const inputRef = ref();
-const tagState = reactive({
-  tags: [],
-  inputVisible: false,
-  inputValue: '',
-});
-
-const handleClose = (removedTag: string) => {
-  const tags = tagState.tags.filter(tag => tag !== removedTag);
-  tagState.tags = tags;
-};
-
-const showInput = () => {
-  if (tagState.tags.length > 4) {
-    return
-  }
-  tagState.inputVisible = true;
-  nextTick(() => {
-    inputRef.value.focus();
-  });
-};
-
-const handleInputConfirm = () => {
-  const inputValue = tagState.inputValue;
-  let tags = tagState.tags;
-  if (inputValue && tags.indexOf(inputValue) === -1) {
-    tags = [...tags, inputValue];
-  }
-  Object.assign(tagState, {
-    tags,
-    inputVisible: false,
-    inputValue: '',
-  });
-};
 
 //图片选择抽屉
 const open = ref<boolean>(false);
@@ -142,29 +119,29 @@ const showDrawer = () => {
 const openPublish = ref<boolean>(false);
 const showModal = () => {
   //todo if (!validateFieldAndLength(articleDetailVo.articleInfo.title, 5, '文章标题')) return;
- // todo if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
+  // todo if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
   openPublish.value = true;
 };
 //发布文章
 const onPublishArticle = () => {
   let body = {
     ...articleDetailVo.articleInfo,
-    tagNames: tagState.tags,
-    columnNames: tagState.tags,
+    tagNames: selectTags.value||[],
+    columnNames: selectColumns.value||[],
     categoryId: articleDetailVo.category.categoryId
   }
   //发布新文章
   if (isAdd.value) {
     addArticle(body).then(articleId => {
-     router.push({path: `/post/${articleId}`})
+      router.push({path: `/post/${articleId}`})
     })
   } else {
     //更新文章
     updateArticle(body).then(articleId => {
-     router.push({path: `/post/${articleId}`})
+      router.push({path: `/post/${articleId}`})
     })
   }
- openPublish.value = false;
+  openPublish.value = false;
 };
 
 //分类领域选择
@@ -232,67 +209,12 @@ const onConfirmSelectImg = (imgUrl: string) => {
       </a-form-item>
 
       <a-form-item label="保存合集" name="columnId">
-        <template v-for="(tag, index) in  tagState.tags" :key="tag">
-          <a-tooltip v-if="tag.length > 5" :title="tag">
-            <a-tag :closable="true" @close="handleClose(tag)">
-              {{ `${tag.slice(0, 5)}...` }}
-            </a-tag>
-          </a-tooltip>
-          <a-tag v-else :closable="true" @close="handleClose(tag)">
-            {{ tag }}
-          </a-tag>
-        </template>
-        <a-input
-            v-if=" tagState.inputVisible"
-            ref="inputRef"
-            v-model:value=" tagState.inputValue"
-            type="text"
-            size="small"
-            :style="{ width: '78px' }"
-            @blur="handleInputConfirm"
-            @keyup.enter="handleInputConfirm"
-        />
-        <a-tag v-else-if=" tagState.tags.length<=4" style="background: #fff; border-style: dashed" @click="showInput">
-          <plus-outlined/>
-          <a-popover>
-            <template #content>
-              开发中...
-            </template>
-            添加合集
-          </a-popover>
-        </a-tag>
+        <TagInput name="columns" label="合集" v-model:model-value="selectColumns" max-tags="3" max-length="10"/>
       </a-form-item>
       <a-form-item label="文章标签" name="tag">
-        <template v-for="(tag, index) in  tagState.tags" :key="tag">
-          <a-tooltip v-if="tag.length > 5" :title="tag">
-            <a-tag :closable="true" @close="handleClose(tag)">
-              {{ `${tag.slice(0, 5)}...` }}
-            </a-tag>
-          </a-tooltip>
-          <a-tag v-else :closable="true" @close="handleClose(tag)">
-            {{ tag }}
-          </a-tag>
-        </template>
-        <a-input
-            v-if=" tagState.inputVisible"
-            ref="inputRef"
-            v-model:value=" tagState.inputValue"
-            type="text"
-            size="small"
-            :style="{ width: '78px' }"
-            @blur="handleInputConfirm"
-            @keyup.enter="handleInputConfirm"
-        />
-        <a-tag v-else-if=" tagState.tags.length<=4" style="background: #fff; border-style: dashed" @click="showInput">
-          <plus-outlined/>
-          <a-popover placement="bottom">
-            <template #content>
-              开发中...
-            </template>
-            添加标签
-          </a-popover>
-        </a-tag>
+        <TagInput name="tags" label="标签" v-model:model-value="selectTags" max-tags="4" max-length="4"/>
       </a-form-item>
+
       <a-form-item label="文章类型" name="creativeType">
         <a-radio-group v-model:value="articleDetailVo.articleInfo.creativeType">
           <a-radio v-for="item in creativeTypeList" :value="item.id">{{ item.label }}</a-radio>

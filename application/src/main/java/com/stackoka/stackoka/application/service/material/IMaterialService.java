@@ -4,6 +4,8 @@ package com.stackoka.stackoka.application.service.material;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoka.stackoka.common.data.material.Material;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -13,5 +15,8 @@ import com.stackoka.stackoka.common.data.material.Material;
  * @since 2025-02-24 17:49:31
  */
 public interface IMaterialService extends IService<Material> {
+
+    List<Material> userMaterialList();
+
 
 }

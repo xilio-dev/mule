@@ -5,7 +5,10 @@ import com.stackoka.stackoka.common.data.tag.Tag;
 import com.stackoka.stackoka.repository.tag.TagMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,9 +20,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagService {
+    @Autowired
+    private TagMapper tagMapper;
 
     @Override
-    public Tag getByName(String tagName) {
+    public List<Tag> getTagsByArticleId(String articleId) {
+        return tagMapper.selectTagsByArticleId(articleId);
+    }
+
+    @Override
+    public Tag getTagByName(String tagName) {
         LambdaQueryWrapper<Tag> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Tag::getName, tagName);
         return baseMapper.selectOne(wrapper);

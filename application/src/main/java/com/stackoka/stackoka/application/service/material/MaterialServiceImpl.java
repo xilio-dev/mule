@@ -1,14 +1,17 @@
 package com.stackoka.stackoka.application.service.material;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoka.stackoka.common.data.material.Material;
 import com.stackoka.stackoka.repository.material.MaterialMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author stackoak.com
@@ -16,5 +19,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
-
+    @Override
+    public List<Material> userMaterialList() {
+        LambdaQueryWrapper<Material> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Material::getSpice, 1);
+        wrapper.eq(Material::getUserId, "1");
+        return baseMapper.selectList(wrapper);
+    }
 }

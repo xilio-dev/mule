@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 /**
@@ -18,6 +19,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("article_column")
+@NoArgsConstructor
 public class ArticleColumn implements Serializable {
 
     private static final long serialVersionUID = 1L;
