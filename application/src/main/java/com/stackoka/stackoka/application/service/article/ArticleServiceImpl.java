@@ -116,7 +116,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 articleDetail.setTags(tags);
             }
         }
+        //判断是否是登陆用户
+        if (true) {
+            UserInteractDTO userInteract = getUserInteract(dto.getId());
+            //设置交互信息为
+            articleDetail.setUserInteract(userInteract);
+        }
+
         return articleDetail;
+    }
+
+    private UserInteractDTO getUserInteract(String aid) {
+        return new UserInteractDTO();
     }
 
     @Override

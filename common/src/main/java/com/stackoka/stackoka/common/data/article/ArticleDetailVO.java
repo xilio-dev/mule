@@ -13,7 +13,7 @@ public class ArticleDetailVO implements Serializable {
     private ArticleInfoDTO articleInfo;
     private UserInfoDTO userInfo;
     private List<TagInfoDTO> tags;
-    private UserInteract userInteract;
+    private UserInteractDTO userInteract;
     private CategoryInfoDTO category;
     private String tagIds;
     private String tagNames;
@@ -111,15 +111,7 @@ class ArticleInfoDTO {
 
 @Data
 class CategoryInfoDTO {
-private Long categoryId;
-private String categoryName;
-}
-@Data
-class UserInteract {
-    private Long id;
-    private Long userId;
-    private Boolean isLike;
-    private Boolean isFollow;
-    private Boolean isCollect;
+    private Long categoryId;
+    private String categoryName;
 }
 

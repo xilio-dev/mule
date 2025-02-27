@@ -19,6 +19,8 @@ const userInfo = ref({})
 const tags = ref({})
 const category = ref({})
 
+const userInteract = ref({})
+
 async function fetchPostData() {
   try {
     const res = await postDetail({id: route.params.id})
@@ -26,6 +28,7 @@ async function fetchPostData() {
     userInfo.value = res.userInfo || {}
     tags.value = res.tags || []
     category.value = res.category || {}
+    userInteract.value = res.userInteract || {}
     isLoading.value = false
   } catch (err) {
     isLoading.value = false
@@ -104,7 +107,7 @@ const onSaveArticleToCollect = () => {
             <a-button type="default" style="width: 100%;">私信</a-button>
           </a-col>
           <a-col :span="12">
-            <a-button type="primary" style="width: 100%;">关注</a-button>
+            <a-button :type="!userInteract.isFollow?'primary':'default'" style="width: 100%;">{{userInteract.isFollow?'已关注':'关注'}}</a-button>
           </a-col>
         </a-row>
 
@@ -221,20 +224,21 @@ const onSaveArticleToCollect = () => {
   <a-float-button-group v-if="!needVisitPass" shape="circle" style="position: fixed; right: 6%; bottom: 43%;">
     <a-float-button @click="onDiggOrunDigg" shape="circle" :badge="{ count: '9', color: 'rgb(194, 200, 209)' }">
       <template #icon>
-        <svg fill="#1e80ff" viewBox="64 64 896 896" focusable="false" data-icon="like" width="1em" height="1em"
+        <svg :fill="userInteract.isDigg?'#1e80ff':'#8a919f'" viewBox="64 64 896 896" focusable="false" data-icon="like" width="1em" height="1em"
              aria-hidden="true">
           <path
               d="M885.9 533.7c16.8-22.2 26.1-49.4 26.1-77.7 0-44.9-25.1-87.4-65.5-111.1a67.67 67.67 0 00-34.3-9.3H572.4l6-122.9c1.4-29.7-9.1-57.9-29.5-79.4A106.62 106.62 0 00471 99.9c-52 0-98 35-111.8 85.1l-85.9 311h-.3v428h472.3c9.2 0 18.2-1.8 26.5-5.4 47.6-20.3 78.3-66.8 78.3-118.4 0-12.6-1.8-25-5.4-37 16.8-22.2 26.1-49.4 26.1-77.7 0-12.6-1.8-25-5.4-37 16.8-22.2 26.1-49.4 26.1-77.7-.2-12.6-2-25.1-5.6-37.1zM112 528v364c0 17.7 14.3 32 32 32h65V496h-65c-17.7 0-32 14.3-32 32z"></path>
         </svg>
       </template>
     </a-float-button>
-    <a-float-button @click="onSaveArticleToCollect" :style="{marginTop: '25px'}" :badge="{ count: '5k', color: 'rgb(194, 200, 209)' }">
+    <a-float-button @click="onSaveArticleToCollect" :style="{marginTop: '25px'}"
+                    :badge="{ count: '5k', color: 'rgb(194, 200, 209)' }">
       <template #icon>
-        <svg t="1739882636550" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+        <svg   t="1739882636550" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="14147" width="20" height="20">
           <path
               d="M554.8 99.6l104.9 212.5c7 14.1 20.4 23.9 36 26.1l234.6 34.1c39.2 5.7 54.8 53.8 26.5 81.5L787 619.2a47.57 47.57 0 0 0-13.7 42.3l40.1 233.6c6.7 39-34.3 68.8-69.3 50.4L534.2 835.2c-13.9-7.3-30.5-7.3-44.5 0L280 945.5c-35 18.4-76-11.3-69.3-50.4l40.1-233.6c2.7-15.5-2.5-31.3-13.7-42.3L67.3 453.8c-28.4-27.6-12.7-75.8 26.5-81.5l234.6-34.1c15.6-2.3 29-12 36-26.1L469.2 99.6c17.5-35.5 68.1-35.5 85.6 0z"
-              p-id="14148" fill="#8a919f"></path>
+              p-id="14148" :fill="userInteract.isCollect?'#1e80ff':'#8a919f'"></path>
         </svg>
       </template>
     </a-float-button>
