@@ -8,6 +8,8 @@ const Api = {
     get: '/article/get',
     digg: '/article/digg',
     UN_DIGG: '/article/undigg',
+    ADD_TO_FAVOR: '/article/addToFavor',
+    FROM_FAVOR_DEL: '/article/fromFavorDel',
 
 };
 
@@ -36,5 +38,13 @@ export function diggArticle(data: any) {
 }
 
 export function unDiggArticle(data: any) {
-    return request.put(Api.UN_DIGG, data)
+    return request.delete(Api.UN_DIGG, data)
+}
+
+export function addToFavor(data: any) {
+    return request.post(Api.ADD_TO_FAVOR, data)
+}
+
+export function fromFavorDel(data: any) {
+    return request.delete(Api.FROM_FAVOR_DEL, data)
 }

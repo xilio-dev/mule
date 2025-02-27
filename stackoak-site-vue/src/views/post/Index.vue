@@ -2,7 +2,7 @@
 import {QuestionCircleOutlined, CustomerServiceOutlined} from "@ant-design/icons-vue";
 import {ref, onMounted} from 'vue';
 import Markdown from "@/components/Markdown.vue";
-import {diggArticle, postDetail} from "@/api/post.ts";
+import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/stores/user.ts";
 import router from "@/router";
@@ -21,7 +21,7 @@ const category = ref({})
 
 async function fetchPostData() {
   try {
-    const res = await postDetail({id:route.params.id})
+    const res = await postDetail({id: route.params.id})
     articleInfo.value = res.articleInfo || {}
     userInfo.value = res.userInfo || {}
     tags.value = res.tags || []
@@ -40,26 +40,31 @@ onMounted(async () => {
   await fetchPostData();
 });
 
-const needVisitPass=ref(false)
+const needVisitPass = ref(false)
 
 //文章点赞或取消点赞
-const onDiggOrunDigg=()=>{
-  diggArticle({aid:route.params.id})
-   message.success("已点赞")
+const onDiggOrunDigg = () => {
+  diggArticle({aid: articleInfo.value.id})
+  message.success("已点赞")
+}
+//添加文章到收藏夹或从收藏夹取消收藏
+const onSaveArticleToCollect = () => {
+  //add todo
+  addToFavor({aid: articleInfo.value.id, collectId: '1'})
 }
 </script>
 
 <template>
 
-  <a-flex v-if="needVisitPass" align="center" justify="center"  style="width: 100%;margin-top: 8%">
-   <a-flex vertical align="center" :gap="15">
-     <a-image src="/suo.svg" style="width: 100px;height: 100px;" :preview="false" />
-     <div style="font-size: 18px;color: gray">请输入访问密码</div>
-     <a-flex vertical>
-       <a-input style="width: 220px" v-model:value="visitPass" placeholder="请输入密码"></a-input>
-       <a-button @click="needVisitPass=false" style="width: 220px;margin-top: 10px">确定</a-button>
-     </a-flex>
-   </a-flex>
+  <a-flex v-if="needVisitPass" align="center" justify="center" style="width: 100%;margin-top: 8%">
+    <a-flex vertical align="center" :gap="15">
+      <a-image src="/suo.svg" style="width: 100px;height: 100px;" :preview="false"/>
+      <div style="font-size: 18px;color: gray">请输入访问密码</div>
+      <a-flex vertical>
+        <a-input style="width: 220px" v-model:value="visitPass" placeholder="请输入密码"></a-input>
+        <a-button @click="needVisitPass=false" style="width: 220px;margin-top: 10px">确定</a-button>
+      </a-flex>
+    </a-flex>
   </a-flex>
 
   <a-row :gutter="20" v-if="!needVisitPass">
@@ -223,7 +228,7 @@ const onDiggOrunDigg=()=>{
         </svg>
       </template>
     </a-float-button>
-    <a-float-button :style="{marginTop: '25px'}" :badge="{ count: '5k', color: 'rgb(194, 200, 209)' }">
+    <a-float-button @click="onSaveArticleToCollect" :style="{marginTop: '25px'}" :badge="{ count: '5k', color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg t="1739882636550" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="14147" width="20" height="20">

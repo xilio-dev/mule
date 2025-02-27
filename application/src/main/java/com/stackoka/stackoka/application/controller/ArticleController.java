@@ -82,7 +82,7 @@ public class ArticleController extends BaseController {
         return RestResult.success();
     }
 
-    @PutMapping(value = "undigg", name = "取消文章点赞")
+    @DeleteMapping(value = "undigg", name = "取消文章点赞")
     public RestResult unDigg(ArticleId articleId) {
         articleService.cancelDigg(articleId);
         return RestResult.success();
@@ -94,7 +94,7 @@ public class ArticleController extends BaseController {
         return RestResult.success();
     }
 
-    @PutMapping("fromFavorDel")
+    @DeleteMapping("fromFavorDel")
     public RestResult fromFavorDel(@RequestBody @Valid FavorRequest favorRequest) {
         articleService.fromFavorDel(favorRequest);
         return RestResult.success();
