@@ -71,7 +71,7 @@
       <!--广告位-->
       <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
         <template #cover>
-          <img style="height: 120px;border-radius: 4px" alt="example" src="@/assets/img.png"/>
+          <img style="height: 120px;border-radius: 4px" alt="example" src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
         </template>
       </a-card>
       <a-card title="阅读排行" :bordered="false" style="margin-top: 12px;min-height: 150px">
@@ -89,7 +89,7 @@
       <!--广告位-->
       <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
         <template #cover>
-          <img style="height: 120px;border-radius: 4px" alt="example" src="@/assets/img.png"/>
+          <img style="height: 120px;border-radius: 4px" alt="example" src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
         </template>
       </a-card>
       <a-card :bordered="false" style="margin-top: 12px;width: 100%;background-color: transparent;box-shadow: none">

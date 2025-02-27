@@ -14,7 +14,7 @@
           style="z-index: 20"
           v-if="tagState.tags.length < maxTags"
           v-model:visible="tagState.inputVisible"
-          placement="bottom"
+          :placement="tagState.tags.length>=2?'bottom':'bottomLeft'"
           trigger="click"
           @click="showInput"
       >
