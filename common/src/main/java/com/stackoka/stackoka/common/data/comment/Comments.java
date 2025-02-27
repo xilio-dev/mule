@@ -34,19 +34,19 @@ public class Comments implements Serializable {
     /**
      * 文章ID，逻辑关联posts表
      */
-    @TableId("article_id")
+    @TableField("article_id")
     private String articleId;
 
     /**
      * 评论者ID，逻辑关联users表
      */
-    @TableId("user_id")
+    @TableField("user_id")
     private String userId;
 
     /**
      * 父评论ID，用于支持评论的回复功能
      */
-    @TableId("pid")
+    @TableField("pid")
     private String pid;
 
     /**

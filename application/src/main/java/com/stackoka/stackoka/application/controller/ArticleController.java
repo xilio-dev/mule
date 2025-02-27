@@ -76,7 +76,7 @@ public class ArticleController extends BaseController {
 //    }
 
     @PostMapping(value = "digg", name = "文章点赞")
-    public RestResult digg(ArticleId articleId) {
+    public RestResult digg(@RequestBody @Valid ArticleId articleId) {
         articleService.digg(articleId);
         return RestResult.success();
     }

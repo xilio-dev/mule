@@ -14,4 +14,5 @@ import com.stackoka.stackoka.common.data.likes.Likes;
  */
 public interface ILikesService extends IService<Likes> {
 
+    Likes getLike(String userId, String articleId);
 }

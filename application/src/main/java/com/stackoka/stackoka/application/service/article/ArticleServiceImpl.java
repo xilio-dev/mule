@@ -309,6 +309,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
         likes.setUserId("1");//todo 临时用户
         likes.setType(LikeTypeEnum.ARTICLE.getType());
         if (op == 1) {
+            //判断是否已经点过赞了，不能重复点赞
+            Likes like = likesService.getLike("1", article.getId());
+            if (!ObjectUtils.isEmpty(like)) {
+                throw new BizException("不能重复点赞！");
+            }
             likesService.save(likes);
         } else {
             likesService.removeById(likes);

@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import {QuestionCircleOutlined, CustomerServiceOutlined, UserOutlined} from "@ant-design/icons-vue";
-import {ref, onMounted, onUnmounted, onActivated, onUpdated, computed} from 'vue';
+import {QuestionCircleOutlined, CustomerServiceOutlined} from "@ant-design/icons-vue";
+import {ref, onMounted} from 'vue';
 import Markdown from "@/components/Markdown.vue";
-import {postDetail} from "@/api/post.ts";
+import {diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/stores/user.ts";
 import router from "@/router";
-import {NumberUtils} from "../../utils/number-util.ts";
+import {NumberUtils} from "@/utils/number-util.ts";
+import {message} from "ant-design-vue";
 
 const useUser = useUserStore()
 
@@ -40,6 +41,12 @@ onMounted(async () => {
 });
 
 const needVisitPass=ref(false)
+
+//文章点赞或取消点赞
+const onDiggOrunDigg=()=>{
+  diggArticle({aid:route.params.id})
+   message.success("已点赞")
+}
 </script>
 
 <template>
@@ -207,7 +214,7 @@ const needVisitPass=ref(false)
     </a-col>
   </a-row>
   <a-float-button-group v-if="!needVisitPass" shape="circle" style="position: fixed; right: 6%; bottom: 43%;">
-    <a-float-button shape="circle" :badge="{ count: '9', color: 'rgb(194, 200, 209)' }">
+    <a-float-button @click="onDiggOrunDigg" shape="circle" :badge="{ count: '9', color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg fill="#1e80ff" viewBox="64 64 896 896" focusable="false" data-icon="like" width="1em" height="1em"
              aria-hidden="true">
