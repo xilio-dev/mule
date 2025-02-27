@@ -27,7 +27,7 @@ public class ArticleController extends BaseController {
     private IArticleService articleService;
 
     @PostMapping("list")
-   // @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
+    // @Cacheable(value = "articleList"/*, key = "#dto.categoryId + '-' + #dto.showType"*/)
     public Result list(@RequestBody @Valid ArticleListDTO dto) {
         return Result.success(articleService.listByCategory(dto));
     }
@@ -39,7 +39,7 @@ public class ArticleController extends BaseController {
     }
 
     @PostMapping("detail")
-   // @Cacheable(value = "articleDetails", key = "#dto.id")
+    // @Cacheable(value = "articleDetails", key = "#dto.id")
     public Result<ArticleDetailVO> detail(@RequestBody @Valid ArticleDetailDTO dto) {
         return Result.success(articleService.detail(dto));
     }
@@ -75,12 +75,13 @@ public class ArticleController extends BaseController {
 //        return articleService.updateById(article);
 //    }
 
-    @PostMapping(value = "digg",name = "文章点赞")
+    @PostMapping(value = "digg", name = "文章点赞")
     public RestResult digg(ArticleId articleId) {
         articleService.digg(articleId);
         return RestResult.success();
     }
-    @PutMapping(value = "undigg",name = "取消文章点赞")
+
+    @PutMapping(value = "undigg", name = "取消文章点赞")
     public RestResult unDigg(ArticleId articleId) {
         articleService.cancelDigg(articleId);
         return RestResult.success();
