@@ -48,7 +48,6 @@
 import { ref, reactive, nextTick, watch } from 'vue';
 import { PlusOutlined, InfoCircleOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-
 const props = defineProps({
   label: {
     type: String,
@@ -74,6 +73,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  selectItems:{
+    type:Array,
+    default:()=>[]
+  }
 });
 
 const emit = defineEmits(['update:modelValue']);

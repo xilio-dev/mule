@@ -1,17 +1,10 @@
 package com.stackoka.stackoka.application.service.article;
 
 
-import com.stackoka.stackoka.common.data.article.ArticleDetailDTO;
-import com.stackoka.stackoka.common.data.article.ArticleListDTO;
-import com.stackoka.stackoka.common.data.article.ArticleBriefVO;
-import com.stackoka.stackoka.common.data.article.SaveArticleDTO;
-import com.stackoka.stackoka.common.data.article.ArticleDetailVO;
-import com.stackoka.stackoka.common.data.article.GetArticleVO;
+import com.stackoka.stackoka.common.data.article.*;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.stackoka.stackoka.common.data.article.ArticleDO;
-import com.stackoka.stackoka.common.data.column.Column;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
@@ -36,4 +29,16 @@ public interface IArticleService extends IService<ArticleDO> {
     GetArticleVO getArticleById(@Valid @NotNull String id);
 
     IPage<ArticleBriefVO> selectByCategoryAndRecent(Page<ArticleBriefVO> page, ArticleListDTO articleListDTO);
+
+    /**
+     * 文章点赞
+     * @param articleId 文章ID
+     */
+    void digg(ArticleId articleId);
+
+    /**
+     * 取消文章点赞
+     * @param articleId 文章ID
+     */
+    void cancelDigg(ArticleId articleId);
 }

@@ -1,11 +1,6 @@
 package com.stackoka.stackoka.application.controller;
 
-import com.stackoka.stackoka.common.data.article.ArticleDetailDTO;
-import com.stackoka.stackoka.common.data.article.ArticleListDTO;
-import com.stackoka.stackoka.common.data.article.DelArticleDTO;
-import com.stackoka.stackoka.common.data.article.SaveArticleDTO;
-import com.stackoka.stackoka.common.data.article.ArticleDetailVO;
-import com.stackoka.stackoka.common.data.article.GetArticleVO;
+import com.stackoka.stackoka.common.data.article.*;
 import com.stackoka.stackoka.application.service.article.IArticleService;
 import com.stackoka.stackoka.common.message.RestResult;
 import com.stackoka.stackoka.common.message.Result;
@@ -80,6 +75,15 @@ public class ArticleController extends BaseController {
 //        return articleService.updateById(article);
 //    }
 
-
+    @PostMapping(value = "digg",name = "文章点赞")
+    public RestResult digg(ArticleId articleId) {
+        articleService.digg(articleId);
+        return RestResult.success();
+    }
+    @PutMapping(value = "undigg",name = "取消文章点赞")
+    public RestResult unDigg(ArticleId articleId) {
+        articleService.cancelDigg(articleId);
+        return RestResult.success();
+    }
 
 }

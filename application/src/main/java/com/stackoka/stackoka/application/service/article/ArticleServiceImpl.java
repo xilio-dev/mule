@@ -3,11 +3,14 @@ package com.stackoka.stackoka.application.service.article;
 
 import com.stackoka.stackoka.application.service.category.ICategoryService;
 import com.stackoka.stackoka.application.service.column.IColumnService;
+import com.stackoka.stackoka.application.service.like.ILikesService;
 import com.stackoka.stackoka.application.service.tag.ITagService;
 import com.stackoka.stackoka.common.data.article.*;
 import com.stackoka.stackoka.common.data.category.Category;
 import com.stackoka.stackoka.common.data.column.ArticleColumn;
 import com.stackoka.stackoka.common.data.column.Column;
+import com.stackoka.stackoka.common.data.likes.LikeTypeEnum;
+import com.stackoka.stackoka.common.data.likes.Likes;
 import com.stackoka.stackoka.common.data.tag.Tag;
 import com.stackoka.stackoka.common.message.ResultEnum;
 import com.stackoka.stackoka.application.exception.BizException;
@@ -52,6 +55,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
     private IArticleTagService articleTagService;
     @Autowired
     private ArticleColumnMapper articleColumnMapper;
+    @Autowired
+    private ILikesService likesService;
 
     @Override
     public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
@@ -165,7 +170,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
         //文章专栏保存与关联 一篇文章存在于3个专栏
         //如果是更新，合并专栏信息
         if (!isAdd && !columnNames.isEmpty()) {
-            List<Column> oldColumns = columnService.getColumnsByArticleId(saveArticle.getId(),userId);
+            List<Column> oldColumns = columnService.getColumnsByArticleId(saveArticle.getId(), userId);
             //旧的专栏名字列表
             List<String> oldColumnNames = oldColumns.stream().map(Column::getName).toList();
 
@@ -216,7 +221,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
             for (String tagName : oldTagsToRemove) {
                 Tag tag = oldTags.stream().filter(t -> t.getName().equals(tagName)).findFirst().orElse(null);
                 if (tag != null) {
-                    articleColumnMapper.deleteById(new ArticleTag( saveArticle.getId(),tag.getId()));
+                    articleColumnMapper.deleteById(new ArticleTag(saveArticle.getId(), tag.getId()));
                 }
             }
         } else {
@@ -233,13 +238,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
             Tag tag = tagService.getTagByName(tagName);
             if (tag == null) {
                 // 如果标签不能存在则创建
-                tag= new Tag();
+                tag = new Tag();
                 tag.setUserId(userId);
                 tag.setName(tagName);
                 tagService.save(tag);
             }
             // 建立文章与专栏的关联
-            articleTagService.save(new ArticleTag(saveArticle.getId(),tag.getId() ));
+            articleTagService.save(new ArticleTag(saveArticle.getId(), tag.getId()));
         }
     }
 
@@ -253,10 +258,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
     private void createColumIfNotExist(String userId, List<String> columnNames, ArticleDO saveArticle) {
         for (String columnName : columnNames) {
             //todo userid
-            Column column = columnService.getColumnByName(columnName,"1");
+            Column column = columnService.getColumnByName(columnName, "1");
             if (column == null) {
                 // 如果专栏不存在，创建专栏
-                column= new Column();
+                column = new Column();
                 column.setUserId(userId);
                 column.setName(columnName);
                 columnService.save(column);
@@ -280,5 +285,38 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
     @Override
     public IPage<ArticleBriefVO> selectByCategoryAndRecent(Page<ArticleBriefVO> page, ArticleListDTO articleListDTO) {
         return baseMapper.selectByCategoryAndRecent(page, articleListDTO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void digg(ArticleId articleId) {
+        diggAndUndigg(articleId, 1);
+    }
+
+    /**
+     * 点赞或取消点赞
+     *
+     * @param articleId 文章编号
+     * @param op        操作类型：1是点赞、0是取消点赞
+     */
+    private void diggAndUndigg(ArticleId articleId, Integer op) {
+        ArticleDO article = getById(articleId.getAid());
+        if (ObjectUtils.isEmpty(article)) {
+            throw new BizException("文章不存在！");
+        }
+        Likes likes = new Likes();
+        likes.setTargetId(article.getId());
+        likes.setUserId("1");//todo 临时用户
+        likes.setType(LikeTypeEnum.ARTICLE.getType());
+        if (op == 1) {
+            likesService.save(likes);
+        } else {
+            likesService.removeById(likes);
+        }
+    }
+
+    @Override
+    public void cancelDigg(ArticleId articleId) {
+        diggAndUndigg(articleId, 0);
     }
 }

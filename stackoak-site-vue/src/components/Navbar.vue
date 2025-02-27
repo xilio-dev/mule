@@ -1,6 +1,6 @@
 <template>
   <a-row style="padding: 0 10%;background-color: white;width: 100%">
-    <a-col :span="14">
+    <a-col :span="10">
       <div style="float: left;margin-top: 10px;">
         <RouterLink to="/">
           <div class="logo-container"></div>
@@ -8,19 +8,19 @@
       </div>
       <a-menu @click="handleClick" v-model:selectedKeys="current" mode="horizontal" :items="items1"/>
     </a-col>
-    <a-col :span="10" style="white-space: nowrap">
+    <a-col :span="14" style="white-space: nowrap">
       <div style="float: right;margin-top: 6px">
         <a-input-search
             style="width: 400px;margin-right: 15px"
             v-model:value="search_key"
             placeholder="探索未来科技"
             enter-button/>
-        <a-badge :dot="true"  >
-          <span  type="ghost">消息</span>
+        <a-badge :dot="true">
+          <a-image :preview="false" src="/xiaoxi.svg"/>
         </a-badge>
 
-        <a-button style="margin-left:  15px"  v-if="!isLogin" type="primary" @click="openLoginModal=true">登陆</a-button>
-        <a-popover v-if="isLogin" placement="bottom" >
+        <a-button style="margin-left: 15px" v-if="!isLogin" type="primary" @click="openLoginModal=true">登陆</a-button>
+        <a-popover v-if="isLogin" placement="bottom">
           <template #content>
             <a-flex vertical>
               <router-link to="/author" target="_blank">
@@ -29,7 +29,7 @@
               <a-button @click="logout" type="text">退出登陆</a-button>
             </a-flex>
           </template>
-          <a-avatar style="margin-left:  15px"  :src="userStore.userinfo.avatar" shape="square"/>
+          <a-avatar style="margin-left:  15px; " :src="userStore.userinfo.avatar" shape="square"/>
         </a-popover>
       </div>
     </a-col>
