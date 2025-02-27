@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoka.stackoka.common.data.article.ArticleBriefVO;
-import com.stackoka.stackoka.common.data.article.ArticleDO;
+import com.stackoka.stackoka.common.data.article.Article;
 import com.stackoka.stackoka.common.data.article.ArticleDetailVO;
 import com.stackoka.stackoka.common.data.article.ArticleListDTO;
 import org.apache.ibatis.annotations.Param;
@@ -20,7 +20,7 @@ import org.apache.ibatis.annotations.Param;
  * @author stackoka.com
  * @since 2025-02-15
  */
-public interface ArticleMapper extends BaseMapper<ArticleDO> {
+public interface ArticleMapper extends BaseMapper<Article> {
 
     IPage<ArticleBriefVO> selectByCategoryAndRecent(@Param("page") Page<ArticleBriefVO> page, @Param("dto") ArticleListDTO articleListDTO);
 

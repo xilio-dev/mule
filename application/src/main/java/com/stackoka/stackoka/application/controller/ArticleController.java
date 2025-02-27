@@ -1,5 +1,6 @@
 package com.stackoka.stackoka.application.controller;
 
+import com.stackoka.stackoka.application.service.collect.ICollectService;
 import com.stackoka.stackoka.common.data.article.*;
 import com.stackoka.stackoka.application.service.article.IArticleService;
 import com.stackoka.stackoka.common.message.RestResult;
@@ -87,4 +88,15 @@ public class ArticleController extends BaseController {
         return RestResult.success();
     }
 
+    @PostMapping("addToFavor")
+    public RestResult addToFavor(@RequestBody @Valid FavorRequest favorRequest) {
+        articleService.addToFavor(favorRequest);
+        return RestResult.success();
+    }
+
+    @PutMapping("fromFavorDel")
+    public RestResult fromFavorDel(@RequestBody @Valid FavorRequest favorRequest) {
+        articleService.fromFavorDel(favorRequest);
+        return RestResult.success();
+    }
 }

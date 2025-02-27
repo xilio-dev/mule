@@ -21,7 +21,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("article")
-public class ArticleDO implements Serializable {
+public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

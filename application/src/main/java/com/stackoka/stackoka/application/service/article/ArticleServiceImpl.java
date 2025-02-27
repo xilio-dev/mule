@@ -2,11 +2,14 @@ package com.stackoka.stackoka.application.service.article;
 
 
 import com.stackoka.stackoka.application.service.category.ICategoryService;
+import com.stackoka.stackoka.application.service.collect.ICollectService;
 import com.stackoka.stackoka.application.service.column.IColumnService;
 import com.stackoka.stackoka.application.service.like.ILikesService;
 import com.stackoka.stackoka.application.service.tag.ITagService;
 import com.stackoka.stackoka.common.data.article.*;
 import com.stackoka.stackoka.common.data.category.Category;
+import com.stackoka.stackoka.common.data.collect.ArticleCollect;
+import com.stackoka.stackoka.common.data.collect.Collect;
 import com.stackoka.stackoka.common.data.column.ArticleColumn;
 import com.stackoka.stackoka.common.data.column.Column;
 import com.stackoka.stackoka.common.data.likes.LikeTypeEnum;
@@ -22,6 +25,7 @@ import com.stackoka.stackoka.repository.article.ArticleMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stackoka.stackoka.repository.collect.ArticleCollectMapper;
 import com.stackoka.stackoka.repository.column.ArticleColumnMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -43,7 +46,7 @@ import java.util.stream.IntStream;
  * @since 2025-02-15
  */
 @Service
-public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> implements IArticleService {
+public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements IArticleService {
 
     @Autowired
     private ITagService tagService;
@@ -57,6 +60,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
     private ArticleColumnMapper articleColumnMapper;
     @Autowired
     private ILikesService likesService;
+    @Autowired
+    private ICollectService collectService;
+    @Autowired
+    private ArticleCollectMapper articleCollectMapper;
 
     @Override
     public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
@@ -127,14 +134,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
         }
 
         //如果文章ID存在，通过文章ID查询是否存在当前用户文章
-        ArticleDO saveArticle;
+        Article saveArticle;
         if (!isAdd) {
             saveArticle = getById(dto.getId());
             if (ObjectUtils.isEmpty(saveArticle)) {
                 throw new BizException("文章不存在！");
             }
         } else {
-            saveArticle = new ArticleDO();
+            saveArticle = new Article();
         }
         //保存文章到数据库
         saveArticle.setTitle(dto.getTitle());
@@ -233,7 +240,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
     }
 
 
-    private void createTagIfNotExist(String userId, List<String> tagNames, ArticleDO saveArticle) {
+    private void createTagIfNotExist(String userId, List<String> tagNames, Article saveArticle) {
         for (String tagName : tagNames) {
             Tag tag = tagService.getTagByName(tagName);
             if (tag == null) {
@@ -255,7 +262,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
      * @param columnNames 表单提交的专栏名字
      * @param saveArticle 文章
      */
-    private void createColumIfNotExist(String userId, List<String> columnNames, ArticleDO saveArticle) {
+    private void createColumIfNotExist(String userId, List<String> columnNames, Article saveArticle) {
         for (String columnName : columnNames) {
             //todo userid
             Column column = columnService.getColumnByName(columnName, "1");
@@ -300,7 +307,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
      * @param op        操作类型：1是点赞、0是取消点赞
      */
     private void diggAndUndigg(ArticleId articleId, Integer op) {
-        ArticleDO article = getById(articleId.getAid());
+        Article article = getById(articleId.getAid());
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
@@ -323,5 +330,51 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, ArticleDO> im
     @Override
     public void cancelDigg(ArticleId articleId) {
         diggAndUndigg(articleId, 0);
+    }
+
+    /**
+     * 将文章添加到收藏夹
+     * todo 需要优化
+     *
+     * @param favorRequest 收藏请求
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addToFavor(FavorRequest favorRequest) {
+        //检查文章是否存在
+        Article article = getById(favorRequest.getAid());
+        if (ObjectUtils.isEmpty(article)) {
+            throw new BizException("文章不存在！");
+        }
+        //检查收藏夹是否存在
+        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), "1");
+        if (ObjectUtils.isEmpty(collect)) {
+            throw new BizException("收藏夹不存在！");
+        }
+        //保存文章到收藏夹、添加文章与收藏夹的关联
+        ArticleCollect articleCollect = new ArticleCollect(favorRequest.getAid(), favorRequest.getCollectId());
+        articleCollectMapper.insert(articleCollect);
+    }
+
+    /**
+     * 从收藏夹中取消文章收藏
+     * todo 需要优化
+     *
+     * @param favorRequest 取消收藏请求信息
+     */
+    @Override
+    public void fromFavorDel(FavorRequest favorRequest) {
+        //检查文章是否存在
+        Article article = getById(favorRequest.getAid());
+        if (ObjectUtils.isEmpty(article)) {
+            throw new BizException("文章不存在！");
+        }
+        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), "1");
+        if (ObjectUtils.isEmpty(collect)) {
+            throw new BizException("收藏夹不存在！");
+        }
+        //删除文章与收藏夹的关联
+        ArticleCollect articleCollect = new ArticleCollect(favorRequest.getAid(), favorRequest.getCollectId());
+        articleCollectMapper.deleteById(articleCollect);
     }
 }

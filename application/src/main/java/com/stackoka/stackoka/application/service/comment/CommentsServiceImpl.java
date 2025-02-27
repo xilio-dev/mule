@@ -4,8 +4,6 @@ package com.stackoka.stackoka.application.service.comment;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoka.stackoka.application.exception.BizException;
 import com.stackoka.stackoka.application.service.like.ILikesService;
-import com.stackoka.stackoka.common.data.article.ArticleDO;
-import com.stackoka.stackoka.common.data.article.ArticleId;
 import com.stackoka.stackoka.common.data.comment.CommentDiggRequest;
 import com.stackoka.stackoka.common.data.comment.Comments;
 import com.stackoka.stackoka.common.data.likes.LikeTypeEnum;

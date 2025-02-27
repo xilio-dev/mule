@@ -16,11 +16,11 @@ import jakarta.validation.constraints.NotNull;
  * @author stackoka.com
  * @since 2025-02-15
  */
-public interface IArticleService extends IService<ArticleDO> {
+public interface IArticleService extends IService<Article> {
 
-   public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO);
+    public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO);
 
-   ArticleDetailVO detail(ArticleDetailDTO dto);
+    ArticleDetailVO detail(ArticleDetailDTO dto);
 
     String saveArticle(SaveArticleDTO article);
 
@@ -32,13 +32,29 @@ public interface IArticleService extends IService<ArticleDO> {
 
     /**
      * 文章点赞
+     *
      * @param articleId 文章ID
      */
     void digg(ArticleId articleId);
 
     /**
      * 取消文章点赞
+     *
      * @param articleId 文章ID
      */
     void cancelDigg(ArticleId articleId);
+
+    /**
+     * 将文章添加到收藏夹
+     *
+     * @param favorRequest 收藏请求
+     */
+    void addToFavor(@Valid FavorRequest favorRequest);
+
+    /**
+     * 从收藏夹中取消文章收藏
+     *
+     * @param favorRequest 取消收藏请求信息
+     */
+    void fromFavorDel(@Valid FavorRequest favorRequest);
 }
