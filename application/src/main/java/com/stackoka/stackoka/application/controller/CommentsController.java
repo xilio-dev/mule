@@ -2,13 +2,11 @@ package com.stackoka.stackoka.application.controller;
 
 import com.stackoka.stackoka.application.service.comment.ICommentsService;
 import com.stackoka.stackoka.common.data.article.ArticleId;
-import com.stackoka.stackoka.common.data.comment.CommentDiggRequest;
+import com.stackoka.stackoka.common.data.comment.CommentId;
 import com.stackoka.stackoka.common.message.RestResult;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -21,19 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/comments")
 public class CommentsController {
-@Autowired
-private ICommentsService commentsService;
+    @Autowired
+    private ICommentsService commentsService;
 
+    @PostMapping("list")
+    public RestResult list(@RequestBody ArticleId articleId) {
+        return RestResult.success(commentsService.getCommentByAid(articleId.getAid()));
+    }
 
     @PostMapping(value = "digg", name = "评论点赞")
-    public RestResult digg(CommentDiggRequest commentDiggRequest) {
-        commentsService.digg(commentDiggRequest);
+    public RestResult digg(@RequestBody @Valid CommentId commentId) {
+        commentsService.digg(commentId);
         return RestResult.success();
     }
 
     @PutMapping(value = "undigg", name = "取消评论点赞")
-    public RestResult unDigg(CommentDiggRequest commentDiggRequest) {
-        commentsService.cancelDigg(commentDiggRequest);
+    public RestResult unDigg(CommentId commentId) {
+        commentsService.cancelDigg(commentId);
         return RestResult.success();
     }
 

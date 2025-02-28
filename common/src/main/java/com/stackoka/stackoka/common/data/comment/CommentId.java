@@ -1,11 +1,13 @@
 package com.stackoka.stackoka.common.data.comment;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.io.Serializable;
+
 @Data
-public class CommentDiggRequest implements Serializable {
+public class CommentId implements Serializable {
     private static final long serialVersionUID = 1L;
-    private String aid;
+    @NotEmpty(message = "评论ID不能为空")
     private String commentId;
 }

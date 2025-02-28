@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {QuestionCircleOutlined, CustomerServiceOutlined} from "@ant-design/icons-vue";
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, reactive} from 'vue';
 import Markdown from "@/components/Markdown.vue";
 import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
@@ -8,6 +8,8 @@ import {useUserStore} from "@/stores/user.ts";
 import router from "@/router";
 import {NumberUtils} from "@/utils/number-util.ts";
 import {message} from "ant-design-vue";
+import Login from "@/components/Login.vue";
+import {commentList, diggComment, unDiggComment} from "@/api/comment.ts";
 
 const useUser = useUserStore()
 
@@ -41,18 +43,27 @@ const onToEditEditor = (id: string) => {
 }
 onMounted(async () => {
   await fetchPostData();
+  await loadComments()
 });
 
 const needVisitPass = ref(false)
 
 //文章点赞或取消点赞
 const onDiggOrunDigg = () => {
+  if (!useUser.isLogin()) {
+    openLoginModal.value = true
+    return
+  }
   diggArticle({aid: articleInfo.value.id})
   userInteract.value.isDigg = !userInteract.value.isDigg
   message.success("已点赞")
 }
 //添加文章到收藏夹或从收藏夹取消收藏
 const onSaveArticleToCollect = () => {
+  if (!useUser.isLogin()) {
+    openLoginModal.value = true
+    return
+  }
   //add todo
   addToFavor({aid: articleInfo.value.id, collectId: '1'})
   userInteract.value.isCollect = !userInteract.value.isCollect
@@ -64,6 +75,28 @@ const toggleFollow = () => {
 //私信作者
 const ontoChat = () => {
 
+}
+//打开登陆
+const openLoginModal = ref(false)
+
+
+//加载评论
+const comments = ref()
+const loadComments = async () => {
+  if (articleInfo.value) {
+    const res = await commentList({aid: articleInfo.value.id})
+    comments.value = res || []
+  }
+}
+//评论点赞/取消点赞
+const onDiggComment = (comment: any) => {
+  if (comment.liked === 1) {
+    comment.liked = 1
+    unDiggComment({commentId: comment.id})
+  } else {
+    comment.liked = 0
+    diggComment({commentId: comment.id})
+  }
 }
 </script>
 
@@ -174,57 +207,57 @@ const ontoChat = () => {
               />
             </a-form-item>
             <a-form-item>
-              <!--              <a-button html-type="submit" :loading="submitting" type="primary" @click="handleSubmit">-->
-              <!--                评论-->
-              <!--              </a-button>-->
+              <a-button html-type="submit" type="primary">
+                评论
+              </a-button>
             </a-form-item>
           </template>
         </a-comment>
-        <a-comment>
+
+        <!-- 遍历顶级评论 -->
+        <a-comment
+            v-for="comment in comments"
+            :key="comment.id"
+            class="comment-item"
+        >
           <template #actions>
-            <span key="comment-nested-reply-to">回复</span>
+            <span>回复</span>
+            <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(comment)">点赞</span>
           </template>
           <template #author>
-            <a>笑嘻嘻</a>
+            <a>{{ comment.user.username }}</a>
           </template>
           <template #avatar>
-            <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+            <a-avatar :src="comment.user.avatar" alt="Avatar"/>
           </template>
           <template #content>
-            <p>
-              哥，你太厉害了，我实在佩服
-            </p>
+            <p>{{ comment.content }}</p>
           </template>
-          <a-comment>
+          <template #datetime>
+            <span>{{ comment.createdAt }}</span>
+          </template>
+
+          <!-- 遍历二级评论 -->
+          <a-comment
+              v-for="reply in comment.replies"
+              :key="reply.id"
+              class="reply-item"
+          >
             <template #actions>
+              <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
               <span>回复</span>
             </template>
             <template #author>
-              <a>阿牛哥</a>
+              <a>{{ reply.user.username }} 回复 {{ reply.toUser ? reply.toUser.username : '' }}</a>
             </template>
             <template #avatar>
-              <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+              <a-avatar :src="reply.user.avatar" alt="Avatar"/>
             </template>
             <template #content>
-              <p>
-                不敢当，不敢当
-              </p>
+              <p>{{ reply.content }}</p>
             </template>
-          </a-comment>
-          <a-comment>
-            <template #actions>
-              <span>回复</span>
-            </template>
-            <template #author>
-              <a>阿牛哥</a>
-            </template>
-            <template #avatar>
-              <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
-            </template>
-            <template #content>
-              <p>
-                不敢当，不敢当
-              </p>
+            <template #datetime>
+              <span>{{ comment.createdAt }}</span>
             </template>
           </a-comment>
         </a-comment>
@@ -302,6 +335,9 @@ const ontoChat = () => {
     </a-float-button>
     <a-back-top/>
   </a-float-button-group>
+  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆智简畅享更多权益">
+    <Login/>
+  </a-modal>
 </template>
 
 <style scoped>
@@ -321,5 +357,11 @@ const ontoChat = () => {
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;
   padding: 0 8px;
+}
+
+/*评论组件样式修改*/
+:deep(.ant-comment .ant-comment-inner) {
+  display: flex;
+  padding: 5px 0;
 }
 </style>

@@ -2,6 +2,7 @@ package com.stackoka.stackoka.application.service.like;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoka.stackoka.common.data.likes.LikeTypeEnum;
 import com.stackoka.stackoka.common.data.likes.Likes;
 
 /**
@@ -14,5 +15,5 @@ import com.stackoka.stackoka.common.data.likes.Likes;
  */
 public interface ILikesService extends IService<Likes> {
 
-    Likes getLike(String userId, String articleId);
+    Likes getLike(String userId, String targetId, LikeTypeEnum likeType);
 }

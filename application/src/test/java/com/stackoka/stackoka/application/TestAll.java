@@ -1,5 +1,4 @@
-package cn.stackoka.stackoka;
-
+package com.stackoka.stackoka.application;
 
 
 public class TestAll {

@@ -66,4 +66,9 @@ public class Comments implements Serializable {
      */
     @TableField("updated_at")
     private LocalDateTime updatedAt;
+    /**
+     * 点赞数量
+     */
+    @TableField("like_count")
+    private Integer likeCount;
 }

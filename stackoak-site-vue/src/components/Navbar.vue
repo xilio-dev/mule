@@ -15,12 +15,23 @@
             v-model:value="search_key"
             placeholder="探索未来科技"
             enter-button/>
-        <a-badge :dot="true">
-          <a-image :preview="false" src="/xiaoxi.svg"/>
-        </a-badge>
-
+        <a-popover  placement="bottomRight">
+          <template #content>
+            <a-flex vertical :gap="8">
+              <a-button type="text">评论</a-button>
+              <a-button type="text">赞和收藏</a-button>
+              <a-button type="text">私信</a-button>
+              <a-button type="text">新增粉丝</a-button>
+              <a-button type="text">系统通知</a-button>
+              <a-button type="text">消息设置</a-button>
+            </a-flex>
+          </template>
+          <a-badge :dot="true">
+            <a-image style="cursor: pointer" @click="onOpenMsg" :preview="false" src="/xiaoxi.svg"/>
+          </a-badge>
+        </a-popover>
         <a-button style="margin-left: 15px" v-if="!isLogin" type="primary" @click="openLoginModal=true">登陆</a-button>
-        <a-popover v-if="isLogin" placement="bottom">
+        <a-popover v-if="isLogin" placement="bottomRight">
           <template #content>
             <a-flex vertical>
               <router-link to="/author" target="_blank">
@@ -233,7 +244,7 @@ const countdownStyle = ref({
 });
 //倒计时实现
 const countdown = ref(0); // 倒计时秒数
-const countdownInterval = ref(null); // 定时器引用
+const countdownInterval = ref(); // 定时器引用
 // 开始倒计时
 function startCountdown() {
   // 如果已经在倒计时，直接返回
@@ -248,6 +259,16 @@ function startCountdown() {
       countdown.value = 0; // 重置倒计时
     }
   }, 1000);
+}
+
+//如果用户已登陆则打开消息界面
+const onOpenMsg = () => {
+  if (!userStore.isLogin()) {
+    //打开登陆框
+    openLoginModal.value = true
+    return;
+  }
+  router.push({path: '/msg'})
 }
 </script>
 <style scoped>

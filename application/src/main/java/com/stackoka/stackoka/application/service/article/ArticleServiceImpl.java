@@ -328,7 +328,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         likes.setType(LikeTypeEnum.ARTICLE.getType());
         if (op == 1) {
             //判断是否已经点过赞了，不能重复点赞
-            Likes like = likesService.getLike("1", article.getId());
+            Likes like = likesService.getLike("1", article.getId(),LikeTypeEnum.ARTICLE);
             if (!ObjectUtils.isEmpty(like)) {
                 throw new BizException("不能重复点赞！");
             }
