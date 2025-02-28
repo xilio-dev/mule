@@ -41,13 +41,13 @@ public class CommentsController {
     }
 
     @PostMapping(value = "add", name = "添加评论")
-    public RestResult add(CommentRequest commentRequest) {
+    public RestResult add(@RequestBody @Valid CommentRequest commentRequest) {
         commentsService.addComment(commentRequest);
         return RestResult.success();
     }
 
     @DeleteMapping(value = "del", name = "删除评论")
-    public RestResult delComment(CommentId commentId) {
+    public RestResult delComment(@RequestBody @Valid CommentId commentId) {
         commentsService.delComment(commentId);
         return RestResult.success();
     }

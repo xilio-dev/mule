@@ -9,11 +9,11 @@ import router from "@/router";
 import {NumberUtils} from "@/utils/number-util.ts";
 import {message} from "ant-design-vue";
 import Login from "@/components/Login.vue";
-import {commentList, diggComment, unDiggComment} from "@/api/comment.ts";
+import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
 
 const useUser = useUserStore()
 
-const comment_value = ref('')
+
 const route = useRoute()
 const isLoading = ref(true);
 const articleInfo = ref({})
@@ -98,6 +98,25 @@ const onDiggComment = (comment: any) => {
     diggComment({commentId: comment.id})
   }
 }
+const comment_value = ref('')
+const commentPid = ref("0")/*依赖的评论，0表示根评论*/
+//添加评论
+const onAddComment = () => {
+  if (commentPid.value && comment_value.value.length > 0) {
+    addComment({aid: articleInfo.value.id, content: comment_value.value, commentPid:commentPid.value })
+  }
+
+}
+
+//删除评论
+const onDeleteComment = () => {
+  deleteComment({commentId: ''})
+}
+//去回复时，设置依赖的评论
+const toApply = (commentId: string) => {
+  commentPid.value = commentId
+}
+
 </script>
 
 <template>
@@ -192,7 +211,7 @@ const onDiggComment = (comment: any) => {
       <a-card style="border: none;margin-top: 15px">专栏
       </a-card>
       <a-card style="border: none;margin-top: 15px">
-        <h3>评论 {{comments.length}}</h3>
+        <h3>评论 {{ comments.length }}</h3>
 
         <a-comment>
           <template #avatar>
@@ -207,9 +226,7 @@ const onDiggComment = (comment: any) => {
               />
             </a-form-item>
             <a-form-item>
-              <a-button html-type="submit" type="primary">
-                评论
-              </a-button>
+              <a-button @click="onAddComment" html-type="submit" type="primary">评论</a-button>
             </a-form-item>
           </template>
         </a-comment>
@@ -221,7 +238,7 @@ const onDiggComment = (comment: any) => {
             class="comment-item"
         >
           <template #actions>
-            <span>回复</span>
+            <span @click="toApply(comment.id)">回复</span>
             <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(comment)">点赞</span>
           </template>
           <template #author>
@@ -245,7 +262,7 @@ const onDiggComment = (comment: any) => {
           >
             <template #actions>
               <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
-              <span>回复</span>
+              <span @click="toApply(reply.id)">回复</span>
             </template>
             <template #author>
               <a>{{ reply.user.username }} 回复 {{ reply.toUser ? reply.toUser.username : '' }}</a>

@@ -20,6 +20,7 @@ import com.stackoka.stackoka.repository.comment.CommentsMapper;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
      * @param commentRequest 评论请求
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addComment(CommentRequest commentRequest) {
         String commentPid = commentRequest.getCommentPid();
         String aid = commentRequest.getAid();
@@ -87,16 +89,18 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         Comment comments = new Comment();
         comments.setUserId("1");//todo 临时用户
         comments.setContent(commentRequest.getContent());
+        comments.setArticleId(aid);
         //如果父评论是0直接添加，否则检查父评论是否存在
         if ("0".equalsIgnoreCase(commentPid)) {
             comments.setPid("0");
+        }else {
+            //查询依赖的父评论
+            Comment pc = getById(commentPid);
+            if (ObjectUtils.isEmpty(pc)) {
+                throw new BizException("依赖的评论不存在！");
+            }
+            comments.setPid(commentPid);
         }
-        //查询依赖的父评论
-        Comment pc = getById(commentPid);
-        if (ObjectUtils.isEmpty(pc)) {
-            throw new BizException("依赖的评论不存在！");
-        }
-        comments.setPid(pc.getPid());
         //保存评论
         save(comments);
     }
