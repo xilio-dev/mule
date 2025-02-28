@@ -138,7 +138,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
     private List<CommentDTO> tran2LevelTree(List<Comment> comments) {
         Map<String, CommentDTO> commentMap = new HashMap<>();
         List<CommentDTO> result = new ArrayList<>();
-        // 第一次遍历：将所有评论存入 Map
+
+        // 第一次遍历：将所有评论存入 Map，并记录 pid
         for (Comment comment : comments) {
             CommentDTO dto = new CommentDTO();
             dto.setId(comment.getId());
@@ -155,20 +156,42 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         // 第二次遍历：构建树形结构
         for (Comment comment : comments) {
             if ("0".equalsIgnoreCase(comment.getPid())) {
-                // 顶级评论，直接添加到结果列表
+                // 一级评论，直接添加到结果列表
                 result.add(commentMap.get(comment.getId()));
             } else {
-                // 二级评论，挂载到对应的顶级评论下
-                CommentDTO parent = commentMap.get(comment.getPid());
-                if (parent != null) {
+                // 找到一级父评论
+                CommentDTO topLevelParent = findTopLevelParent(commentMap, comments, comment.getPid());
+                if (topLevelParent != null) {
                     // 设置被回复的用户
                     CommentDTO reply = commentMap.get(comment.getId());
-                    reply.setToUser(parent.getUser());
-                    parent.getReplies().add(reply);
+                    reply.setToUser(commentMap.get(comment.getPid()).getUser());
+
+                    // 将二级及以上的评论都挂在一级评论的 replies 下
+                    topLevelParent.getReplies().add(reply);
                 }
             }
         }
         return result;
+    }
+
+    // 查找一级父评论
+    private CommentDTO findTopLevelParent(Map<String, CommentDTO> commentMap, List<Comment> comments, String pid) {
+        // 根据 pid 找到对应的 Comment
+        Comment parentComment = comments.stream()
+                .filter(c -> c.getId().equals(pid))
+                .findFirst()
+                .orElse(null);
+
+        if (parentComment == null) {
+            return null;
+        }
+        // 如果父评论的 pid 是 "0"，说明它是一级评论
+        if ("0".equalsIgnoreCase(parentComment.getPid())) {
+            return commentMap.get(parentComment.getId());
+        }
+
+        // 否则继续向上查找
+        return findTopLevelParent(commentMap, comments, parentComment.getPid());
     }
 
     // 根据用户 ID 获取用户 DTO

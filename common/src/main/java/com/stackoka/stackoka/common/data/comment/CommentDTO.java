@@ -14,7 +14,6 @@ public class CommentDTO implements Serializable {
      * 评论ID，主键
      */
     private String id;
-
     /**
      * 文章ID，逻辑关联posts表
      */
