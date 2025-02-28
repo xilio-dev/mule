@@ -3,6 +3,7 @@ package com.stackoka.stackoka.application.controller;
 import com.stackoka.stackoka.application.service.comment.ICommentsService;
 import com.stackoka.stackoka.common.data.article.ArticleId;
 import com.stackoka.stackoka.common.data.comment.CommentId;
+import com.stackoka.stackoka.common.data.comment.CommentRequest;
 import com.stackoka.stackoka.common.message.RestResult;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,4 +40,15 @@ public class CommentsController {
         return RestResult.success();
     }
 
+    @PostMapping(value = "add", name = "添加评论")
+    public RestResult add(CommentRequest commentRequest) {
+        commentsService.addComment(commentRequest);
+        return RestResult.success();
+    }
+
+    @DeleteMapping(value = "del", name = "删除评论")
+    public RestResult delComment(CommentId commentId) {
+        commentsService.delComment(commentId);
+        return RestResult.success();
+    }
 }

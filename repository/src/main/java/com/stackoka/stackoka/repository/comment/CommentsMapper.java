@@ -1,7 +1,7 @@
 package com.stackoka.stackoka.repository.comment;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.stackoka.stackoka.common.data.comment.Comments;
+import com.stackoka.stackoka.common.data.comment.Comment;
 
 
 /**
@@ -12,7 +12,7 @@ import com.stackoka.stackoka.common.data.comment.Comments;
  * @author stackoak.com
  * @since 2025-02-27 23:00:30
  */
-public interface CommentsMapper extends BaseMapper<Comments> {
+public interface CommentsMapper extends BaseMapper<Comment> {
 
 }
 

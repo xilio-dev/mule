@@ -4,7 +4,8 @@ package com.stackoka.stackoka.application.service.comment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoka.stackoka.common.data.comment.CommentDTO;
 import com.stackoka.stackoka.common.data.comment.CommentId;
-import com.stackoka.stackoka.common.data.comment.Comments;
+import com.stackoka.stackoka.common.data.comment.CommentRequest;
+import com.stackoka.stackoka.common.data.comment.Comment;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
  * @author stackoak.com
  * @since 2025-02-27 23:00:30
  */
-public interface ICommentsService extends IService<Comments> {
+public interface ICommentsService extends IService<Comment> {
     /**
      * 评论点赞
      *
@@ -33,4 +34,18 @@ public interface ICommentsService extends IService<Comments> {
     void cancelDigg(CommentId commentId);
 
     List<CommentDTO> getCommentByAid(@NotEmpty String aid);
+
+    /**
+     * 添加评论
+     *
+     * @param commentRequest 评论请求
+     */
+    void addComment(CommentRequest commentRequest);
+
+    /**
+     * 删除评论
+     *
+     * @param commentId 评论ID
+     */
+    void delComment(CommentId commentId);
 }

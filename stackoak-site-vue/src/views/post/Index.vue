@@ -81,7 +81,7 @@ const openLoginModal = ref(false)
 
 
 //加载评论
-const comments = ref()
+const comments = ref([])
 const loadComments = async () => {
   if (articleInfo.value) {
     const res = await commentList({aid: articleInfo.value.id})
@@ -192,7 +192,7 @@ const onDiggComment = (comment: any) => {
       <a-card style="border: none;margin-top: 15px">专栏
       </a-card>
       <a-card style="border: none;margin-top: 15px">
-        <h3>评论33</h3>
+        <h3>评论 {{comments.length}}</h3>
 
         <a-comment>
           <template #avatar>
