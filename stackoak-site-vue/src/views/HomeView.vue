@@ -1,7 +1,7 @@
 <template>
 
   <a-row :gutter="15">
-    <a-col   :span="3" class="index-nav index-nav-top  " >
+    <a-col :span="3" class="index-nav index-nav-top  ">
       <a-menu
           id="leftNavMenu"
           v-model:openKeys="openKeys"
@@ -71,7 +71,8 @@
       <!--广告位-->
       <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
         <template #cover>
-          <img style="height: 120px;border-radius: 4px" alt="example" src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
+          <img style="height: 120px;border-radius: 4px" alt="example"
+               src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
         </template>
       </a-card>
       <a-card title="阅读排行" :bordered="false" style="margin-top: 12px;min-height: 150px">
@@ -80,16 +81,18 @@
       <a-card title="热门新闻" :bordered="false" style="margin-top: 12px;min-height: 150px">
 
       </a-card>
-      <a-card title="友情链接" :bordered="false" style="margin-top: 12px;min-height: 150px">
-        <a-flex justify="space-around" align="center">
-          <a-tag>腾讯</a-tag>
-          <a-tag>阿里爸爸</a-tag>
+      <a-card title="友情链接" :bordered="false" style="margin-top: 12px;min-height: 100px">
+        <a-flex wrap="wrap" justify="space-around" align="center" style="margin: 8px" :gap="4">
+          <template v-for="item in friendLinks" >
+             <a-button  type="dashed">{{item.name}}</a-button>
+          </template>
         </a-flex>
       </a-card>
       <!--广告位-->
       <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
         <template #cover>
-          <img style="height: 120px;border-radius: 4px" alt="example" src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
+          <img style="height: 120px;border-radius: 4px" alt="example"
+               src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
         </template>
       </a-card>
       <a-card :bordered="false" style="margin-top: 12px;width: 100%;background-color: transparent;box-shadow: none">
@@ -145,6 +148,8 @@ import {useUserStore} from "@/stores/user.ts";
 const userStore = useUserStore()
 import router from "@/router";
 import Login from "@/components/Login.vue";
+import {friendLinkList} from "@/api/friendlink.ts";
+import {JSX} from "vue/jsx-runtime";
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
 const selectedKeys = ref([0]);
@@ -198,9 +203,15 @@ const loadLeftMenu = async () => {
   } catch (err) {
   }
 }
+const friendLinks = ref()
+const loadFriendLink = async () => {
+  const res = await friendLinkList()
+  friendLinks.value = res || []
+}
 onMounted(async () => {
   await loadLeftMenu()
   await loadHomeData()
+  await loadFriendLink()
 })
 //左侧菜单点击事件
 const handleClick: MenuProps['onClick'] = e => {
@@ -313,7 +324,6 @@ a-card {
   border: none;
   box-shadow: none;
 }
-
 
 
 </style>
