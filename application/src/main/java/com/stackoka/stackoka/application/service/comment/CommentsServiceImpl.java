@@ -93,7 +93,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         //如果父评论是0直接添加，否则检查父评论是否存在
         if ("0".equalsIgnoreCase(commentPid)) {
             comments.setPid("0");
-        }else {
+        } else {
             //查询依赖的父评论
             Comment pc = getById(commentPid);
             if (ObjectUtils.isEmpty(pc)) {
@@ -111,13 +111,28 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
      * @param commentId 评论ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delComment(CommentId commentId) {
         //检查评论是否属于用户自己的评论，避免删除别人的
         Comment comments = getCommentByUser(commentId.getCommentId());
         if (ObjectUtils.isEmpty(comments)) {
             throw new BizException("评论不存在！");
         }
-        removeById(commentId);
+        //如果有子评论需要删除所有子评论
+        removeByCommentPid(commentId);
+        //删除当前评论
+        removeById(commentId.getCommentId());
+    }
+
+    /**
+     * 删除子评论
+     *
+     * @param commentId。父评论编号
+     */
+    private void removeByCommentPid(CommentId commentId) {
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getPid, commentId.getCommentId());
+        remove(wrapper);
     }
 
     /**
@@ -148,6 +163,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
             dto.setLiked(0); // 默认未点赞
             dto.setCreatedAt(comment.getCreatedAt()); // 格式化时间
             dto.setUser(getUserDTO(comment.getUserId())); // 设置评论用户
+            dto.setUserId(comment.getUserId());
             dto.setToUser(null); // 默认没有回复对象
             dto.setReplies(new ArrayList<>()); // 初始化子评论列表
             commentMap.put(comment.getId(), dto);

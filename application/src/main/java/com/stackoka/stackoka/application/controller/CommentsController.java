@@ -46,8 +46,8 @@ public class CommentsController {
         return RestResult.success();
     }
 
-    @DeleteMapping(value = "del", name = "删除评论")
-    public RestResult delComment(@RequestBody @Valid CommentId commentId) {
+    @PostMapping(value = "del", name = "删除评论")
+    public RestResult delComment(@RequestBody CommentId commentId) {
         commentsService.delComment(commentId);
         return RestResult.success();
     }

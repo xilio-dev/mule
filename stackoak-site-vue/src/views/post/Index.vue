@@ -103,14 +103,16 @@ const commentPid = ref("0")/*依赖的评论，0表示根评论*/
 //添加评论
 const onAddComment = () => {
   if (commentPid.value && comment_value.value.length > 0) {
-    addComment({aid: articleInfo.value.id, content: comment_value.value, commentPid:commentPid.value })
+    addComment({aid: articleInfo.value.id, content: comment_value.value, commentPid: commentPid.value})
   }
 
 }
 
 //删除评论
-const onDeleteComment = () => {
-  deleteComment({commentId: ''})
+const onDeleteComment = (commentId: string) => {
+  deleteComment({commentId: commentId}).then(res => {
+    message.success("删除成功！")
+  })
 }
 //去回复时，设置依赖的评论
 const toApply = (commentId: string) => {
@@ -215,24 +217,25 @@ const toApply = (commentId: string) => {
 
         <a-comment>
           <template #avatar>
-            <a-avatar src="https://www.antdv.com/assets/logo.1ef800a8.svg" alt="Han Solo"/>
+            <a-avatar v-if="useUser.isLogin()" :src="useUser.userinfo.avatar" alt="Han Solo"/>
           </template>
           <template #content>
             <a-form-item>
               <a-textarea
                   v-model:value="comment_value"
-                  placeholder="平等表达，友善交流"
+                  placeholder="友善交流"
                   :auto-size="{ minRows: 5, maxRows: 10 }"
               />
             </a-form-item>
             <a-form-item>
-              <a-button @click="onAddComment" html-type="submit" type="primary">评论</a-button>
+              <a-button @click="onAddComment" type="primary">评论</a-button>
             </a-form-item>
           </template>
         </a-comment>
 
         <!-- 遍历顶级评论 -->
         <a-comment
+            v-if="useUser.isLogin()"
             v-for="comment in comments"
             :key="comment.id"
             class="comment-item"
@@ -240,6 +243,14 @@ const toApply = (commentId: string) => {
           <template #actions>
             <span @click="toApply(comment.id)">回复</span>
             <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(comment)">点赞</span>
+            <a-popconfirm
+                title="您确定删除该条评论?"
+                ok-text="确定"
+                cancel-text="取消"
+                @confirm="onDeleteComment(comment.id)">
+              <span v-if="useUser.userinfo.userId==comment.userId">删除</span>
+            </a-popconfirm>
+
           </template>
           <template #author>
             <a>{{ comment.user.username }}</a>
@@ -263,6 +274,13 @@ const toApply = (commentId: string) => {
             <template #actions>
               <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
               <span @click="toApply(reply.id)">回复</span>
+              <a-popconfirm
+                  title="您确定删除该条评论?"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="onDeleteComment(reply.id)">
+                <span v-if="useUser.userinfo.userId==reply.userId">删除</span>
+              </a-popconfirm>
             </template>
             <template #author>
               <a>{{ reply.user.username }} 回复 {{ reply.toUser ? reply.toUser.username : '' }}</a>

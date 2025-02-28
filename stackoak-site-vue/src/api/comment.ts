@@ -15,12 +15,15 @@ export function diggComment(data: any) {
 export function unDiggComment(data: any) {
     return request.put(Api.UN_DIGG, data)
 }
+
 export function commentList(data: any) {
-    return request.post(Api.LIST,data)
+    return request.post(Api.LIST, data)
 }
+
 export function addComment(data: any) {
     return request.post(Api.ADD, data)
 }
+
 export function deleteComment(data: any) {
-    return request.delete(Api.DEL, data)
+    return request.post(Api.DEL, data)
 }
