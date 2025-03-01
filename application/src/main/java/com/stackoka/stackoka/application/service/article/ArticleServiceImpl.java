@@ -5,6 +5,7 @@ import com.stackoka.stackoka.application.service.category.ICategoryService;
 import com.stackoka.stackoka.application.service.collect.ICollectService;
 import com.stackoka.stackoka.application.service.column.IColumnService;
 import com.stackoka.stackoka.application.service.like.ILikesService;
+import com.stackoka.stackoka.application.service.search.ISearchService;
 import com.stackoka.stackoka.application.service.tag.ITagService;
 import com.stackoka.stackoka.common.data.article.*;
 import com.stackoka.stackoka.common.data.category.Category;
@@ -64,6 +65,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private ICollectService collectService;
     @Autowired
     private ArticleCollectMapper articleCollectMapper;
+    @Autowired
+    private ISearchService searchService;
 
     @Override
     public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
@@ -181,9 +184,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         saveArticle.setCreativeType(dto.getCreativeType());
         saveArticle.setCategoryId(categoryId);
         if (isAdd) {
+            //新增文章并加上索引
             save(saveArticle);
+            searchService.saveIndex(saveArticle);
         } else {
+            //更新文章并更新索引
             updateById(saveArticle);
+            searchService.saveIndex(saveArticle);
+
         }
         //文章专栏保存与关联 一篇文章存在于3个专栏
         //如果是更新，合并专栏信息
@@ -328,7 +336,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         likes.setType(LikeTypeEnum.ARTICLE.getType());
         if (op == 1) {
             //判断是否已经点过赞了，不能重复点赞
-            Likes like = likesService.getLike("1", article.getId(),LikeTypeEnum.ARTICLE);
+            Likes like = likesService.getLike("1", article.getId(), LikeTypeEnum.ARTICLE);
             if (!ObjectUtils.isEmpty(like)) {
                 throw new BizException("不能重复点赞！");
             }

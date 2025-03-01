@@ -5,7 +5,6 @@ import {message} from "ant-design-vue";
 const baseApi = import.meta.env.VITE_APP_BASE_API;
 const instance = axios.create({
     baseURL: baseApi + '/',
-    //baseURL: 'https://api.xilio.cn/',
     timeout: 1000,
     headers: {'X-Custom-Header': 'foobar'}
 });
@@ -22,14 +21,11 @@ instance.interceptors.request.use(function (config) {
 // 添加响应拦截器
 instance.interceptors.response.use(function (response) {
     const {code, msg, data} = response.data
-    if (code === 1006) {
-        message.error(msg);
-    }
     if (code === 1) {
         return data;
+    }else {
+        message.error(msg);
     }
-
-
 }, function (error) {
     return Promise.reject(error);
 });

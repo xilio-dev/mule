@@ -47,13 +47,11 @@ const props = defineProps<{
         <div class="content-wrapper">
           <div class="content-main">
             <div class="title-row">
-              <div class="xx-link title">{{ item.title }}</div>
+              <div class="xx-link title" v-html="item.title"></div>
             </div>
             <div class="abstract">
               <div class="xx-link">
-                <div>
-                  {{ item.description }}
-                </div>
+                <div v-html="item.conent"/>
               </div>
             </div>
             <div class="entry-footer">

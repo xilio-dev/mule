@@ -1,7 +1,12 @@
 package com.stackoka.stackoka.application.exception;
 
 
+import com.stackoka.stackoka.common.message.RestResult;
 import com.stackoka.stackoka.common.message.Result;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,5 +26,16 @@ public class GlobalExceptionHandler {
     public Result handleCustomException(BizException ex) {
         ex.printStackTrace();
         return  Result.error(ex.getCode(),ex.getMsg());
+    }
+    @ExceptionHandler(BindException.class)
+    public RestResult bindExceptionHandler(BindException e){
+        e.printStackTrace();
+        return RestResult.error(HttpStatus.BAD_REQUEST.value(),e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public RestResult methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e){
+        e.printStackTrace();
+        return RestResult.error(HttpStatus.BAD_REQUEST.value(),e.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
     }
 }

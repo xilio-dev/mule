@@ -13,9 +13,10 @@
         <a-input-search
             style="width: 400px;margin-right: 15px"
             v-model:value="search_key"
-            placeholder="探索未来科技"
+            placeholder="发现更多精彩"
+            @search="onSearch"
             enter-button/>
-        <a-popover  placement="bottomRight">
+        <a-popover placement="bottomRight">
           <template #content>
             <a-flex vertical :gap="8">
               <a-button type="text">评论</a-button>
@@ -125,10 +126,17 @@ const sendEmailCode = () => {
   sendEmail(emailRegisterDTO.email)
   message.success('验证码已发送！');
 }
+const search_key = ref('')
+const onSearch = () => {
+  if (search_key.value == '') {
+    return;
+  }
 
+  router.push({path: '/search', query: {keyword: search_key.value}})
+}
 //三方登陆
 const openLoginModal = ref(false)
-const search_key = ref('')
+
 const count = 2;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
 const activeKey = ref('1');
