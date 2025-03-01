@@ -13,13 +13,40 @@
       ></a-menu>
     </a-col>
     <a-col :span="15">
-      <a-carousel style="margin-bottom: 10px" :after-change="onChange">
-        <img src="https://picsum.photos/1920/1080?random=2"/>
-        <img src="https://picsum.photos/1920/1080?random=3"/>
-        <img src="https://picsum.photos/1920/1080?random=4"/>
-        <img src="https://picsum.photos/1920/1080?random=5"/>
-        <img src="https://picsum.photos/1920/1080?random=6"/>
-      </a-carousel>
+
+      <div class="video-container">
+        <video
+            class="background-video"
+            autoplay
+            loop
+            muted
+            src="https://lf3-static.bytednsdoc.com/obj/eden-cn/111eh7nupehpqps/1220下酒菜.mp4"
+        >
+        </video>
+        <div class="search-container">
+          <a-input-search
+              v-model:value="search_key"
+              @search="onSearch"
+              class="centered-search"
+              size="large"
+              enter-button
+              placeholder="请输入搜索内容"
+          />
+        </div>
+      </div>
+
+
+<!--        <a-input-search style="margin: 15px" size="large"/>-->
+
+
+
+<!--      <a-carousel style="margin-bottom: 10px" :after-change="onChange">-->
+<!--        <img src="https://picsum.photos/1920/1080?random=2"/>-->
+<!--        <img src="https://picsum.photos/1920/1080?random=3"/>-->
+<!--        <img src="https://picsum.photos/1920/1080?random=4"/>-->
+<!--        <img src="https://picsum.photos/1920/1080?random=5"/>-->
+<!--        <img src="https://picsum.photos/1920/1080?random=6"/>-->
+<!--      </a-carousel>-->
 
       <a-card style="margin-top: 8px; " class="index-article-card">
         <a-tabs v-model:activeKey="activeKey" @tabClick="onTabClick">
@@ -227,7 +254,14 @@ const onTabClick = (targetKey: string) => {
 watch(openKeys, val => {
   console.log('openKeys', val);
 });
-
+//搜索
+const search_key=ref('')
+const onSearch = () => {
+  if (search_key.value == '') {
+    return;
+  }
+  router.push({path: '/search', query: {keyword: search_key.value}})
+}
 </script>
 <style scoped>
 
@@ -325,6 +359,36 @@ a-card {
   box-shadow: none;
 }
 
+.video-container {
+  position: relative;
+  width: 100%;
+  height: 100px; /* 或根据需要调整高度 */
+  background-color: gray;
+}
 
+.background-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 确保视频填充整个容器 */
+}
+
+.search-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10; /* 确保搜索框在视频上方 */
+  width: calc(100% - 100px);
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  padding: 0 30px; /* 确保左右间距 */
+}
+
+.centered-search {
+  width: 100%; /* 搜索框宽度占满容器 */
+  border: none;
+  box-shadow: none;
+}
 </style>
 

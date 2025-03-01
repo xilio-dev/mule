@@ -11,11 +11,18 @@
     <a-col :span="14" style="white-space: nowrap">
       <div style="float: right;margin-top: 6px">
         <a-input-search
+            v-if="false"
             style="width: 400px;margin-right: 15px"
             v-model:value="search_key"
             placeholder="发现更多精彩"
             @search="onSearch"
             enter-button/>
+
+         <span>苏州</span>
+         <a-image src="/w1.png" style="width: 24px;height: 24px" :preview="false" aria-hidden="true"/>
+         <span style="margin-right: 15px">晴 21度 良</span>
+
+
         <a-popover placement="bottomRight">
           <template #content>
             <a-flex vertical :gap="8">
@@ -207,16 +214,6 @@ const items1 = ref<MenuProps['items']>([
   {
     key: '/resource',
     label: '资源中心',
-    title: 'Navigation Four - Link',
-  },
-  {
-    key: '/qus',
-    label: 'test',
-    title: 'Navigation Four - Link',
-  },
-  {
-    key: '/noti',
-    label: 'noti',
     title: 'Navigation Four - Link',
   },
 ]);
