@@ -51,7 +51,9 @@ const props = defineProps<{
             </div>
             <div class="abstract">
               <div class="xx-link">
-                <div v-html="item.conent"/>
+                <div>
+                  {{ item.description }}
+                </div>
               </div>
             </div>
             <div class="entry-footer">
