@@ -26,14 +26,20 @@
         >
         </video>
         <div class="search-container">
-          <a-input-search
-              v-model:value="search_key"
-              @search="onSearch"
-              class="centered-search"
-              size="large"
-              enter-button
-              placeholder="请输入搜索内容"
-          />
+          <a-popover  trigger="click" placement="bottom" >
+            <template #content >
+            <div class="centered-search " style="z-index: 10;height: 200px;width: 600px">
+            </div>
+            </template>
+            <a-input-search
+                v-model:value="search_key"
+                @search="onSearch"
+                class="centered-search"
+                size="large"
+                enter-button
+                placeholder="请输入搜索内容"
+            />
+          </a-popover>
         </div>
       </div>
 

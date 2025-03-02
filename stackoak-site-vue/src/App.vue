@@ -20,7 +20,8 @@ const pathName = computed(() =>{
     return 'editor';
   }else if (currentPath.value==='/opensource/document/detail'){
     return 'doc'
-  }else {
+  }
+  else {
     return 'base'
   }
 })
@@ -31,6 +32,7 @@ const pathName = computed(() =>{
   <header v-if="pathName==='base'">
     <Navbar style="position: fixed;z-index: 90"/>
   </header>
+
   <main style="padding: 60px 10% 0;" v-if="pathName==='base'">
     <RouterView/>
   </main>

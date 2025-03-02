@@ -7,14 +7,14 @@
         <img style="width: 100px;height: 100px;border-radius: 4px" src="@/assets/avatar.jpeg"/>
         <div>xilio1024</div>
       </div>
-      <a-affix offset-bottom="bottom"  :offset-top="60">
-      <a-menu
-          id="creator_left_menu"
-          v-model:openKeys="openKeys"
-          mode="inline"
-          :items="items"
-          @click="handleClick"
-      ></a-menu>
+      <a-affix offset-bottom="bottom" :offset-top="60">
+        <a-menu
+            id="creator_left_menu"
+            v-model:openKeys="openKeys"
+            mode="inline"
+            :items="items"
+            @click="handleClick"
+        ></a-menu>
       </a-affix>
     </a-col>
     <a-col :span="14">
@@ -36,17 +36,42 @@
         </div>
       </a-card>
       <a-card :bordered="false" title="近期文章" style="margin-top: 20px;box-shadow: none">
-        <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
+        <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="recentArticle">
           <template #renderItem="{ item }">
             <a-list-item key="item.title">
               <template #actions>
-          <span v-for="{ icon, text } in actions" :key="icon">
-            <component :is="icon" style="margin-right: 8px"/>
-            {{ text }}
-          </span>
+
+                <span><component :is="StarOutlined" style="margin-right: 8px"/>{{ item.collectCount }}</span>
+                <span><component :is="LikeOutlined" style="margin-right: 8px"/>{{ item.likeCount }}</span>
+                <span><component :is="MessageOutlined" style="margin-right: 8px"/>{{ item.commentCount }}</span>
               </template>
               <template #extra>
-                操作
+                <a-dropdown>
+                  <a class="ant-dropdown-link" @click.prevent>
+                    操作
+                    <DownOutlined/>
+                  </a>
+                  <template #overlay>
+                    <a-menu>
+                      <a-menu-item>
+                        <router-link :to="{ path: '/editor', query: { id: item.id } }" target="_blank">编辑
+                        </router-link>
+                      </a-menu-item>
+                      <a-menu-item>
+                        <a-popconfirm
+                            title="你确定要删除该篇文章?"
+                            ok-text="确定"
+                            cancel-text="取消"
+                            @confirm="onRemoveRecentArticle(item.id)">
+                          <span>删除</span>
+                        </a-popconfirm>
+                      </a-menu-item>
+                      <a-menu-item>
+                        <router-link :to="`/post/${item.id}`" target="_blank">浏览</router-link>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
+                </a-dropdown>
               </template>
               <a-list-item-meta class="title-container">
                 <template #title>
@@ -55,14 +80,15 @@
               </a-list-item-meta>
             </a-list-item>
           </template>
+
         </a-list>
       </a-card>
     </a-col>
     <a-col :span="6">
-      <a-affix offset-bottom="bottom"  :offset-top="60">
-      <a-card title="公告栏" style="height: 150px">
+      <a-affix offset-bottom="bottom" :offset-top="60">
+        <a-card title="公告栏" style="height: 150px">
 
-      </a-card>
+        </a-card>
       </a-affix>
     </a-col>
   </a-row>
@@ -70,6 +96,7 @@
 </template>
 <script lang="ts" setup>
 import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
+import {DownOutlined} from '@ant-design/icons-vue';
 
 const listData: Record<string, string>[] = [];
 
@@ -84,7 +111,7 @@ const pagination = {
   onChange: (page: number) => {
     console.log(page);
   },
-  pageSize: 30,
+  pageSize: 5,
 };
 const actions: Record<string, any>[] = [
   {icon: StarOutlined, text: '156'},
@@ -94,10 +121,32 @@ const actions: Record<string, any>[] = [
 
 import {reactive, ref, watch, VueElement, h} from 'vue';
 import {MailOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
-import type {MenuProps, ItemType} from 'ant-design-vue';
+import {type MenuProps, type ItemType, message} from 'ant-design-vue';
 
 const selectedKeys = ref<string[]>(['1']);
 const openKeys = ref<string[]>(['sub1', 'sub2']);
+//删除近期文章
+const onRemoveRecentArticle = (id: string) => {
+  message.success("删除成功！"+id)
+}
+//加载近期文章
+
+const queryParam = ref({
+  current: 1,
+  size: 10,
+  categoryId: 0,
+  showType: 3
+})
+const recentArticle = ref([])
+const loadRecentArticle = async () => {
+  await articleList(queryParam.value).then(res => {
+    if (res == null) {
+      recentArticle.value = []
+      return
+    }
+    recentArticle.value = res.records
+  })
+}
 
 function getItem(
     label: VueElement | string,
@@ -149,6 +198,7 @@ watch(openKeys, val => {
 });
 //近期文章
 import {onMounted, nextTick} from 'vue';
+import {articleList} from "@/api/post.ts";
 
 const count = 3;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
@@ -158,6 +208,8 @@ const loading = ref(false);
 const data = ref([]);
 const list = ref([]);
 onMounted(() => {
+  //加载近期文章
+  loadRecentArticle()
   fetch(fakeDataUrl)
       .then(res => res.json())
       .then(res => {
@@ -166,6 +218,24 @@ onMounted(() => {
         list.value = res.results;
       });
 });
+const onLoadMore = () => {
+  loading.value = true;
+  list.value = data.value.concat(
+      [...new Array(count)].map(() => ({loading: true, name: {}, picture: {}})),
+  );
+  fetch(fakeDataUrl)
+      .then(res => res.json())
+      .then(res => {
+        const newData = data.value.concat(res.results);
+        loading.value = false;
+        data.value = newData;
+        list.value = newData;
+        nextTick(() => {
+
+          window.dispatchEvent(new Event('resize'));
+        });
+      });
+};
 </script>
 
 <style scoped>
@@ -206,5 +276,13 @@ a-card {
   text-overflow: ellipsis; /* 显示省略号 */
   max-width: 100%; /* 确保宽度不超过父容器 */
   display: block; /* 确保样式生效 */
+}
+
+.ant-dropdown-link {
+  color: #292828;
+}
+
+.demo-loadmore-list {
+  min-height: 350px;
 }
 </style>
