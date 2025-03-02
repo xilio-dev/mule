@@ -2,6 +2,7 @@
 
   <a-row :gutter="15">
     <a-col :span="3" class="index-nav index-nav-top  ">
+      <a-affix offset-bottom="bottom"  :offset-top="59">
       <a-menu
           id="leftNavMenu"
           v-model:openKeys="openKeys"
@@ -11,6 +12,7 @@
           :items="items"
           @click="handleClick"
       ></a-menu>
+      </a-affix>
     </a-col>
     <a-col :span="15">
 
@@ -64,6 +66,9 @@
       </a-card>
     </a-col>
     <a-col :span="6">
+
+
+
       <a-card title="创作中心" :bordered="false" style="border-radius: 4px;">
         <a-flex justify="space-around" align="center" style="margin-top: 15px">
           <div @click="onOpenLoginModel('/editor')" style="text-decoration: none" class="creator-link-container">
@@ -102,9 +107,11 @@
                src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
         </template>
       </a-card>
+
       <a-card title="阅读排行" :bordered="false" style="margin-top: 12px;min-height: 150px">
 
       </a-card>
+      <a-affix offset-bottom="bottom"  :offset-top="45">
       <a-card title="热门新闻" :bordered="false" style="margin-top: 12px;min-height: 150px">
 
       </a-card>
@@ -115,6 +122,7 @@
           </template>
         </a-flex>
       </a-card>
+
       <!--广告位-->
       <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
         <template #cover>
@@ -146,7 +154,7 @@
           <div>公司域名 stackoak.com</div>
         </a-flex>
       </a-card>
-
+      </a-affix>
     </a-col>
   </a-row>
   <a-float-button-group shape="circle" :style="{ right: '24px' }">
@@ -196,7 +204,7 @@ const activeKey = ref('3');
 const articles = ref([])
 const queryParam = ref({
   current: 1,
-  size: 15,
+  size: 150,
   categoryId: 0,
   showType: activeKey.value
 })

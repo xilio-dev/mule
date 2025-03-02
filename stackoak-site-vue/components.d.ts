@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AAffix: typeof import('ant-design-vue/es')['Affix']
     AAvatar: typeof import('ant-design-vue/es')['Avatar']
     ABackTop: typeof import('ant-design-vue/es')['BackTop']
     ABadge: typeof import('ant-design-vue/es')['Badge']
