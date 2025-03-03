@@ -4,12 +4,26 @@ import {ref, watch} from "vue";
 import {searchArticle} from "@/api/search.ts";
 import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
 import {ImageUtils} from "@/utils/file.ts";
+import {message} from "ant-design-vue";
+
 const route = useRoute()
 const articles = ref([])
+
+
+const pagination = ref({
+  onChange: (page: number) => {
+    pagination.value.current = page
+    startSearch()
+  },
+  pageSize: 5,
+  total: 0,
+  current: 1
+})
 // 监听查询参数的变化，发生变化重新获取数据
 const doSearch = (keyword: any) => {
-  searchArticle({keyword: keyword, page: 1, size: 10}).then((res) => {
+  searchArticle({keyword: keyword, page: pagination.value.current, size: pagination.value.pageSize}).then((res) => {
     articles.value = res.records;
+    pagination.value.total = res.total
   });
 }
 watch(
@@ -23,17 +37,21 @@ watch(
 );
 
 const activeKey = ref('1');
-const search_key = ref(undefined)
-const onSearch = () => {
+const search_key = ref()
+search_key.value=route.query.keyword
+const startSearch = () => {
+  if (search_key.value == undefined || search_key.value == '') {
+    message.warning("请输入关键字！")
+    return;
+  }
   doSearch(search_key.value)
 }
-const pagination = {
-  onChange: (page: number) => {
-    console.log(page);
-  },
-  pageSize: 3,
-};
-const goArticleDetail=(id:string)=>{
+const onSearch = () => {
+  pagination.value.current=1
+  startSearch()
+}
+
+const goArticleDetail = (id: string) => {
   const url = `/post#/post/${id}`;
   window.open(url, '_blank');
 }
@@ -52,7 +70,7 @@ const goArticleDetail=(id:string)=>{
       />
     </a-row>
     <a-row style="width: 100%;background-color: white">
-      <a-card style="width: 100%;box-shadow: none" :bordered="false">
+      <a-card style="width: 100%;box-shadow: none;margin-bottom: 15px" :bordered="false">
         <a-tabs v-model:activeKey="activeKey">
           <a-tab-pane key="1" tab="文章">
             <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles">
@@ -72,7 +90,7 @@ const goArticleDetail=(id:string)=>{
                         :src="ImageUtils.getImgUrl(item.cover)"
                     />
                   </template>
-                  <a-list-item-meta  >
+                  <a-list-item-meta>
                     <template #description>
                       <span class="article-description" v-html=" item.content "></span>
                     </template>
@@ -80,9 +98,7 @@ const goArticleDetail=(id:string)=>{
                       <span class="article-title" v-html=" item.title "></span>
                     </template>
                   </a-list-item-meta>
-
                 </a-list-item>
-
               </template>
             </a-list>
           </a-tab-pane>
@@ -109,6 +125,7 @@ const goArticleDetail=(id:string)=>{
   padding: 0 20px;
   border-radius: 0 0 8px 8px;
 }
+
 /*List列表修改*/
 .article-title {
   font-weight: 600;
@@ -120,7 +137,8 @@ const goArticleDetail=(id:string)=>{
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
 }
-.article-description{
+
+.article-description {
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -129,21 +147,25 @@ const goArticleDetail=(id:string)=>{
   font-weight: 400;
   color: #8a919f;
 }
+
 :deep(.ant-list-vertical .ant-list-item .ant-list-item-meta .ant-list-item-meta-title) {
-   margin-block-end: 0;
+  margin-block-end: 0;
 
 }
+
 :deep(.ant-list-vertical .ant-list-item .ant-list-item-action) {
   margin-block-start: 8px;
 }
-:deep(.ant-list-vertical .ant-list-item .ant-list-item-meta ){
+
+:deep(.ant-list-vertical .ant-list-item .ant-list-item-meta ) {
   margin-block-end: 0;
 }
+
 :deep(.ant-list-lg .ant-list-item) {
-   padding: 8px 8px;
+  padding: 8px 8px;
 }
 
-.article-item-action{
+.article-item-action {
   cursor: pointer;
 }
 </style>

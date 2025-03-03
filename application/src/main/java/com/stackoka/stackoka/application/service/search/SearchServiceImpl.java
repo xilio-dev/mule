@@ -202,9 +202,9 @@ public class SearchServiceImpl implements ISearchService {
             TopDocs topDocs = indexSearcher.search(query, 1);
             //获取条数
             int total = (int) topDocs.totalHits.value;
-            pageData.setSize(total);
-            int realPage = total % limit == 0 ? total / limit : total / limit + 1;
-            pageData.setTotal(realPage);
+            pageData.setTotal(total);
+//            int realPage = total % limit == 0 ? total / limit : total / limit + 1;
+//            pageData.setPages(realPage);
             //获取结果集
             ScoreDoc lastSd = null;
             if (page > 1) {
