@@ -174,114 +174,185 @@ public class SearchServiceImpl implements ISearchService {
     public IPage<Article> fullTextSearch(String keyword, SearchRequest request) {
         int page = request.getPage();
         int limit = request.getSize();
-        List<Article> searchList = new ArrayList<>(10);
+        List<Article> searchList = new ArrayList<>();
         Page<Article> pageData = new Page<>(page, limit);
-        File indexFile = new File(ARTICLE_INDEX);
-        File[] files = indexFile.listFiles();
-        //沒有索引文件，不然沒有查詢結果
-        if (files == null || files.length == 0) {
-            pageData.setSize(0);
-            pageData.setTotal(0);
-            pageData.setCurrent(page);
-            pageData.setRecords(new ArrayList<>());
-            return pageData;
-        }
-        IndexReader indexReader = null;
-        Directory directory = null;
+
         try (Analyzer analyzer = new IKAnalyzer()) {
-            directory = FSDirectory.open(Paths.get(ARTICLE_INDEX));
-            //多项查询条件
-            QueryParser queryParser = new MultiFieldQueryParser(new String[]{"title", "description", "content",
-                    "likeCount", "viewCount", "commentCount", "collectCount", "publishTime", "cover"}, analyzer);
-            //单项
-            //QueryParser queryParser = new QueryParser("title", analyzer);
-            Query query = queryParser.parse(StringUtils.hasText(keyword) ? keyword : "*:*");
-            indexReader = DirectoryReader.open(directory);
-            //索引查询对象
+            Directory directory = FSDirectory.open(Paths.get(ARTICLE_INDEX));
+            IndexReader indexReader = DirectoryReader.open(directory);
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-            TopDocs topDocs = indexSearcher.search(query, 1);
-            //获取条数
-            int total = (int) topDocs.totalHits.value;
+
+            // 多字段查询
+            QueryParser queryParser = new MultiFieldQueryParser(new String[]{"title", "description", "content",}, analyzer);
+          //  Query query = queryParser.parse(StringUtils.hasText(keyword) ? keyword : "*:*");
+            Query query = queryParser.parse(QueryParser.escape(keyword)); // 使用 QueryParser.escape 避免特殊字符问题
+            // 获取总记录数
+            int total = (int) indexSearcher.search(query, 1).totalHits.value;
             pageData.setTotal(total);
-//            int realPage = total % limit == 0 ? total / limit : total / limit + 1;
-//            pageData.setPages(realPage);
-            //获取结果集
+
+            // 分页逻辑
             ScoreDoc lastSd = null;
             if (page > 1) {
                 int num = limit * (page - 1);
                 TopDocs tds = indexSearcher.search(query, num);
                 lastSd = tds.scoreDocs[num - 1];
-
             }
-            //通过最后一个元素去搜索下一页的元素 如果lastSd为null，查询第一页
+
+            // 获取当前页数据
             TopDocs tds = indexSearcher.searchAfter(lastSd, query, limit);
+
+            // 高亮处理
             QueryScorer queryScorer = new QueryScorer(query);
-            //最佳摘要
             SimpleSpanFragmenter fragmenter = new SimpleSpanFragmenter(queryScorer, 200);
-            //高亮前后标签
             SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<b><font color='red'>", "</font></b>");
-            //高亮对象
             Highlighter highlighter = new Highlighter(formatter, queryScorer);
-            //设置高亮最佳摘要
             highlighter.setTextFragmenter(fragmenter);
-            //遍历查询结果 把标题和内容替换为带高亮的最佳摘要
+
             for (ScoreDoc sd : tds.scoreDocs) {
                 Document doc = indexSearcher.doc(sd.doc);
                 Article article = new Article();
                 String id = doc.get("id");
-                //获取标题的最佳摘要
+
+                // 高亮标题和内容
                 String titleBestFragment = highlighter.getBestFragment(analyzer, "title", doc.get("title"));
                 String descBestFragment = highlighter.getBestFragment(analyzer, "description", doc.get("description"));
                 String contentBestFragment = highlighter.getBestFragment(analyzer, "content", doc.get("content"));
+
                 article.setId(id);
+                article.setTitle(StringUtils.hasText(titleBestFragment) ? titleBestFragment : doc.get("title"));
+                article.setContent(StringUtils.hasText(descBestFragment) ? descBestFragment : contentBestFragment);
                 article.setLikeCount(Integer.valueOf(doc.get("likeCount")));
                 article.setViewCount(Integer.valueOf(doc.get("viewCount")));
                 article.setCommentCount(Integer.valueOf(doc.get("commentCount")));
                 article.setCollectCount(Integer.valueOf(doc.get("collectCount")));
                 article.setPublishTime(LocalDateTime.parse(doc.get("publishTime")));
                 article.setCover(doc.get("cover"));
-                article.setTitle(titleBestFragment);
-                //article.setDescription(descBestFragment);
-                article.setContent(contentBestFragment);
-                if (ObjectUtils.isEmpty(titleBestFragment)) {
-                    article.setTitle(doc.get("title"));
-                }
-                if (ObjectUtils.isEmpty(descBestFragment)) {
-                    if (ObjectUtils.isEmpty(contentBestFragment)) {
-                        article.setContent(doc.get("content"));
-                    } else {
-                        article.setContent(contentBestFragment);
-                    }
-
-                } else {
-                    article.setContent(descBestFragment);
-                }
 
                 searchList.add(article);
             }
-            pageData.setCurrent(page);
+
             pageData.setRecords(searchList);
             return pageData;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("全文檢索出错：" + e.getMessage());
-        } finally {
-            if (indexReader != null) {
-                try {
-                    indexReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (directory != null) {
-                try {
-                    directory.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+            // 记录异常信息
 
+            throw new RuntimeException("全文检索出错：" + e.getMessage());
+        } finally {
+            // 确保资源正确关闭
+
+        }
     }
+//    public IPage<Article> fullTextSearch(String keyword, SearchRequest request) {
+//        int page = request.getPage();
+//        int limit = request.getSize();
+//        List<Article> searchList = new ArrayList<>(10);
+//        Page<Article> pageData = new Page<>(page, limit);
+//        File indexFile = new File(ARTICLE_INDEX);
+//        File[] files = indexFile.listFiles();
+//        //沒有索引文件，不然沒有查詢結果
+//        if (files == null || files.length == 0) {
+//            pageData.setSize(0);
+//            pageData.setTotal(0);
+//            pageData.setCurrent(page);
+//            pageData.setRecords(new ArrayList<>());
+//            return pageData;
+//        }
+//        IndexReader indexReader = null;
+//        Directory directory = null;
+//        try (Analyzer analyzer = new IKAnalyzer()) {
+//            directory = FSDirectory.open(Paths.get(ARTICLE_INDEX));
+//            //多项查询条件
+//            QueryParser queryParser = new MultiFieldQueryParser(new String[]{"title", "description", "content",
+//                    "likeCount", "viewCount", "commentCount", "collectCount", "publishTime", "cover"}, analyzer);
+//            //单项
+//            //QueryParser queryParser = new QueryParser("title", analyzer);
+//            Query query = queryParser.parse(StringUtils.hasText(keyword) ? keyword : "*:*");
+//            indexReader = DirectoryReader.open(directory);
+//            //索引查询对象
+//            IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+//            TopDocs topDocs = indexSearcher.search(query, 1);
+//            //获取条数
+//            int total = (int) topDocs.totalHits.value;
+//            pageData.setTotal(total);
+////            int realPage = total % limit == 0 ? total / limit : total / limit + 1;
+////            pageData.setPages(realPage);
+//            //获取结果集
+//            ScoreDoc lastSd = null;
+//            if (page > 1) {
+//                int num = limit * (page - 1);
+//                TopDocs tds = indexSearcher.search(query, num);
+//                lastSd = tds.scoreDocs[num - 1];
+//
+//            }
+//            //通过最后一个元素去搜索下一页的元素 如果lastSd为null，查询第一页
+//            TopDocs tds = indexSearcher.searchAfter(lastSd, query, limit);
+//            QueryScorer queryScorer = new QueryScorer(query);
+//            //最佳摘要
+//            SimpleSpanFragmenter fragmenter = new SimpleSpanFragmenter(queryScorer, 200);
+//            //高亮前后标签
+//            SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<b><font color='red'>", "</font></b>");
+//            //高亮对象
+//            Highlighter highlighter = new Highlighter(formatter, queryScorer);
+//            //设置高亮最佳摘要
+//            highlighter.setTextFragmenter(fragmenter);
+//            //遍历查询结果 把标题和内容替换为带高亮的最佳摘要
+//            for (ScoreDoc sd : tds.scoreDocs) {
+//                Document doc = indexSearcher.doc(sd.doc);
+//                Article article = new Article();
+//                String id = doc.get("id");
+//                //获取标题的最佳摘要
+//                String titleBestFragment = highlighter.getBestFragment(analyzer, "title", doc.get("title"));
+//                String descBestFragment = highlighter.getBestFragment(analyzer, "description", doc.get("description"));
+//                String contentBestFragment = highlighter.getBestFragment(analyzer, "content", doc.get("content"));
+//                article.setId(id);
+//                article.setLikeCount(Integer.valueOf(doc.get("likeCount")));
+//                article.setViewCount(Integer.valueOf(doc.get("viewCount")));
+//                article.setCommentCount(Integer.valueOf(doc.get("commentCount")));
+//                article.setCollectCount(Integer.valueOf(doc.get("collectCount")));
+//                article.setPublishTime(LocalDateTime.parse(doc.get("publishTime")));
+//                article.setCover(doc.get("cover"));
+//                article.setTitle(titleBestFragment);
+//                //article.setDescription(descBestFragment);
+//                article.setContent(contentBestFragment);
+//                if (ObjectUtils.isEmpty(titleBestFragment)) {
+//                    article.setTitle(doc.get("title"));
+//                }
+//                if (ObjectUtils.isEmpty(descBestFragment)) {
+//                    if (ObjectUtils.isEmpty(contentBestFragment)) {
+//                        article.setContent(doc.get("content"));
+//                    } else {
+//                        article.setContent(contentBestFragment);
+//                    }
+//
+//                } else {
+//                    article.setContent(descBestFragment);
+//                }
+//
+//                searchList.add(article);
+//            }
+//            pageData.setCurrent(page);
+//            pageData.setRecords(searchList);
+//            return pageData;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException("全文檢索出错：" + e.getMessage());
+//        } finally {
+//            if (indexReader != null) {
+//                try {
+//                    indexReader.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (directory != null) {
+//                try {
+//                    directory.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//    }
 
 }
