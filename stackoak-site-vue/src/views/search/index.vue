@@ -117,7 +117,6 @@ const goArticleDetail = (id: string) => {
 <style scoped>
 .search {
   width: 100%;
-  margin: 0 8%
 }
 
 /* 卡片修改*/

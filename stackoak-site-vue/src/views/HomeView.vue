@@ -2,20 +2,19 @@
 
   <a-row :gutter="15">
     <a-col :span="3" class="index-nav index-nav-top  ">
-      <a-affix offset-bottom="bottom"  :offset-top="59">
-      <a-menu
-          id="leftNavMenu"
-          v-model:openKeys="openKeys"
-          v-model:selected-keys="selectedKeys"
-          style=" float: left;border:none;border-radius: 4px;"
-          mode="inline"
-          :items="items"
-          @click="handleClick"
-      ></a-menu>
+      <a-affix offset-bottom="bottom" :offset-top="59">
+        <a-menu
+            id="leftNavMenu"
+            v-model:openKeys="openKeys"
+            v-model:selected-keys="selectedKeys"
+            style=" float: left;border:none;border-radius: 4px;"
+            mode="inline"
+            :items="items"
+            @click="handleClick"
+        ></a-menu>
       </a-affix>
     </a-col>
     <a-col :span="15">
-
       <div class="video-container">
         <video
             class="background-video"
@@ -26,10 +25,10 @@
         >
         </video>
         <div class="search-container">
-          <a-popover  trigger="click" placement="bottom" >
-            <template #content >
-            <div class="centered-search " style="z-index: 10;height: 200px;width: 600px">
-            </div>
+          <a-popover trigger="click" placement="bottom">
+            <template #content>
+              <div class="centered-search " style="z-index: 10;height: 200px;width: 600px">
+              </div>
             </template>
             <a-input-search
                 v-model:value="search_key"
@@ -44,19 +43,18 @@
       </div>
 
 
-<!--        <a-input-search style="margin: 15px" size="large"/>-->
+      <!--        <a-input-search style="margin: 15px" size="large"/>-->
 
 
+      <!--      <a-carousel style="margin-bottom: 10px" :after-change="onChange">-->
+      <!--        <img src="https://picsum.photos/1920/1080?random=2"/>-->
+      <!--        <img src="https://picsum.photos/1920/1080?random=3"/>-->
+      <!--        <img src="https://picsum.photos/1920/1080?random=4"/>-->
+      <!--        <img src="https://picsum.photos/1920/1080?random=5"/>-->
+      <!--        <img src="https://picsum.photos/1920/1080?random=6"/>-->
+      <!--      </a-carousel>-->
 
-<!--      <a-carousel style="margin-bottom: 10px" :after-change="onChange">-->
-<!--        <img src="https://picsum.photos/1920/1080?random=2"/>-->
-<!--        <img src="https://picsum.photos/1920/1080?random=3"/>-->
-<!--        <img src="https://picsum.photos/1920/1080?random=4"/>-->
-<!--        <img src="https://picsum.photos/1920/1080?random=5"/>-->
-<!--        <img src="https://picsum.photos/1920/1080?random=6"/>-->
-<!--      </a-carousel>-->
-
-      <a-card style="margin-top: 8px; " class="index-article-card">
+      <a-card style="margin-top: 8px;box-shadow: none " class="index-article-card" :bordered="false">
         <a-tabs v-model:activeKey="activeKey" @tabClick="onTabClick">
           <a-tab-pane key="1" tab="关注">
 
@@ -72,7 +70,6 @@
       </a-card>
     </a-col>
     <a-col :span="6">
-
 
 
       <a-card title="创作中心" :bordered="false" style="border-radius: 4px;">
@@ -104,7 +101,26 @@
 
       </a-card>
       <a-card title="推荐关注" :bordered="false" style="margin-top: 12px;min-height: 150px">
-
+        <a-list item-layout="horizontal" :data-source="list" :split="false">
+          <template #renderItem="{ item }">
+            <a-list-item>
+              <template #actions>
+                <a>关注</a>
+              </template>
+              <a-list-item-meta>
+                <template #title>
+                  <a href="https://www.antdv.com/">{{ item.name.last }}</a>
+                </template>
+                <template #description>
+                  <span class="no-wrap">后端开发工程师,2年开发经</span>
+                </template>
+                <template #avatar>
+                  <a-avatar :src="item.picture.large"/>
+                </template>
+              </a-list-item-meta>
+            </a-list-item>
+          </template>
+        </a-list>
       </a-card>
       <!--广告位-->
       <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
@@ -115,51 +131,74 @@
       </a-card>
 
       <a-card title="阅读排行" :bordered="false" style="margin-top: 12px;min-height: 150px">
-
-      </a-card>
-      <a-affix offset-bottom="bottom"  :offset-top="45">
-      <a-card title="热门新闻" :bordered="false" style="margin-top: 12px;min-height: 150px">
-
-      </a-card>
-      <a-card title="友情链接" :bordered="false" style="margin-top: 12px;min-height: 100px">
-        <a-flex wrap="wrap" justify="space-around" align="center" style="margin: 8px" :gap="4">
-          <template v-for="item in friendLinks" >
-             <a-button  type="dashed">{{item.name}}</a-button>
+        <a-list item-layout="horizontal" :data-source="listWithIndex" :split="false">
+          <template #renderItem="{ item }">
+            <a-list-item>
+              <a-list-item-meta>
+                <template #title>
+                  <span class="no-wrap rank-title">{{ item.name.last }}</span>
+                </template>
+                <template #avatar>
+                  <span>{{ item.index }}</span>
+                </template>
+              </a-list-item-meta>
+            </a-list-item>
           </template>
-        </a-flex>
+        </a-list>
       </a-card>
+      <a-affix offset-bottom="bottom" :offset-top="45">
+        <a-card title="热门资讯" :bordered="false" style="margin-top: 12px;min-height: 150px">
+          <a-list item-layout="horizontal" :data-source="listWithIndex" :split="false">
+            <template #renderItem="{ item }">
+              <a-list-item>
+                <a-list-item-meta>
+                  <template #title>
+                    <span class="no-wrap rank-title">{{ item.name.last }}</span>
+                  </template>
+                </a-list-item-meta>
+              </a-list-item>
+            </template>
+          </a-list>
+        </a-card>
+        <a-card title="友情链接" :bordered="false" style="margin-top: 12px;min-height: 100px">
+          <a-flex wrap="wrap" justify="space-around" align="center" style="margin: 8px" :gap="4">
+            <template v-for="item in friendLinks">
+              <a-button type="dashed">{{ item.name }}</a-button>
+            </template>
+          </a-flex>
+        </a-card>
 
-      <!--广告位-->
-      <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
-        <template #cover>
-          <img style="height: 120px;border-radius: 4px" alt="example"
-               src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
-        </template>
-      </a-card>
-      <a-card :bordered="false" style="margin-top: 12px;width: 100%;background-color: transparent;box-shadow: none">
-        <a-flex gap="small" vertical style="color: #9aa3ab;">
-          <a-flex gap="small" justify="start" align="center">
-            <div>用户协议</div>
-            <div>营业执照</div>
-            <div>关于我们</div>
-            <div>商务合作</div>
+        <!--广告位-->
+        <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
+          <template #cover>
+            <img style="height: 120px;border-radius: 4px" alt="example"
+                 src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
+          </template>
+        </a-card>
+        <a-card :bordered="false" style="margin-top: 12px;width: 100%;background-color: transparent;box-shadow: none">
+          <a-flex gap="small" vertical style="color: #9aa3ab;">
+            <a-flex gap="small" justify="start" align="center">
+              <div>用户协议</div>
+              <div>营业执照</div>
+              <div>关于我们</div>
+              <div>商务合作</div>
+            </a-flex>
+            <a-flex gap="small" justify="start" align="center">
+              <div>版权申诉</div>
+              <div>版权与免责声明</div>
+            </a-flex>
+            <div>
+              举报邮箱：stackoak@163.com
+            </div>
+            <div>
+              公安备案号：11010596030143
+            </div>
+            <div>
+              ©2024-2025 苏州栈木网络技术工作室
+            </div>
+            <div>网站域名 stackoak.com</div>
           </a-flex>
-          <a-flex gap="small" justify="start" align="center">
-            <div>版权申诉</div>
-            <div>版权与免责声明</div>
-          </a-flex>
-          <div>
-            举报邮箱：xiliojubao@163.com
-          </div>
-          <div>
-            公安备案号：11010596030143
-          </div>
-          <div>
-            ©2024-2025 苏州栈木网络有限责任公司
-          </div>
-          <div>公司域名 stackoak.com</div>
-        </a-flex>
-      </a-card>
+        </a-card>
       </a-affix>
     </a-col>
   </a-row>
@@ -177,7 +216,7 @@
   </a-modal>
 </template>
 <script lang="ts" setup>
-import {onMounted} from 'vue';
+import {computed, onMounted} from 'vue';
 import {ref, reactive, watch} from 'vue';
 import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import type {ItemType, MenuProps} from "ant-design-vue";
@@ -190,7 +229,7 @@ const userStore = useUserStore()
 import router from "@/router";
 import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
-import {JSX} from "vue/jsx-runtime";
+
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
 const selectedKeys = ref([0]);
@@ -269,13 +308,38 @@ watch(openKeys, val => {
   console.log('openKeys', val);
 });
 //搜索
-const search_key=ref('')
+const search_key = ref('')
 const onSearch = () => {
   if (search_key.value == '') {
     return;
   }
   router.push({path: '/search', query: {keyword: search_key.value}})
 }
+
+
+const count = 3;
+const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
+
+
+const data = ref([]);
+const list = ref([]);
+onMounted(() => {
+  fetch(fakeDataUrl)
+      .then(res => res.json())
+      .then(res => {
+
+        data.value = res.results;
+        list.value = res.results;
+      });
+});
+// 计算属性：为列表项添加序号
+const listWithIndex = computed(() => {
+  return list.value.map((item, index) => ({
+    ...item,
+    index: index + 1, // 序号从 1 开始
+  }));
+});
+
 </script>
 <style scoped>
 
@@ -403,6 +467,24 @@ a-card {
   width: 100%; /* 搜索框宽度占满容器 */
   border: none;
   box-shadow: none;
+}
+
+:deep(.ant-list .ant-list-item .ant-list-item-action) {
+  margin-inline-start: 2px;
+}
+
+.no-wrap {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  font-weight: 400;
+}
+.rank-title{
+  font-weight: 800;
+  color: rgb(37, 41, 51);
+  font-family: Archivo;
 }
 </style>
 

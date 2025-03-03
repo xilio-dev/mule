@@ -40,7 +40,6 @@
           <template #renderItem="{ item }">
             <a-list-item key="item.title">
               <template #actions>
-
                 <span><component :is="StarOutlined" style="margin-right: 8px"/>{{ item.collectCount }}</span>
                 <span><component :is="LikeOutlined" style="margin-right: 8px"/>{{ item.likeCount }}</span>
                 <span><component :is="MessageOutlined" style="margin-right: 8px"/>{{ item.commentCount }}</span>
@@ -127,7 +126,7 @@ const selectedKeys = ref<string[]>(['1']);
 const openKeys = ref<string[]>(['sub1', 'sub2']);
 //删除近期文章
 const onRemoveRecentArticle = (id: string) => {
-  message.success("删除成功！"+id)
+  message.success("删除成功！" + id)
 }
 //加载近期文章
 
@@ -282,7 +281,19 @@ a-card {
   color: #292828;
 }
 
-.demo-loadmore-list {
-  min-height: 350px;
+:deep(.ant-list-lg .ant-list-item ) {
+  padding: 10px 10px;
+}
+
+:deep(.ant-list-vertical .ant-list-item .ant-list-item-action ) {
+  margin-block-start: 0;
+}
+
+:deep(.ant-list-vertical .ant-list-item .ant-list-item-meta) {
+  margin-block-end: 0;
+}
+
+:deep(.ant-card .ant-card-body ) {
+  padding: 10px;
 }
 </style>
