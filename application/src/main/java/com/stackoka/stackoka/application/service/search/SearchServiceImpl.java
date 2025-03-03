@@ -6,10 +6,7 @@ import com.stackoka.stackoka.common.data.article.Article;
 import com.stackoka.stackoka.common.data.article.ArticleId;
 import com.stackoka.stackoka.common.data.search.SearchRequest;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -31,6 +28,7 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +77,13 @@ public class SearchServiceImpl implements ISearchService {
             }
             //StringField 不分词 直接建索引 存储
             doc.add(new StringField("id", article.getId(), Field.Store.YES));
+            doc.add(new StringField("likeCount", String.valueOf(article.getLikeCount()), Field.Store.YES));
+            doc.add(new StringField("viewCount", String.valueOf(article.getViewCount()), Field.Store.YES));
+            doc.add(new StringField("commentCount", String.valueOf(article.getCommentCount()), Field.Store.YES));
+            doc.add(new StringField("publishTime", String.valueOf(article.getPublishTime()), Field.Store.YES));
+            doc.add(new StringField("collectCount", String.valueOf(article.getCollectCount()), Field.Store.YES));
+            doc.add(new StringField("cover", String.valueOf(article.getCover()), Field.Store.YES));
+
             //TextField 分词 建索引 存储
             doc.add(new TextField("title", article.getTitle(), Field.Store.YES));
             doc.add(new TextField("description", article.getDescription(), Field.Store.YES));
@@ -186,7 +191,8 @@ public class SearchServiceImpl implements ISearchService {
         try (Analyzer analyzer = new IKAnalyzer()) {
             directory = FSDirectory.open(Paths.get(ARTICLE_INDEX));
             //多项查询条件
-            QueryParser queryParser = new MultiFieldQueryParser(new String[]{"title", "description", "content"}, analyzer);
+            QueryParser queryParser = new MultiFieldQueryParser(new String[]{"title", "description", "content",
+                    "likeCount", "viewCount", "commentCount", "collectCount", "publishTime", "cover"}, analyzer);
             //单项
             //QueryParser queryParser = new QueryParser("title", analyzer);
             Query query = queryParser.parse(StringUtils.hasText(keyword) ? keyword : "*:*");
@@ -228,6 +234,12 @@ public class SearchServiceImpl implements ISearchService {
                 String descBestFragment = highlighter.getBestFragment(analyzer, "description", doc.get("description"));
                 String contentBestFragment = highlighter.getBestFragment(analyzer, "content", doc.get("content"));
                 article.setId(id);
+                article.setLikeCount(Integer.valueOf(doc.get("likeCount")));
+                article.setViewCount(Integer.valueOf(doc.get("viewCount")));
+                article.setCommentCount(Integer.valueOf(doc.get("commentCount")));
+                article.setCollectCount(Integer.valueOf(doc.get("collectCount")));
+                article.setPublishTime(LocalDateTime.parse(doc.get("publishTime")));
+                article.setCover(doc.get("cover"));
                 article.setTitle(titleBestFragment);
                 //article.setDescription(descBestFragment);
                 article.setContent(contentBestFragment);
