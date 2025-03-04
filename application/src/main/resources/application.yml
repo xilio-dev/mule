@@ -1,21 +1,21 @@
 # 项目相关配置
-stackoka:
+stackoak:
   # 名称
-  name: StackOka
+  name: StackOak
   # 版本
   version: 1.0.0
   # 版权年份
   copyrightYear: 2025
   # 文件路径
-  profile: /Users/liuxin/Desktop/StackOka/uploadPath
-
-# Swagger配置
-swagger:
-  # 是否开启swagger
-  enabled: true
-  # 请求前缀
-  pathMapping: /dev-api
-
+  profile: /Users/liuxin/Desktop/stackoak/uploadPath
+  api:
+    admin:
+      prefix: /admin
+      package: com.stackoak.stackoak.application.controller.admin
+    portal:
+      prefix: /portal
+      package: com.stackoak.stackoak.application.controller.portal
+api-package: com.stackoak.stackoak.application.controller.portal
 server:
   port: 9856
 spring:
@@ -48,6 +48,3 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath*:/mapper/**/*.xml
 
-springfox:
-  documentation:
-    enabled: false

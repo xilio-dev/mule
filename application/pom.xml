@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.stackoka</groupId>
-        <artifactId>stackoka</artifactId>
+        <groupId>com.stackoak</groupId>
+        <artifactId>stackoak</artifactId>
         <version>1.0.0</version>
     </parent>
     <artifactId>application</artifactId>
@@ -57,7 +57,11 @@
                 </exclusion>
             </exclusions>-->
         </dependency>
-
+        <dependency>
+            <groupId>org.lionsoul</groupId>
+            <artifactId>ip2region</artifactId>
+            <version>2.7.0</version>
+        </dependency>
         <dependency>
             <groupId>com.github.xingfudeshi</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
@@ -65,7 +69,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.stackoka</groupId>
+            <groupId>com.stackoak</groupId>
             <artifactId>repository</artifactId>
         </dependency>
     </dependencies>
