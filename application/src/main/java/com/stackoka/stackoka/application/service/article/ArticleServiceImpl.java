@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -163,6 +164,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         saveArticle.setContent(dto.getContent());
         saveArticle.setUserId(userId);//todo user
         saveArticle.setCover(dto.getCover());
+        saveArticle.setPublishTime(LocalDateTime.now());
         //todo test
         if (!StringUtils.hasLength(dto.getCover())) {
             saveArticle.setCover("https://picsum.photos/1920/1080?random=1");

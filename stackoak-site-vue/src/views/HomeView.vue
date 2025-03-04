@@ -188,15 +188,15 @@
               <div>版权与免责声明</div>
             </a-flex>
             <div>
-              举报邮箱：stackoak@163.com
+              举报邮箱：{{siteConfigInfo.reportMail}}
             </div>
             <div>
-              公安备案号：11010596030143
+              公安备案号：{{siteConfigInfo.securityRecord}}
             </div>
             <div>
-              ©2024-2025 苏州栈木网络技术工作室
+              {{siteConfigInfo.copyright}} {{siteConfigInfo.companyName}}
             </div>
-            <div>网站域名 stackoak.com</div>
+            <div>网站域名 {{siteConfigInfo.domainName}}</div>
           </a-flex>
         </a-card>
       </a-affix>
@@ -229,6 +229,7 @@ const userStore = useUserStore()
 import router from "@/router";
 import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
+import {getSiteConfigInfo} from "@/api/site-config.ts";
 
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
@@ -288,10 +289,18 @@ const loadFriendLink = async () => {
   const res = await friendLinkList()
   friendLinks.value = res || []
 }
+const siteConfigInfo = ref({})
+const loadSiteConfigInfo = async () => {
+  const res = await getSiteConfigInfo()
+  if (res) {
+    siteConfigInfo.value = res||{}
+  }
+}
 onMounted(async () => {
   await loadLeftMenu()
   await loadHomeData()
   await loadFriendLink()
+  await loadSiteConfigInfo()
 })
 //左侧菜单点击事件
 const handleClick: MenuProps['onClick'] = e => {
@@ -481,7 +490,8 @@ a-card {
   -webkit-line-clamp: 1;
   font-weight: 400;
 }
-.rank-title{
+
+.rank-title {
   font-weight: 800;
   color: rgb(37, 41, 51);
   font-family: Archivo;
