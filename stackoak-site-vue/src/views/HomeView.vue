@@ -28,11 +28,13 @@
           <a-popover trigger="click" placement="bottom">
             <template #content>
               <div class="centered-search " style="z-index: 10;height: 200px;width: 600px">
+                <div style="cursor: pointer" class="no-wrap" v-for="item in searchHistory" @click="onHisSearch(item)">{{item}}</div>
               </div>
             </template>
             <a-input-search
                 v-model:value="search_key"
                 @search="onSearch"
+                @focus="onSearchFocus"
                 class="centered-search"
                 size="large"
                 enter-button
@@ -188,15 +190,15 @@
               <div>版权与免责声明</div>
             </a-flex>
             <div>
-              举报邮箱：{{siteConfigInfo.reportMail}}
+              举报邮箱：{{ siteConfigInfo.reportMail }}
             </div>
             <div>
-              公安备案号：{{siteConfigInfo.securityRecord}}
+              公安备案号：{{ siteConfigInfo.securityRecord }}
             </div>
             <div>
-              {{siteConfigInfo.copyright}} {{siteConfigInfo.companyName}}
+              {{ siteConfigInfo.copyright }} {{ siteConfigInfo.companyName }}
             </div>
-            <div>网站域名 {{siteConfigInfo.domainName}}</div>
+            <div>网站域名 {{ siteConfigInfo.domainName }}</div>
           </a-flex>
         </a-card>
       </a-affix>
@@ -230,6 +232,7 @@ import router from "@/router";
 import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
 import {getSiteConfigInfo} from "@/api/site-config.ts";
+import {getSearchHistory} from "@/api/search.ts";
 
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
@@ -293,8 +296,21 @@ const siteConfigInfo = ref({})
 const loadSiteConfigInfo = async () => {
   const res = await getSiteConfigInfo()
   if (res) {
-    siteConfigInfo.value = res||{}
+    siteConfigInfo.value = res || {}
   }
+}
+//获取用户搜索历史
+const searchHistory = ref()
+const onSearchFocus = async () => {
+  if (userStore.isLogin()) {
+    const res = await getSearchHistory()
+    searchHistory.value = res || []
+  }
+}
+//通过历史记录进行搜索
+const onHisSearch=(keyword:string)=>{
+  search_key.value=keyword
+  onSearch()
 }
 onMounted(async () => {
   await loadLeftMenu()

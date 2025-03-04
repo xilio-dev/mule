@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoka.stackoka.common.data.article.Article;
 import com.stackoka.stackoka.common.data.article.ArticleId;
+import com.stackoka.stackoka.common.data.search.SearchHistory;
 import com.stackoka.stackoka.common.data.search.SearchRequest;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -20,7 +21,9 @@ import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.wltea.analyzer.lucene.IKAnalyzer;
@@ -36,7 +39,8 @@ import java.util.List;
 public class SearchServiceImpl implements ISearchService {
     private final static String INDEX_DIR = "store/lucene/index";
     private final static String ARTICLE_INDEX = INDEX_DIR + "/article";
-
+@Autowired
+private ISearchHistoryService searchHistoryService;
     /**
      * 保存文章索引
      *
@@ -171,6 +175,7 @@ public class SearchServiceImpl implements ISearchService {
      * @return 返回结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public IPage<Article> fullTextSearch(String keyword, SearchRequest request) {
         int page = request.getPage();
         int limit = request.getSize();
@@ -232,6 +237,10 @@ public class SearchServiceImpl implements ISearchService {
             }
 
             pageData.setRecords(searchList);
+            //记录搜索历史
+            String userId="1";//todo 临时用户
+            //如果是登陆用户，需要记录搜索历史
+            searchHistoryService.save(new SearchHistory(userId,keyword));
             return pageData;
         } catch (Exception e) {
             // 记录异常信息
