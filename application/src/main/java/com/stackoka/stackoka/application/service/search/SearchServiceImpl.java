@@ -244,7 +244,7 @@ private ISearchHistoryService searchHistoryService;
             return pageData;
         } catch (Exception e) {
             // 记录异常信息
-
+            e.printStackTrace();
             throw new RuntimeException("全文检索出错：" + e.getMessage());
         } finally {
             // 确保资源正确关闭

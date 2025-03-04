@@ -8,11 +8,21 @@ import {
 import avatarImage from '@/assets/avatar.jpeg';
 import ArticleList from "@/components/ArticleList.vue";
 import ColumnList from "@/components/ColumnList.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {getFans, getFollows} from "@/api/user.ts";
 
 
 const activeKey = ref('1')
-
+const loadFollows=async ()=>{
+  const res=getFollows({current:1,size:10})
+}
+const loadFans=async ()=>{
+  const res=getFans({current:1,size:10})
+}
+onMounted(async ()=>{
+  await loadFollows()
+  await loadFans()
+})
 </script>
 
 <template>
