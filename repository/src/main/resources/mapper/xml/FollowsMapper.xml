@@ -22,7 +22,7 @@
             f.target_user_id = #{userId}
     </select>
     <select id="selectFollow" resultType="com.stackoka.stackoka.common.data.follow.FollowUserVO">
-        SELECT u.id    AS userId,
+                SELECT  u.id    AS userId,
                u.username,
                u.avatar,
                u.description,
@@ -36,5 +36,7 @@
                  LEFT JOIN
              follows AS f2 ON f2.target_user_id = f.target_user_id AND f2.user_id = #{visitorUserId}
         WHERE f.user_id = #{userId}
+
+
     </select>
 </mapper>

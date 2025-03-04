@@ -6,14 +6,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoka.stackoka.application.exception.BizException;
+import com.stackoka.stackoka.application.service.user.IUserService;
 import com.stackoka.stackoka.common.data.PageQuery;
 import com.stackoka.stackoka.common.data.follow.FollowRequest;
 import com.stackoka.stackoka.common.data.follow.FollowUserVO;
 import com.stackoka.stackoka.common.data.follow.Follows;
+import com.stackoka.stackoka.common.data.user.User;
 import com.stackoka.stackoka.repository.follow.FollowsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+
+import javax.swing.plaf.IconUIResource;
 
 /**
  * <p>
@@ -27,6 +31,8 @@ import org.springframework.util.ObjectUtils;
 public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> implements IFollowsService {
     @Autowired
     private FollowsMapper followsMapper;
+    @Autowired
+    private IUserService userService;
 
     /**
      * 获取我关注的人
@@ -35,7 +41,7 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
      */
     @Override
     public IPage<FollowUserVO> findFollow(PageQuery pageQuery) {
-        Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getCurrent());
+        Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         page.setRecords(followsMapper.selectFollow(page, "1", "3"));
         return page;
     }
@@ -47,7 +53,7 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
      */
     @Override
     public IPage<FollowUserVO> findFans(PageQuery pageQuery) {
-        Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getCurrent());
+        Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         return followsMapper.selectFans(page, "1", null);
     }
 
@@ -74,6 +80,17 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
     @Override
     public void follow(FollowRequest followRequest) {
         String currentUser = "1";//todo 临时测试
+        //不能够关注自己
+        if (currentUser.equals(followRequest.getUserId())) {
+            throw new BizException("不能关注自己");
+        }
+        //检查关注的人是否存在
+        User user = userService.getById(followRequest.getUserId());
+        if (ObjectUtils.isEmpty(user)) {
+            throw new BizException("期望关注的作者不存在！");
+        }
+        //todo 检查被关注作者的状态是否正常
+
         //检查是否已经关注了作者，没有关注再关注
         LambdaQueryWrapper<Follows> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Follows::getTargetUserId, followRequest.getUserId());

@@ -6,6 +6,9 @@ import com.stackoka.stackoka.common.data.PageQuery;
 import com.stackoka.stackoka.common.data.follow.FollowRequest;
 import com.stackoka.stackoka.common.data.follow.FollowUserVO;
 import com.stackoka.stackoka.common.message.RestResult;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +20,14 @@ import org.springframework.web.bind.annotation.*;
  * @author stackoak.com
  * @since 2025-03-04 14:53:49
  */
+@Tag(name = "关注接口")
 @RestController
 @RequestMapping("/user")
 public class FollowsController {
     @Autowired
     private IFollowsService followsService;
 
+    @Operation(summary = "关注作者")
     @PostMapping(value = "follow", name = "关注作者")
     public RestResult follow(@RequestBody FollowRequest followRequest) {
         followsService.follow(followRequest);
