@@ -29,6 +29,7 @@ export const useUserStore = defineStore('user', () => {
             username: undefined,
             avatar: undefined,
         };
+        localStorage.removeItem('token')
         localStorage.removeItem('userinfo');
     }
 
@@ -42,6 +43,10 @@ export const useUserStore = defineStore('user', () => {
         userinfo.value = {...userinfo.value, token};
         localStorage.setItem('token', token)
     }
+    function getToken() {
+        localStorage.getItem('token')
+    }
+
 
     // 获取用户信息
     function getUserInfo(): UserInfo {
@@ -56,5 +61,5 @@ export const useUserStore = defineStore('user', () => {
     if (localStorage.getItem('userinfo')) {
         userinfo.value = getUserInfo();
     }
-    return {userinfo, setUserInfo, logout, setToken, isLogin};
+    return {userinfo, setUserInfo, logout, getToken,setToken, isLogin};
 });

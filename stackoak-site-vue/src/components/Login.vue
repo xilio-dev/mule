@@ -26,7 +26,7 @@ const onEmailLoginFinish = (values: EmailLoginDTO) => {
   console.log(values)
   emailLogin(values)
       .then(res => {
-        userStore.setToken(res.token);
+        userStore.setToken(res.tokenValue);
         // 获取用户信息
         return getUserInfo();
       })

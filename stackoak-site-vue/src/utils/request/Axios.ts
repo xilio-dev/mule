@@ -11,7 +11,12 @@ const instance = axios.create({
 
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
-    // 在发送请求之前做些什么
+
+    // 添加权限请求头
+    const token = localStorage.getItem('token'); // 假设Token存储在localStorage中
+    if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`; // 添加Token到请求头
+    }
     return config;
 }, function (error) {
     // 对请求错误做些什么
