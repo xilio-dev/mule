@@ -9,8 +9,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class EmailLoginDTO extends BaseDTO {
-    @Email
+    @Email(message = "邮箱格式不正确")
+    @NotEmpty(message = "邮箱为空")
     private String email;
-    @NotEmpty
+    @NotEmpty(message = "密码不能为空")
     private String password;
 }

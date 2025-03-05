@@ -30,8 +30,8 @@ const onEmailLoginFinish = (values: EmailLoginDTO) => {
         // 获取用户信息
         return getUserInfo();
       })
-      .then(res => {
-        userStore.setUserInfo(res);
+      .then(user => {
+        userStore.setUserInfo(user);
         window.location.href = '/';
       })
       .catch(error => {
@@ -42,21 +42,26 @@ const onEmailLoginFinish = (values: EmailLoginDTO) => {
 //邮箱账号-密码登陆
 interface EmailRegisterDTO {
   email: string;
-  code: Number;
+  code: string;
 }
 
 const emailRegisterDTO = reactive<EmailRegisterDTO>({
-  email: 'StackOak@163.com',
-  code: 123456,
+  email: '',
+  code: '',
 });
 const onEmailRegisterFinish = (values: EmailLoginDTO) => {
-  emailCodeLogin(values).then(res=>{
-    if (res){
-
+  emailCodeLogin(values).then(res => {
+    if (res) {
+      userStore.setToken(res.tokenValue);
+      // 获取用户信息
+      return getUserInfo();
     }
-    message.success("登陆成功");
-    window.location.href = '/'
-  })
+  }).then(user => {
+    userStore.setUserInfo(user);
+    window.location.href = '/';
+  }).catch(error => {
+    console.error('登录失败:', error);
+  });
 }
 //获取邮箱验证码
 const sendEmailCode = () => {

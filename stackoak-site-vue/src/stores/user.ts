@@ -1,5 +1,6 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
+import {sendLogout} from "@/api/auth.ts";
 
 interface UserInfo {
     userId?: number;
@@ -31,6 +32,7 @@ export const useUserStore = defineStore('user', () => {
         };
         localStorage.removeItem('token')
         localStorage.removeItem('userinfo');
+        sendLogout()
     }
 
     // 定义 setUserInfo 方法，参数类型为 UserInfo
@@ -43,10 +45,10 @@ export const useUserStore = defineStore('user', () => {
         userinfo.value = {...userinfo.value, token};
         localStorage.setItem('token', token)
     }
+
     function getToken() {
         localStorage.getItem('token')
     }
-
 
     // 获取用户信息
     function getUserInfo(): UserInfo {
@@ -56,10 +58,9 @@ export const useUserStore = defineStore('user', () => {
         }
         return userinfo.value;
     }
-
     // 初始化时从 localStorage 加载用户信息
     if (localStorage.getItem('userinfo')) {
         userinfo.value = getUserInfo();
     }
-    return {userinfo, setUserInfo, logout, getToken,setToken, isLogin};
+    return {userinfo, setUserInfo, logout, getToken, setToken, isLogin};
 });

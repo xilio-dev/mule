@@ -11,5 +11,5 @@ public class EmailRegisterDTO extends BaseDTO {
     @NotEmpty
     private String email;
 
-    private Integer code;
+    private String code;
 }
