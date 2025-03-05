@@ -44,16 +44,19 @@ watch(openKeys, val => {
 <template>
   <a-row :gutter="15">
     <a-col :span="4" class="setting-menu">
-      <a-menu
-          id="setting_left_menu"
-          mode="inline"
-          :items="items"
-          v-model:openKeys="openKeys"
-          v-model:selected-keys="selectedKeys"
-          @click="handleClick"
-      ></a-menu>
+      <a-affix offset-bottom="bottom" :offset-top="59">
+        <a-menu
+            style="height: 500px;border-radius: 4px"
+            id="setting_left_menu"
+            mode="inline"
+            :items="items"
+            v-model:openKeys="openKeys"
+            v-model:selected-keys="selectedKeys"
+            @click="handleClick"
+        ></a-menu>
+      </a-affix>
     </a-col>
-    <a-col :span="14" style="padding-left: 15px">
+    <a-col :span="14">
       <router-view/>
     </a-col>
     <a-col :span="6">
@@ -67,7 +70,6 @@ watch(openKeys, val => {
 
 <style scoped>
 .setting-menu {
-  background-color: white;
   border: none;
   border-radius: 4px;
 }
