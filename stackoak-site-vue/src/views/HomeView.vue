@@ -7,7 +7,7 @@
             id="leftNavMenu"
             v-model:openKeys="openKeys"
             v-model:selected-keys="selectedKeys"
-            style=" float: left;border:none;border-radius: 4px;"
+            style="float: left;border:none;border-radius: 4px;"
             mode="inline"
             :items="items"
             @click="handleClick"
@@ -213,7 +213,7 @@
     <a-float-button/>
     <a-back-top/>
   </a-float-button-group>
-  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆智简畅享更多权益">
+  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak畅享更多权益">
     <Login/>
   </a-modal>
 </template>

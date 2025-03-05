@@ -1,0 +1,124 @@
+<template>
+
+  <a-row :gutter="12">
+    <a-col :span="4">
+      <div style="text-align: center;background-color: white;padding-top: 30px;padding-bottom: 15px">
+        <img style="width: 100px;height: 100px;border-radius: 4px" src="@/assets/avatar.jpeg"/>
+        <div>xilio1024</div>
+      </div>
+      <a-affix offset-bottom="bottom" :offset-top="60">
+        <a-menu
+            id="creator_left_menu"
+            v-model:openKeys="openKeys"
+            mode="inline"
+            :items="items"
+            @click="handleClick"
+        ></a-menu>
+      </a-affix>
+    </a-col>
+    <a-col :span="14">
+      <router-view/>
+    </a-col>
+    <a-col :span="6">
+      <a-affix offset-bottom="bottom" :offset-top="60">
+        <a-card title="公告栏" style="height: 150px">
+
+        </a-card>
+      </a-affix>
+    </a-col>
+  </a-row>
+
+</template>
+<script lang="ts" setup>
+
+
+const listData: Record<string, string>[] = [];
+
+for (let i = 0; i < 23; i++) {
+  listData.push({
+    href: 'https://www.antdv.com/',
+    title: `我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章 ${i}`,
+  });
+}
+
+
+import {reactive, ref, watch, VueElement, h} from 'vue';
+import {MailOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
+import {type MenuProps, type ItemType, message} from 'ant-design-vue';
+
+const selectedKeys = ref<string[]>(['1']);
+const openKeys = ref<string[]>(['sub1', 'sub2']);
+
+function getItem(
+    label: VueElement | string,
+    key: string,
+    icon?: any,
+    children?: ItemType[],
+    type?: 'group',
+): ItemType {
+  return {
+    key,
+    icon,
+    children,
+    label,
+    type,
+  } as ItemType;
+}
+
+const items: ItemType[] = reactive([
+  {
+    label: '首页',
+    key: 'home',
+    icon: () => h(MailOutlined),
+  },
+  getItem('内容管理', 'content', () => h(MailOutlined), [
+    getItem('文章管理', 'article', null),
+    getItem('我的开源', 'opensource', null),
+    getItem('合集管理', 'column', null),
+    getItem('评论管理', 'comment', null),
+  ]),
+
+  getItem('数据中心', 'analysis', () => h(AppstoreOutlined), [
+    getItem('文章数据', 'article'),
+    getItem('粉丝数据', 'fans'),
+  ]),
+  getItem('创作工具', 'tool', () => h(AppstoreOutlined), [
+    getItem('图片素材', 'images'),
+    getItem('数据导出', '8'),
+  ]),
+  getItem('个性设置', 'setting', () => h(SettingOutlined), [
+    getItem('博客设置', 'config-blog'),
+  ]),
+]);
+
+const handleClick: MenuProps['onClick'] = e => {
+  console.log('click', e);
+};
+
+watch(openKeys, val => {
+  console.log('openKeys', val);
+});
+</script>
+
+<style scoped>
+.setting-menu {
+  min-height: 500px;
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+:deep(.ant-menu-light.ant-menu-root.ant-menu-inline) {
+  border-inline-end: none;
+}
+
+/*修改所有卡片样式*/
+a-card {
+  border: none;
+  box-shadow: none;
+}
+
+:deep(.ant-card .ant-card-body ) {
+  padding: 10px;
+}
+</style>

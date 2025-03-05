@@ -2,7 +2,6 @@
 
   <a-row :gutter="12">
     <a-col :span="4">
-
       <div style="text-align: center;background-color: white;padding-top: 30px;padding-bottom: 15px">
         <img style="width: 100px;height: 100px;border-radius: 4px" src="@/assets/avatar.jpeg"/>
         <div>xilio1024</div>
@@ -171,6 +170,7 @@ const items: ItemType[] = reactive([
   },
   getItem('内容管理', 'sub1', () => h(MailOutlined), [
     getItem('文章管理', 'g1', null),
+    getItem('我的开源', 'g1', null),
     getItem('合集管理', 'g2', null),
     getItem('评论管理', 'g3', null),
   ]),
@@ -255,13 +255,6 @@ const onLoadMore = () => {
   border-radius: 5px;
   height: 50px;
 }
-
-/*修改所有卡片样式*/
-a-card {
-  border: none;
-  box-shadow: none;
-}
-
 /* 父容器的宽度限制 */
 .title-container {
   width: 100%; /* 确保父容器宽度有限制 */
@@ -292,7 +285,11 @@ a-card {
 :deep(.ant-list-vertical .ant-list-item .ant-list-item-meta) {
   margin-block-end: 0;
 }
-
+/*修改所有卡片样式*/
+a-card {
+  border: none;
+  box-shadow: none;
+}
 :deep(.ant-card .ant-card-body ) {
   padding: 10px;
 }

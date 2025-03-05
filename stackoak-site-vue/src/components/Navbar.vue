@@ -18,9 +18,9 @@
             @search="onSearch"
             enter-button/>
 
-         <span>苏州</span>
-         <a-image src="/w1.png" style="width: 24px;height: 24px" :preview="false" aria-hidden="true"/>
-         <span style="margin-right: 15px">晴 21度 良</span>
+        <span>苏州</span>
+        <a-image src="/w1.png" style="width: 24px;height: 24px" :preview="false" aria-hidden="true"/>
+        <span style="margin-right: 15px">晴 21度 良</span>
 
 
         <a-popover placement="bottomRight">
@@ -43,7 +43,13 @@
           <template #content>
             <a-flex vertical>
               <router-link to="/author" target="_blank">
-                <a-button type="text">我的主页</a-button>
+                <a-button type="text">个人主页</a-button>
+              </router-link>
+              <router-link to="/creator" target="_blank">
+                <a-button type="text">创作中心</a-button>
+              </router-link>
+              <router-link to="/setting/profile" target="_blank">
+                <a-button type="text">账号设置</a-button>
               </router-link>
               <a-button @click="logout" type="text">退出登陆</a-button>
             </a-flex>

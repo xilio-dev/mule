@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 @Service("userLoginService")
 public class UserLoginServiceImpl implements ILoginService {
@@ -78,6 +79,9 @@ public class UserLoginServiceImpl implements ILoginService {
         User user = userService.getByEmail(dto.getEmail());
         if (ObjectUtils.isEmpty(user)) {
             throw new BizException("账户尚未注册！");
+        }
+        if (!StringUtils.hasText(user.getPassword())){
+            throw new BizException("未设置密码，请用验证码登陆！");
         }
         if (UserStatusEnum.BLOCKED.getStatus().intValue() == user.getStatus().intValue()) {
             throw new BizException("账号被封禁");

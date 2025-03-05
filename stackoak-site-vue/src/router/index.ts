@@ -1,13 +1,48 @@
 import {createRouter, createWebHistory, createWebHashHistory} from 'vue-router'
-
+// createWebHistory 模式URL不会显示#号
 const router = createRouter({
-    history: createWebHashHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/',
             name: 'Home',
             component: () => import('@/views/HomeView.vue'),
         },
+        {
+            path: '/setting',
+            name: 'Setting',
+            component: () => import('@/layouts/SettingLayout.vue'),
+            redirect: '/setting/profile',
+            children: [
+                {
+                    path: 'profile',
+                    name: 'Profile',
+                    component: () => import('@/views/setting/profile/index.vue'),
+                },
+                {
+                    path: 'account',
+                    name: 'Account',
+                    component: () => import('@/views/setting/account/index.vue'),
+                },
+                {
+                    path: 'notification',
+                    name: 'Notification',
+                    component: () => import('@/views/setting/notification/index.vue'),
+                },
+                {
+                    path: 'black-list',
+                    name: 'Black-list',
+                    component: () => import('@/views/setting/black-list/index.vue'),
+                },
+                {
+                    path: 'privacy',
+                    name: 'Privacy',
+                    component: () => import('@/views/setting/privacy/index.vue'),
+                }
+            ]
+
+        },
+
         {
             path: '/login',
             name: 'login',

@@ -223,6 +223,7 @@ private ISearchHistoryService searchHistoryService;
                 String contentBestFragment = highlighter.getBestFragment(analyzer, "content", doc.get("content"));
 
                 article.setId(id);
+                //todo 需要处理一下，一开始没有值
                 article.setTitle(StringUtils.hasText(titleBestFragment) ? titleBestFragment : doc.get("title"));
                 article.setContent(StringUtils.hasText(descBestFragment) ? descBestFragment : contentBestFragment);
                 article.setLikeCount(Integer.valueOf(doc.get("likeCount")));

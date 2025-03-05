@@ -371,7 +371,7 @@ const toApply = (commentId: string) => {
     </a-float-button>
     <a-back-top/>
   </a-float-button-group>
-  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆智简畅享更多权益">
+  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak畅享更多权益">
     <Login/>
   </a-modal>
 </template>
