@@ -42,7 +42,70 @@ const router = createRouter({
             ]
 
         },
+        {
+            path: '/creator',
+            name: 'Creator',
+            component: () => import('@/layouts/CreatorLayout.vue'),
+            redirect: '/creator/index',
+            children: [
+                {
+                    path: 'index',
+                    name: 'Index',
+                    component: () => import('@/views/creator/index.vue'),
+                },
+                {
+                    path: 'content/article',
+                    name: 'ContentArticle',
+                    component: () => import('@/views/creator/content/article/index.vue'),
+                },
+                {
+                    path: 'content/opensource',
+                    name: 'ContentOpensource',
+                    component: () => import('@/views/creator/content/opensource/index.vue'),
+                },
+                {
+                    path: 'content/column',
+                    name: 'ContentColumn',
+                    component: () => import('@/views/creator/content/column/index.vue'),
+                },
+                {
+                    path: 'content/comment',
+                    name: 'ContentComment',
+                    component: () => import('@/views/creator/content/comment/index.vue'),
+                },
 
+                {
+                    path: 'analysis/articles',
+                    name: 'AnalysisArticle',
+                    component: () => import('@/views/creator/analysis/article/index.vue'),
+                },
+                {
+                    path: 'analysis/fans',
+                    name: 'AnalysisFans',
+                    component: () => import('@/views/creator/analysis/fans/index.vue'),
+                },
+                {
+                    path: 'setting/config-blog',
+                    name: 'SettingConfigBlog',
+                    component: () => import('@/views/creator/settings/config-blog/index.vue'),
+                },
+                {
+                    path: 'tool/export',
+                    name: 'ToolExport',
+                    component: () => import('@/views/creator/tool/export/index.vue'),
+                },
+                {
+                    path: 'tool/import',
+                    name: 'ToolImport',
+                    component: () => import('@/views/creator/tool/import/index.vue'),
+                },
+                {
+                    path: 'tool/images',
+                    name: 'ToolImages',
+                    component: () => import('@/views/creator/tool/resource/images/index.vue'),
+                },
+            ]
+        },
         {
             path: '/login',
             name: 'login',
@@ -64,11 +127,7 @@ const router = createRouter({
             name: 'qus',
             component: () => import('@/views/question/index.vue'),
         },
-        {
-            path: '/creator',
-            name: 'creator',
-            component: () => import('@/views/creator/Index.vue'),
-        },
+
         {
             path: '/author',
             name: 'author',

@@ -2,16 +2,17 @@
 
   <a-row :gutter="12">
     <a-col :span="4">
-      <div style="text-align: center;background-color: white;padding-top: 30px;padding-bottom: 15px">
-        <img style="width: 100px;height: 100px;border-radius: 4px" src="@/assets/avatar.jpeg"/>
-        <div>xilio1024</div>
+      <div style="text-align: center;background-color: white;padding-top: 30px;padding-bottom: 12px">
+        <img style="width: 100px;height: 100px;border-radius: 4px;margin-bottom: 5px" :src="userStore.userinfo.avatar"/>
+        <div>{{ userStore.userinfo.username }}</div>
       </div>
       <a-affix offset-bottom="bottom" :offset-top="60">
         <a-menu
             id="creator_left_menu"
-            v-model:openKeys="openKeys"
             mode="inline"
             :items="items"
+            v-model:openKeys="openKeys"
+            v-model:selected-keys="selectedKeys"
             @click="handleClick"
         ></a-menu>
       </a-affix>
@@ -30,8 +31,10 @@
 
 </template>
 <script lang="ts" setup>
+import router from "@/router";
+import {useUserStore} from "@/stores/user.ts";
 
-
+const userStore = useUserStore()
 const listData: Record<string, string>[] = [];
 
 for (let i = 0; i < 23; i++) {
@@ -46,8 +49,9 @@ import {reactive, ref, watch, VueElement, h} from 'vue';
 import {MailOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
 import {type MenuProps, type ItemType, message} from 'ant-design-vue';
 
-const selectedKeys = ref<string[]>(['1']);
-const openKeys = ref<string[]>(['sub1', 'sub2']);
+
+const selectedKeys = ref<string[]>(['index']);
+const openKeys = ref<string[]>(['index', 'content', 'analysis']);
 
 function getItem(
     label: VueElement | string,
@@ -68,7 +72,7 @@ function getItem(
 const items: ItemType[] = reactive([
   {
     label: '首页',
-    key: 'home',
+    key: 'index',
     icon: () => h(MailOutlined),
   },
   getItem('内容管理', 'content', () => h(MailOutlined), [
@@ -79,12 +83,12 @@ const items: ItemType[] = reactive([
   ]),
 
   getItem('数据中心', 'analysis', () => h(AppstoreOutlined), [
-    getItem('文章数据', 'article'),
+    getItem('文章数据', 'articles'),
     getItem('粉丝数据', 'fans'),
   ]),
   getItem('创作工具', 'tool', () => h(AppstoreOutlined), [
     getItem('图片素材', 'images'),
-    getItem('数据导出', '8'),
+    getItem('数据导出', 'export'),
   ]),
   getItem('个性设置', 'setting', () => h(SettingOutlined), [
     getItem('博客设置', 'config-blog'),
@@ -92,7 +96,12 @@ const items: ItemType[] = reactive([
 ]);
 
 const handleClick: MenuProps['onClick'] = e => {
-  console.log('click', e);
+  console.log(e)
+  if (e.keyPath) {
+    let path = e.keyPath?.join("/")
+    console.log(path)
+    router.push({path: `/creator/${path}`})
+  }
 };
 
 watch(openKeys, val => {
