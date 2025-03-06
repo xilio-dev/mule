@@ -22,7 +22,7 @@
     </a-col>
     <a-col :span="6">
       <a-affix offset-bottom="bottom" :offset-top="60">
-        <a-card title="公告栏" style="height: 150px">
+        <a-card :bordered="false" title="公告栏" style="min-height: 150px;">
 
         </a-card>
       </a-affix>
@@ -128,6 +128,6 @@ a-card {
 }
 
 :deep(.ant-card .ant-card-body ) {
-  padding: 10px;
+  padding: 8px 20px;
 }
 </style>

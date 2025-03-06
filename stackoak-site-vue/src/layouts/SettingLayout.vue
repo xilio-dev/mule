@@ -60,10 +60,11 @@ watch(openKeys, val => {
       <router-view/>
     </a-col>
     <a-col :span="6">
+      <a-affix offset-bottom="bottom" :offset-top="60">
       <a-card title="常见问题" style="height: 150px;background-color: white">
 
       </a-card>
-
+      </a-affix>
     </a-col>
   </a-row>
 </template>
