@@ -107,6 +107,39 @@ const router = createRouter({
             ]
         },
         {
+            path: '/msg',
+            name: 'Msg',
+            component: () => import('@/layouts/MessageLayout.vue'),
+            redirect: '/msg/comment',
+            children: [
+                {
+                    path: 'comment',
+                    name: 'Comment',
+                    component: () => import('@/views/msg/comment/index.vue'),
+                },
+                {
+                    path: 'like',
+                    name: 'Like',
+                    component: () => import('@/views/msg/like/index.vue'),
+                },
+                {
+                    path: 'attention',
+                    name: 'Attention',
+                    component: () => import('@/views/msg/attention/index.vue'),
+                },
+                {
+                    path: 'chat',
+                    name: 'Chat',
+                    component: () => import('@/views/msg/chat/index.vue'),
+                },
+                {
+                    path: 'system',
+                    name: 'System',
+                    component: () => import('@/views/msg/system/index.vue'),
+                }
+            ]
+        },
+        {
             path: '/login',
             name: 'login',
             component: () => import('@/views/login.vue'),
@@ -167,16 +200,6 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: () => import('@/views/login/Index.vue'),
-        },
-        {
-            path: '/chat',
-            name: 'chat',
-            component: () => import('@/views/chat/index.vue'),
-        },
-        {
-            path: '/msg',
-            name: 'msg',
-            component: () => import('@/views/msg/index.vue'),
         },
     ],
 })

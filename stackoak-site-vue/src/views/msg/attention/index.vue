@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<h1>message in o</h1>
+新增粉丝
 </template>
 
 <style scoped>

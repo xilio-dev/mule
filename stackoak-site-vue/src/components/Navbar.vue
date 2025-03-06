@@ -26,12 +26,12 @@
         <a-popover placement="bottomRight">
           <template #content>
             <a-flex vertical :gap="8">
-              <a-button type="text">评论</a-button>
-              <a-button type="text">赞和收藏</a-button>
-              <a-button type="text">私信</a-button>
-              <a-button type="text">新增粉丝</a-button>
-              <a-button type="text">系统通知</a-button>
-              <a-button type="text">消息设置</a-button>
+              <a-button @click="openMsgManage('/msg/comment')" type="text">评论</a-button>
+              <a-button @click="openMsgManage('/msg/like')" type="text">赞和收藏</a-button>
+              <a-button @click="openMsgManage('/msg/chat')" type="text">私信</a-button>
+              <a-button @click="openMsgManage('/msg/attention')" type="text">新增粉丝</a-button>
+              <a-button @click="openMsgManage('/msg/system')" type="text">系统通知</a-button>
+              <a-button @click="openMsgManage('/setting/notification')" type="text">消息设置</a-button>
             </a-flex>
           </template>
           <a-badge :dot="true">
@@ -76,6 +76,9 @@ onMounted(() => {
     isLogin.value = true
   }
 })
+const openMsgManage = (path: string) => {
+  router.push({path: path})
+}
 
 //邮箱账号-密码登陆
 interface EmailLoginDTO {

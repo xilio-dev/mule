@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import {h, reactive, ref, VueElement, watch} from "vue";
+import {h, reactive, ref, watch} from "vue";
 import type {ItemType, MenuProps} from "ant-design-vue";
 import {SettingOutlined, ProfileOutlined, UserOutlined, DisconnectOutlined, BellOutlined} from "@ant-design/icons-vue";
 import router from "@/router";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const items: ItemType[] = reactive([
   {
     label: '个人资料',
@@ -36,10 +38,18 @@ const handleClick: MenuProps['onClick'] = e => {
 };
 const selectedKeys = ref(['profile']);
 const openKeys = ref(['profile']);
-watch(openKeys, val => {
-  console.log('openKeys', val);
-});
 
+watch(() => route.path, (path) => {
+  const segments = path.split('/').filter(Boolean); // 分割路径并过滤空字符串
+  const lastSegment = segments.pop(); // 获取最后一个路径段
+  if (lastSegment) {
+    selectedKeys.value = [lastSegment]; // 设置选中项
+    openKeys.value = segments; // 设置展开的父级菜单（如果需要）
+  } else {
+    selectedKeys.value = []; // 如果路径无效，清除选中项
+    openKeys.value = []; // 清除展开的父级菜单
+  }
+}, {immediate: true}); // 立即执行一次，确保初始路径也能正确设置选中项
 </script>
 <template>
   <a-row :gutter="15">
@@ -61,9 +71,9 @@ watch(openKeys, val => {
     </a-col>
     <a-col :span="6">
       <a-affix offset-bottom="bottom" :offset-top="60">
-      <a-card title="常见问题" style="height: 150px;background-color: white">
+        <a-card :bordered="false" title="常见问题" style="height: 150px;background-color: white">
 
-      </a-card>
+        </a-card>
       </a-affix>
     </a-col>
   </a-row>

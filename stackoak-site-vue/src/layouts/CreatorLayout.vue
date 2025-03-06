@@ -8,6 +8,7 @@
       </div>
       <a-affix offset-bottom="bottom" :offset-top="60">
         <a-menu
+            style="margin-bottom: 80px"
             id="creator_left_menu"
             mode="inline"
             :items="items"
