@@ -84,3 +84,12 @@ sa-token:
   # 是否输出操作日志
   is-log: true
 
+redis:
+  mq:
+    streams:
+      # 消息通知
+      - name: STACKOAK:MESSAGES:NOTIFICATION
+        groups:
+          - name: NOTIFICATION_GROUP
+            consumers: NOTIFICATION_CONSUMER_1
+

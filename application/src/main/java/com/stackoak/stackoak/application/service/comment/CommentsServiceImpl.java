@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.service.comment;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.application.exception.BizException;
+import com.stackoak.stackoak.application.actors.mq.RedisStreamUtil;
 import com.stackoak.stackoak.application.service.article.IArticleService;
 import com.stackoak.stackoak.application.service.like.ILikesService;
 import com.stackoak.stackoak.application.service.user.IUserService;
@@ -19,6 +20,7 @@ import com.stackoak.stackoak.common.data.user.UserDTO;
 import com.stackoak.stackoak.repository.comment.CommentsMapper;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -45,6 +47,12 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
     private IUserService userService;
     @Autowired
     private IArticleService articleService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+    @Autowired
+    private RedisStreamUtil streamUtil;
+    @Autowired
+    private RedisStreamUtil redisStreamUtil;
 
     @Override
     public void digg(CommentId commentDiggRequest) {
@@ -103,6 +111,14 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         }
         //保存评论
         save(comments);
+        //检查用户是否开启了评论通知功能，如果没有开启就不推送到消息队列了
+        Map<String,Object> message = new HashMap<>(2);
+        message.put("title","评论消息" );
+        message.put("type",  "1");
+        message.put("userId",article.getUserId());
+        message.put("content", commentRequest.getContent());
+        String streamKey = "STACKOAK:MESSAGES:NOTIFICATION";
+        redisStreamUtil.addMap(streamKey, message);
     }
 
     /**

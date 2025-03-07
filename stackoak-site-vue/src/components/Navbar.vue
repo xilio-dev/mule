@@ -34,7 +34,7 @@
               <a-button @click="openMsgManage('/setting/notification')" type="text">消息设置</a-button>
             </a-flex>
           </template>
-          <a-badge :dot="true">
+          <a-badge :count="messages.length" :dot="false">
             <a-image style="cursor: pointer" @click="onOpenMsg" :preview="false" src="/xiaoxi.svg"/>
           </a-badge>
         </a-popover>
@@ -64,12 +64,39 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import {onMounted, nextTick} from 'vue';
+import {onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {reactive} from 'vue';
 import {useUserStore} from '@/stores/user'
 
 const isLogin = ref(false)
 const userStore = useUserStore()
+
+
+const messages = ref([]);
+const eventSource = ref();
+onMounted(() => {
+  if (userStore.isLogin()) {
+    eventSource.value = new EventSource(`http://localhost:9856/portal/notification/createSse/${userStore.userinfo.userId}`);
+    eventSource.value.onmessage = (event:any) => {
+      if (event.data){
+        console.log(event.data)
+        const res=JSON.parse(event.data)
+        message.info(res.content)
+        messages.value.push(event.data);
+      }
+    };
+    eventSource.value.onerror = (error) => {
+      console.error('SSE 连接出错:', error);
+      eventSource.value.close();
+    };
+  }
+});
+
+onBeforeUnmount(() => {
+  if (userStore.isLogin() && eventSource) {
+    eventSource.value.close();
+  }
+});
 
 onMounted(() => {
   if (userStore.isLogin()) {
