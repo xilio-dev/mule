@@ -11,7 +11,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
     @Bean
-    public GroupedOpenApi webApi() {
+    public GroupedOpenApi commonApi() {
+        return GroupedOpenApi.builder()
+                .group("通用接口")
+                // .pathsToMatch(portal_api_prefix)
+                .packagesToScan("com.stackoak.stackoak.application.controller.common")
+                .build();
+    }
+    @Bean
+    public GroupedOpenApi portalApi() {
         return GroupedOpenApi.builder()
                 .group("门户接口")
                // .pathsToMatch(portal_api_prefix)

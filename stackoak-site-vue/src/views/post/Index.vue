@@ -191,7 +191,7 @@ const toApply = (commentId: string) => {
     <a-col :span="18" style=" float: left">
       <a-card style="border: none">
         <h1>{{ articleInfo.title }}</h1>
-        <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px">
+        <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 30px">
           <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
             <div style="color: #515767;">{{ userInfo.userName }}</div>
             <div>{{ articleInfo.publishTime }}</div>
