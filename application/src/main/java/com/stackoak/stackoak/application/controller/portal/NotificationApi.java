@@ -33,9 +33,5 @@ public class NotificationApi {
         sseClient.closeSse(uid);
         return RestResult.success("sse session closed");
     }
-    @GetMapping("/sendMsg/{uid}/{msg}")
-    public RestResult sendMsg(@PathVariable String uid,@PathVariable String msg) {
-       // sseClient.sendMessage(uid,msg);
-        return RestResult.success("sse session closed");
-    }
+
 }

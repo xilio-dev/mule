@@ -112,7 +112,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         //保存评论
         save(comments);
         //检查用户是否开启了评论通知功能，如果没有开启就不推送到消息队列了
-        Map<String,Object> message = new HashMap<>(2);
+        Map<String,Object> message = new HashMap<>(10);
         message.put("title","评论消息" );
         message.put("type",  "1");
         message.put("userId",article.getUserId());

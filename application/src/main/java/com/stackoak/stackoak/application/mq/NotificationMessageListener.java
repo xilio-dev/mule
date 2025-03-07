@@ -23,21 +23,23 @@ public class NotificationMessageListener implements StreamListener<String, MapRe
 
     @Override
     public void onMessage(MapRecord<String, String, String> message) {
+        System.out.println("MessageId: " + message.getId());
+        System.out.println("Stream: " + message.getStream());
+        System.out.println("Body: " + message.getValue());
         String streamKey = message.getStream();
         //消息ID
-        RecordId recordId = message.getId();
+        RecordId messageId = message.getId();
         //消息内容
         Map<String, String> msg = message.getValue();
+
         String userId = msg.get("userId");
         String content = msg.get("content");
         CommentMessage commentMessage = new CommentMessage();
         commentMessage.setMessageId(streamKey);
         commentMessage.setContent(content);
         sseClient.sendMessage(userId, commentMessage);
-        //redisStreamUtil.ack(streamKey,"NOTIFICATION_GROUP",recordId.getValue());
-        //   redisStreamUtil.del(streamKey,recordId.getValue());
-        System.out.println("MessageId: " + message.getId());
-        System.out.println("Stream: " + message.getStream());
-        System.out.println("Body: " + message.getValue());
+        //手动确认消息
+        redisStreamUtil.ack(streamKey, "NOTIFICATION_GROUP", messageId.getValue());
+        redisStreamUtil.del(streamKey, messageId.getValue());/*删除消息*/
     }
 }

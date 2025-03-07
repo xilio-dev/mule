@@ -53,9 +53,9 @@ public class RedisStreamConfiguration {
                 StreamMessageListenerContainer
                         .StreamMessageListenerContainerOptions
                         .builder()
-                        .batchSize(100)/*todo 单次处理消息数量*/
+                        .batchSize(2)/*todo 单次处理消息数量*/
                         .executor(executor)
-                        .pollTimeout(Duration.ofSeconds(2))
+                        .pollTimeout(Duration.ofSeconds(1))
                         .errorHandler(new ErrorHandler() {
                             @Override
                             public void handleError(Throwable t) {

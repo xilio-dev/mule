@@ -71,16 +71,24 @@ import {useUserStore} from '@/stores/user'
 const isLogin = ref(false)
 const userStore = useUserStore()
 
+const no_read_msg = reactive({
+  likeMsg: [],
+  collectMsg: [],
+  commentMsg: [],
+  attention: [],
+  systemMsg: []
+})
+
 
 const messages = ref([]);
 const eventSource = ref();
 onMounted(() => {
   if (userStore.isLogin()) {
     eventSource.value = new EventSource(`http://localhost:9856/portal/notification/createSse/${userStore.userinfo.userId}`);
-    eventSource.value.onmessage = (event:any) => {
-      if (event.data){
+    eventSource.value.onmessage = (event: any) => {
+      if (event.data) {
         console.log(event.data)
-        const res=JSON.parse(event.data)
+        const res = JSON.parse(event.data)
         message.info(res.content)
         messages.value.push(event.data);
       }

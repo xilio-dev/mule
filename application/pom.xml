@@ -123,7 +123,6 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <compilerArgument>-parameters</compilerArgument>
-
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <annotationProcessorPaths>
