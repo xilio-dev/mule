@@ -64,4 +64,6 @@ public interface IArticleService extends IService<Article> {
      * @return 文章列表
      */
     IPage<ArticleBriefVO> getPublishArticle(@Valid ArticleQueryRequest request);
+
+    void deleteArticle(ArticleId aid);
 }

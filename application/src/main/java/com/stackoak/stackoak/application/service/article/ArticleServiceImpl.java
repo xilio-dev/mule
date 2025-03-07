@@ -1,6 +1,8 @@
 package com.stackoak.stackoak.application.service.article;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.category.ICategoryService;
 import com.stackoak.stackoak.application.service.collect.ICollectService;
@@ -409,5 +411,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public IPage<ArticleBriefVO> getPublishArticle(ArticleQueryRequest request) {
 
         return null;
+    }
+
+    @Override
+    public void deleteArticle(ArticleId dto) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Article::getUserId, userId);
+        wrapper.eq(Article::getId, dto.getAid());
+        Article article = getOne(wrapper);
+        article.setStatus(ArticleStatus.RECYCLE.getCode());
+        updateById(article);
+        //todo 更新搜索引擎或缓存
     }
 }

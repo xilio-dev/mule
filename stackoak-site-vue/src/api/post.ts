@@ -3,6 +3,7 @@ import {request} from '@/utils/request/Axios.ts';
 const Api = {
     articleList: '/article/list',
     postAdd: '/article/add',
+    DELETE: '/article/del',
     UPDATE: '/article/update',
     postDetail: '/article/detail',
     get: '/article/get',
@@ -24,6 +25,10 @@ export function addArticle(article: any) {
 export function updateArticle(article: any) {
     return request.put(Api.UPDATE, article)
 }
+export function deleteArticle(aid: string) {
+    return request.post(Api.DELETE, aid)
+}
+
 
 export function postDetail(data: any) {
     return request.post(Api.postDetail, data)

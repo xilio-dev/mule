@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class DelArticleDTO extends BaseDTO {
-    private String id;
+    private String aid;
 }

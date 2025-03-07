@@ -37,13 +37,7 @@
                     </router-link>
                   </a-menu-item>
                   <a-menu-item>
-                    <a-popconfirm
-                        title="你确定要删除该篇文章?"
-                        ok-text="确定"
-                        cancel-text="取消"
-                        @confirm="onRemoveRecentArticle(item.id)">
-                      <span>删除</span>
-                    </a-popconfirm>
+                    <span @click="onRemoveRecentArticle(item.id)">删除</span>
                   </a-menu-item>
                   <a-menu-item>
                     <router-link :to="`/post/${item.id}`" target="_blank">浏览</router-link>
@@ -83,10 +77,24 @@ const pagination = {
   pageSize: 5,
 };
 import {ref} from 'vue';
-import {message} from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 //删除近期文章
 const onRemoveRecentArticle = (id: string) => {
-  message.success("删除成功！" + id)
+  Modal.confirm({
+    title: '您确定删除该篇文章?',
+    content: '删除后会放到回收站',
+    okText: '确认',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk() {
+      deleteArticle({aid: id}).then(res => {
+        removeArticleById(id)
+        message.success("已删除")
+      })
+    },
+
+  });
+
 }
 //加载近期文章
 
@@ -96,6 +104,9 @@ const queryParam = ref({
   categoryId: 0,
   showType: 3
 })
+const removeArticleById = (aid: string) => {
+  recentArticle.value = recentArticle.value.filter(article => article.id !== aid);
+}
 const recentArticle = ref([])
 const loadRecentArticle = async () => {
   await articleList(queryParam.value).then(res => {
@@ -109,7 +120,7 @@ const loadRecentArticle = async () => {
 
 //近期文章
 import {onMounted} from 'vue';
-import {articleList} from "@/api/post.ts";
+import {articleList, deleteArticle} from "@/api/post.ts";
 
 const count = 3;
 const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;

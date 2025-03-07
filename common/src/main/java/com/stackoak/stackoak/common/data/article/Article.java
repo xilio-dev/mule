@@ -158,4 +158,9 @@ public class Article implements Serializable {
      */
     @TableField("original_url")
     private String originalUrl;
+    /**
+     *状态：1正常、2回收站
+     */
+    @TableField("status")
+    private Integer status;
 }
