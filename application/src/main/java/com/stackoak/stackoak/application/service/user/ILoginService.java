@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.user;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.stackoak.stackoak.common.data.mail.EmailLoginDTO;
 import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
+import com.stackoak.stackoak.common.data.user.UpdatePwdRequest;
 import jakarta.validation.Valid;
 
 public interface ILoginService {
@@ -36,4 +37,6 @@ public interface ILoginService {
      * @param dto 新邮箱信息
      */
     void changeEmailBind(@Valid EmailRegisterDTO dto);
+
+    void updateAccountPassword(@Valid UpdatePwdRequest request);
 }

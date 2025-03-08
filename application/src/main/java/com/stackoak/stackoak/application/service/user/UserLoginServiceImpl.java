@@ -10,6 +10,7 @@ import com.stackoak.stackoak.application.service.notification.INotificationSetti
 import com.stackoak.stackoak.common.data.mail.EmailLoginDTO;
 import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
 import com.stackoak.stackoak.common.data.notification.NotificationSetting;
+import com.stackoak.stackoak.common.data.user.UpdatePwdRequest;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.common.data.user.UserStatusEnum;
 import org.checkerframework.checker.units.qual.A;
@@ -48,9 +49,10 @@ public class UserLoginServiceImpl implements ILoginService {
         //验证码正确，执行登录逻辑
         //如果用户已经注册过了，直接返回登陆信息
         User user = userService.getByEmail(dto.getEmail());
-        String userId;
+        String userId, email;
         if (!ObjectUtils.isEmpty(user)) {
             userId = user.getId();
+            email = user.getEmail();
         } else {
             //如果用户没有注册，自动创建一个新的账号
             User newUser = new User();
@@ -59,10 +61,12 @@ public class UserLoginServiceImpl implements ILoginService {
             newUser.setUsername(dto.getEmail());
             userService.save(newUser);
             userId = newUser.getId();
+            email = newUser.getEmail();
             //创建通知默认设置
             ns.save(new NotificationSetting(userId));
         }
         StpKit.USER.login(userId, new SaLoginModel()
+                .setExtra("email", email)
                 .setDevice("PC")
                 .setIsLastingCookie(true)
                 .setTimeout(60 * 60 * 24 * 7)
@@ -97,6 +101,7 @@ public class UserLoginServiceImpl implements ILoginService {
             throw new BizException("密码不正确");
         }
         StpKit.USER.login(user.getId(), new SaLoginModel()
+                .setExtra("email", user.getEmail())
                 .setDevice("PC")// 此次登录的客户端设备类型, 用于[同端互斥登录]时指定此次登录的设备类型
                 .setIsLastingCookie(true)// 是否为持久Cookie（临时Cookie在浏览器关闭时会自动删除，持久Cookie在重新打开后依然存在）
                 .setTimeout(60 * 60 * 24 * 7)// 指定此次登录token的有效期, 单位:秒 （如未指定，自动取全局配置的 timeout 值）
@@ -137,6 +142,20 @@ public class UserLoginServiceImpl implements ILoginService {
             userService.updateById(oldUser);
         } else {
             throw new BizException("验证码失效");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAccountPassword(UpdatePwdRequest request) {
+        //获取当前登陆用户的邮箱
+        String email = (String) StpKit.USER.getExtra("email");
+        String code = redisTemplate.opsForValue().get("stackoak:emailvalidcode:" + email);
+        if (StringUtils.hasText(code) && code.equalsIgnoreCase(request.getCode())) {
+            User user = new User();
+            user.setId(StpKit.USER.getLoginIdAsString());
+            user.setPassword(secureManager.encrypt(request.getNewPassword()));
+            userService.updateById(user);
         }
     }
 }

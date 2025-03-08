@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.user;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import com.stackoak.stackoak.common.data.mail.EmailLoginDTO;
 import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
+import com.stackoak.stackoak.common.data.user.UpdatePwdRequest;
 import org.springframework.stereotype.Service;
 
 @Service("adminLoginService")
@@ -46,6 +47,11 @@ public class AdminLoginServiceImpl implements ILoginService{
      */
     @Override
     public void changeEmailBind(EmailRegisterDTO dto) {
+
+    }
+
+    @Override
+    public void updateAccountPassword(UpdatePwdRequest request) {
 
     }
 }
