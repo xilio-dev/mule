@@ -12,7 +12,7 @@ import com.stackoak.stackoak.common.data.comment.Comment;
  * @author stackoak.com
  * @since 2025-02-27 23:00:30
  */
-public interface CommentsMapper extends BaseMapper<Comment> {
+public interface CommentMapper extends BaseMapper<Comment> {
 
 }
 

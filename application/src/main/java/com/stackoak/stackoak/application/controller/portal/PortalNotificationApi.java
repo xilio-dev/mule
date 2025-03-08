@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  */
 @RestController
 @RequestMapping("/notification")
-public class NotificationApi {
+public class PortalNotificationApi {
     @Autowired
     private SseClient sseClient;
 

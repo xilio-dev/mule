@@ -7,6 +7,8 @@ import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.actors.mq.RedisStreamUtil;
 import com.stackoak.stackoak.application.service.article.IArticleService;
 import com.stackoak.stackoak.application.service.like.ILikesService;
+import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
+import com.stackoak.stackoak.application.service.notification.INotificationsService;
 import com.stackoak.stackoak.application.service.user.IUserService;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.comment.CommentDTO;
@@ -15,9 +17,12 @@ import com.stackoak.stackoak.common.data.comment.CommentRequest;
 import com.stackoak.stackoak.common.data.comment.Comment;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
 import com.stackoak.stackoak.common.data.likes.Likes;
+import com.stackoak.stackoak.common.data.notification.Notification;
+import com.stackoak.stackoak.common.data.notification.NotificationSetting;
+import com.stackoak.stackoak.common.data.notification.NotificationType;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.common.data.user.UserDTO;
-import com.stackoak.stackoak.repository.comment.CommentsMapper;
+import com.stackoak.stackoak.repository.comment.CommentMapper;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -39,7 +44,7 @@ import java.util.Map;
  * @since 2025-02-27 23:00:30
  */
 @Service
-public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> implements ICommentsService {
+public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> implements ICommentsService {
 
     @Autowired
     private ILikesService likesService;
@@ -50,9 +55,11 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    private RedisStreamUtil streamUtil;
-    @Autowired
     private RedisStreamUtil redisStreamUtil;
+    @Autowired
+    private INotificationSettingService notificationSettingService;
+    @Autowired
+    private INotificationsService notificationsService;
 
     @Override
     public void digg(CommentId commentDiggRequest) {
@@ -111,14 +118,24 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comment> im
         }
         //保存评论
         save(comments);
-        //检查用户是否开启了评论通知功能，如果没有开启就不推送到消息队列了
-        Map<String,Object> message = new HashMap<>(10);
-        message.put("title","评论消息" );
-        message.put("type",  "1");
-        message.put("userId",article.getUserId());
-        message.put("content", commentRequest.getContent());
-        String streamKey = "STACKOAK:MESSAGES:NOTIFICATION";
-        redisStreamUtil.addMap(streamKey, message);
+        //检查用户是否开启了评论通知功能，如果没有开启就不推送到消息队列了 todo 异步优化
+        NotificationSetting notify = notificationSettingService.getById(article.getUserId());
+        Notification notification = new Notification();
+        notification.setType(NotificationType.COMMENT.getType());
+        notification.setUserId(article.getUserId());
+        notification.setContent(commentRequest.getContent());
+        //记录消息到数据库，可以考虑异步
+        notificationsService.save(notification);
+        //如果文章作者用户开启了消息通知才推送
+        if (notify.getAppEnabled() && notify.getCommentEnabled()) {
+            Map<String, Object> message = new HashMap<>(10);
+            message.put("title", "评论消息");
+            message.put("type", String.valueOf(NotificationType.COMMENT.getType()));
+            message.put("userId", article.getUserId());
+            message.put("content", commentRequest.getContent());
+            String streamKey = "STACKOAK:MESSAGES:NOTIFICATION";
+            redisStreamUtil.addMap(streamKey, message);
+        }
     }
 
     /**

@@ -20,7 +20,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@TableName("notifications")
+@TableName("notification")
 public class Notification implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,19 +29,19 @@ public class Notification implements Serializable {
      * 通知ID，主键
      */
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
-    private Integer id;
+    private String id;
 
     /**
      * 接收通知的用户ID，外键关联users表
      */
     @TableField("user_id")
-    private Integer userId;
+    private String userId;
 
     /**
      * 通知类型
      */
     @TableField("type")
-    private String type;
+    private Integer type;
 
     /**
      * 通知内容，JSON格式存储详细信息
