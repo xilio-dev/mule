@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.comment;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.actors.mq.RedisStreamUtil;
 import com.stackoak.stackoak.application.service.article.IArticleService;
@@ -123,7 +124,9 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         Notification notification = new Notification();
         notification.setType(NotificationType.COMMENT.getType());
         notification.setUserId(article.getUserId());
-        notification.setContent(commentRequest.getContent());
+        HashMap<String, Object> content = new HashMap<>();
+        content.put("reviewContent", comments.getContent());
+        notification.setContent(content);
         //记录消息到数据库，可以考虑异步
         notificationsService.save(notification);
         //如果文章作者用户开启了消息通知才推送
@@ -132,7 +135,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
             message.put("title", "评论消息");
             message.put("type", String.valueOf(NotificationType.COMMENT.getType()));
             message.put("userId", article.getUserId());
-            message.put("content", commentRequest.getContent());
+            message.put("content", new Gson().toJson(content));
             String streamKey = "STACKOAK:MESSAGES:NOTIFICATION";
             redisStreamUtil.addMap(streamKey, message);
         }

@@ -4,11 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.handlers.GsonTypeHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 /**
  * <p>
  * 通知表，存储用户的通知信息
@@ -46,8 +51,8 @@ public class Notification implements Serializable {
     /**
      * 通知内容，JSON格式存储详细信息
      */
-    @TableField("content")
-    private String content;
+    @TableField(value = "content", typeHandler = GsonTypeHandler.class)
+    private Map<String, Object> content;
 
     /**
      * 是否已读，默认未读

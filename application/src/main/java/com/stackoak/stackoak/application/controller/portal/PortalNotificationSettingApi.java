@@ -1,7 +1,12 @@
 package com.stackoak.stackoak.application.controller.portal;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
+import com.stackoak.stackoak.common.data.notification.NotificationSetting;
+import com.stackoak.stackoak.common.data.notification.SettingNotifyRequest;
+import com.stackoak.stackoak.common.message.RestResult;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -12,7 +17,22 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2025-03-08 15:44:39
  */
 @RestController
-@RequestMapping("/notificationSetting")
+@RequestMapping("/notify-setting")
 public class PortalNotificationSettingApi {
+
+    @Autowired
+    private INotificationSettingService ns;
+
+    @PutMapping(value = "set", name = "设置消息通知")
+    public RestResult set(@RequestBody SettingNotifyRequest request) {
+        ns.setNotify(request);
+        return RestResult.success();
+    }
+
+    @GetMapping(value = "get-setting", name = "获取消息配置")
+    public RestResult getUserNotifySetting() {
+        NotificationSetting setting = ns.getUserNotifySetting();
+        return RestResult.success(setting);
+    }
 
 }

@@ -21,9 +21,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://124.221.53.234:3306/xilio1024?serverTimezone=UTC
-    username: xilio1024
-    password: EbfSKppBwZMemEGW
+    url: jdbc:mysql://localhost:3306/stackoak?serverTimezone=UTC
+    username: root
+    password: root153212
     driverClassName: com.mysql.cj.jdbc.Driver
   mail:
     host: smtp.163.com

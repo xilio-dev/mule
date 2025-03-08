@@ -35,16 +35,10 @@ public class NotificationSetting implements Serializable {
     private String userId;
 
     /**
-     * 是否开启点赞通知
+     * 是否开启点赞收藏通知
      */
-    @TableField("like_enabled")
-    private Boolean likeEnabled;
-
-    /**
-     * 是否开启收藏通知
-     */
-    @TableField("collect_enabled")
-    private Boolean collectEnabled;
+    @TableField("like_collect_enabled")
+    private Boolean likeCollectEnabled;
 
     /**
      * 是否开启关注通知
@@ -75,6 +69,12 @@ public class NotificationSetting implements Serializable {
      */
     @TableField("app_enabled")
     private Boolean appEnabled;
+
+    /**
+     * 私信通知开启状态
+     */
+    @TableField("chat_enabled")
+    private Boolean chatEnabled;
 
     /**
      * 创建时间
