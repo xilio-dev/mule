@@ -105,4 +105,38 @@ public class UserLoginServiceImpl implements ILoginService {
         //todo 登陆日志记录
         return StpUtil.getTokenInfo();
     }
+
+    /**
+     * 绑定邮箱
+     *
+     * @param dto 绑定信息
+     */
+    @Override
+    public void bindEmail(EmailRegisterDTO dto) {
+
+    }
+
+    /**
+     * 改变邮箱绑定
+     *
+     * @param dto 新邮箱信息
+     */
+    @Override
+    public void changeEmailBind(EmailRegisterDTO dto) {
+        //检查验证码是否正确
+        String code = redisTemplate.opsForValue().get("stackoak:emailvalidcode:" + dto.getEmail());
+        if (StringUtils.hasText(code) && code.equalsIgnoreCase(dto.getCode())) {
+            //检查当前想要变更的邮箱是否已经存在数据库了
+            User byEmail = userService.getByEmail(dto.getEmail());
+            if (!ObjectUtils.isEmpty(byEmail)) {
+                throw new BizException("当前邮箱已经绑定别的账户");
+            }
+            User oldUser = userService.getById(StpKit.USER.getLoginIdAsString());
+            //变更邮箱信息
+            oldUser.setEmail(dto.getEmail());
+            userService.updateById(oldUser);
+        } else {
+            throw new BizException("验证码失效");
+        }
+    }
 }

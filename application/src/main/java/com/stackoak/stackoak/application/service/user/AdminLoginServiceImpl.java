@@ -28,4 +28,24 @@ public class AdminLoginServiceImpl implements ILoginService{
     public SaTokenInfo emailLogin(EmailLoginDTO emailLoginDTO) {
         return null;
     }
+
+    /**
+     * 绑定邮箱
+     *
+     * @param dto 绑定信息
+     */
+    @Override
+    public void bindEmail(EmailRegisterDTO dto) {
+
+    }
+
+    /**
+     * 改变邮箱绑定
+     *
+     * @param dto 新邮箱信息
+     */
+    @Override
+    public void changeEmailBind(EmailRegisterDTO dto) {
+
+    }
 }

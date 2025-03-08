@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.application.service.mail;
 
 import com.stackoak.stackoak.application.exception.BizException;
+import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
 import com.stackoak.stackoak.common.data.mail.SendEmailDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,12 @@ public class MailService {
         // 发送邮件
         mailHelper.sendHtmlMail(dto.getEmail(), "stackoak网站登陆验证码", content);
         //将验证码存储到Redis缓存，设置过期时间为5分钟
-        redisTemplate.opsForValue().set("stackoak:emailvalidcode:" + dto.getEmail(), String.valueOf(code),3, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set("stackoak:emailvalidcode:" + dto.getEmail(), String.valueOf(code), 3, TimeUnit.MINUTES);
+    }
+
+    public boolean validEmail(@Valid EmailRegisterDTO dto) {
+        String email = dto.getEmail();
+        String code = redisTemplate.opsForValue().get("stackoak:emailvalidcode:" + email);
+        return StringUtils.hasText(code) && code.equalsIgnoreCase(dto.getCode());
     }
 }

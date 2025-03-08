@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 public interface ILoginService {
     /**
      * 邮箱验证码登陆
+     *
      * @param dto 登陆信息
      * @return 登陆结果
      */
@@ -21,4 +22,18 @@ public interface ILoginService {
      * @return 登陆结果
      */
     SaTokenInfo emailLogin(@Valid EmailLoginDTO emailLoginDTO);
+
+    /**
+     * 绑定邮箱
+     *
+     * @param dto 绑定信息
+     */
+    void bindEmail(@Valid EmailRegisterDTO dto);
+
+    /**
+     * 改变邮箱绑定
+     *
+     * @param dto 新邮箱信息
+     */
+    void changeEmailBind(@Valid EmailRegisterDTO dto);
 }

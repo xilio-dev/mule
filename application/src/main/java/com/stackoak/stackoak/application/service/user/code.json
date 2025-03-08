@@ -1,7 +1,0 @@
-{
-  "imgurl": "passport.baidu.com\/v2\/api\/qrcode?sign=b1f92fef10718bbf698169c553d4ac76&lp=pc&qrloginfrom=pc&logPage=traceId%3Apc_loginv5_1741347044%2ClogPage%3Aloginv5",
-  "errno": 0,
-  "sign": "b1f92fef10718bbf698169c553d4ac76",
-  "prompt": "\u767b\u5f55\u540e\u5a01\u9a6c\u5c06\u83b7\u5f97\u767e\u5ea6\u8d26\u53f7\u7684\u516c\u5f00\u4fe1\u606f\uff08\u7528\u6237\u540d\u3001\u5934\u50cf\uff09"
-}
-https://passport.baidu.com/v2/api/qrcode?sign=b1f92fef10718bbf698169c553d4ac76&lp=pc&qrloginfrom=pc&logPage=traceId%3Apc_loginv5_1741347044%2ClogPage%3Aloginv5

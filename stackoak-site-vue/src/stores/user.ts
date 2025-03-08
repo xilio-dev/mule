@@ -5,6 +5,7 @@ import {sendLogout} from "@/api/auth.ts";
 interface UserInfo {
     userId?: number;
     username?: string;
+    email?: string;
     avatar?: string;
     token?: string;
 }
@@ -14,6 +15,7 @@ export const useUserStore = defineStore('user', () => {
     const userinfo = ref<UserInfo>({
         userId: undefined,
         username: undefined,
+        email: undefined,
         avatar: undefined,
         token: undefined
     });
@@ -28,6 +30,7 @@ export const useUserStore = defineStore('user', () => {
         userinfo.value = {
             userId: undefined,
             username: undefined,
+            email: undefined,
             avatar: undefined,
         };
         localStorage.removeItem('token')
@@ -45,7 +48,10 @@ export const useUserStore = defineStore('user', () => {
         userinfo.value = {...userinfo.value, token};
         localStorage.setItem('token', token)
     }
-
+    // 定义 updateEmail 方法，用于更新 email 字段并同步到 localStorage
+    function updateEmail(newEmail: string) {
+        setUserInfo({ ...userinfo.value, email: newEmail });
+    }
     function getToken() {
         localStorage.getItem('token')
     }
@@ -58,9 +64,10 @@ export const useUserStore = defineStore('user', () => {
         }
         return userinfo.value;
     }
+
     // 初始化时从 localStorage 加载用户信息
     if (localStorage.getItem('userinfo')) {
         userinfo.value = getUserInfo();
     }
-    return {userinfo, setUserInfo, logout, getToken, setToken, isLogin};
+    return {userinfo, setUserInfo, logout, getToken, setToken, isLogin,updateEmail};
 });
