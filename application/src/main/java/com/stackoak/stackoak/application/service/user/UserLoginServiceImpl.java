@@ -6,10 +6,13 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.stackoak.stackoak.application.actors.security.SecureManager;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
+import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
 import com.stackoak.stackoak.common.data.mail.EmailLoginDTO;
 import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
+import com.stackoak.stackoak.common.data.notification.NotificationSetting;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.common.data.user.UserStatusEnum;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class UserLoginServiceImpl implements ILoginService {
     private SecureManager secureManager;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private INotificationSettingService ns;
 
     /**
      * 邮箱验证码登陆
@@ -54,6 +59,8 @@ public class UserLoginServiceImpl implements ILoginService {
             newUser.setUsername(dto.getEmail());
             userService.save(newUser);
             userId = newUser.getId();
+            //创建通知默认设置
+            ns.save(new NotificationSetting(userId));
         }
         StpKit.USER.login(userId, new SaLoginModel()
                 .setDevice("PC")
@@ -80,7 +87,7 @@ public class UserLoginServiceImpl implements ILoginService {
         if (ObjectUtils.isEmpty(user)) {
             throw new BizException("账户尚未注册！");
         }
-        if (!StringUtils.hasText(user.getPassword())){
+        if (!StringUtils.hasText(user.getPassword())) {
             throw new BizException("未设置密码，请用验证码登陆！");
         }
         if (UserStatusEnum.BLOCKED.getStatus().intValue() == user.getStatus().intValue()) {

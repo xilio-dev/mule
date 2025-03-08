@@ -24,6 +24,10 @@ public class NotificationSetting implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public NotificationSetting(String userId) {
+        this.userId = userId;
+    }
+
     /**
      * 用户ID，外键关联用户表
      */
