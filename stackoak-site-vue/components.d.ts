@@ -50,6 +50,7 @@ declare module 'vue' {
     ATag: typeof import('ant-design-vue/es')['Tag']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
+    AUpload: typeof import('ant-design-vue/es')['Upload']
     AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
     CherryMarkdown: typeof import('./src/components/CherryMarkdown.vue')['default']
     CherryMarkdownv2: typeof import('./src/components/icons/CherryMarkdownv2.vue')['default']

@@ -4,6 +4,8 @@ const Api = {
     getUserInfo: '/user/get',
     FOLLOWS: '/user/follows',
     FANS: '/user/fans',
+    UPDATE_PROFILE: '/user/update-profile',
+    GET_USER_PROFILE: '/user/get-profile',
 };
 
 export function getUserInfo() {
@@ -17,3 +19,11 @@ export function getFollows(pageQuery: any) {
 export function getFans(pageQuery: any) {
     return request.post(Api.FANS, pageQuery)
 }
+
+export function updateProfile(data: any) {
+    return request.put(Api.UPDATE_PROFILE, data)
+}
+export function getUserProfile() {
+    return request.get(Api.GET_USER_PROFILE)
+}
+

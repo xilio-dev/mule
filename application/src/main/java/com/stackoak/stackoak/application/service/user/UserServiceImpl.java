@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.service.user;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.common.data.user.LoginUser;
+import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.repository.user.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -42,5 +43,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return getOne(wrapper);
     }
 
+    @Override
+    public void updateProfile(UpdateProfileRequest request) {
+        User user = getById(StpKit.USER.getLoginIdAsString());
+        BeanUtils.copyProperties(request, user);
+        updateById(user);
+    }
 
+    @Override
+    public UpdateProfileRequest getProfile() {
+        User user = getById(StpKit.USER.getLoginIdAsString());
+        UpdateProfileRequest dto = new UpdateProfileRequest();
+        BeanUtils.copyProperties(user, dto);
+        return dto;
+    }
 }

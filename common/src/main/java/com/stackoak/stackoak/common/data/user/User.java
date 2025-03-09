@@ -73,8 +73,8 @@ public class User implements Serializable {
     /**
      * 描述
      */
-    @TableField("desc")
-    private String desc;
+    @TableField("introduce")
+    private String introduce;
 
     /**
      * 个人博客地址
