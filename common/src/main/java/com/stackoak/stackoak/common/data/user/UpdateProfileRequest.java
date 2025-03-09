@@ -1,9 +1,12 @@
 package com.stackoak.stackoak.common.data.user;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -95,17 +98,23 @@ public class UpdateProfileRequest implements Serializable {
     /**
      * 入学时间
      */
-    private LocalDateTime eduStartTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private LocalDate eduStartTime;
 
     /**
      * 毕业时间
      */
-    private LocalDateTime eduEndTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private LocalDate eduEndTime;
 
     /**
      * 开始工作时间
      */
-    private LocalDateTime jobTime;
+    @JsonFormat(pattern = "yyyy/MM/dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy/MM/dd")
+    private LocalDate jobTime;
 
     /**
      * 用户二维码

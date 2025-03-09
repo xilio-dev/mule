@@ -2,7 +2,7 @@
 import {computed, onMounted, reactive, ref, toRaw} from 'vue';
 import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
-import type {Dayjs} from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import {getUserProfile, updateProfile} from "@/api/user.ts";
 import {message} from "ant-design-vue";
 
@@ -16,6 +16,11 @@ type RangeValue = [Dayjs, Dayjs];
 const loadUserProfile = () => {
   getUserProfile().then(res => {
     Object.assign(userForm, res);
+    userForm.jobTime=dayjs(userForm.jobTime, dateFormat)
+    userForm.eduTime= ref<[Dayjs, Dayjs]>([
+      dayjs(userForm.eduStartTime, dateFormat),
+      dayjs(userForm.eduEndTime, dateFormat),
+    ]);
     intSelectTags()
   })
 }
@@ -100,7 +105,7 @@ interface UserForm {
   careerField: string,
   company: string,
   jobTitle: string,
-  jobTime: string,
+  jobTime: Dayjs,
   tagIds: undefined,
 }
 
@@ -125,7 +130,7 @@ const userForm: UnwrapRef<UserForm> = reactive({
   majorName: '',
   eduStartTime: '',
   eduEndTime: '',
-  eduTime: undefined,
+  eduTime: '',
   careerField: '',
   company: '',
   jobTitle: '',
@@ -141,21 +146,27 @@ const rules: Record<string, Rule[]> = {
     {required: true, message: '请选择性别', trigger: 'change'}
   ],
 };
+const dateFormat = 'YYYY/MM/DD';
 const onSubmit = () => {
   console.log(formRef.value.validate());
   formRef.value
       .validate()
       .then(() => {
+        console.log(userForm)
+        if (userForm.jobTime){
+          userForm.jobTime=userForm.jobTime.format(dateFormat)
+        }
         if (userForm.eduTime) {
-          userForm.eduStartTime = userForm.eduTime[0]
-          userForm.eduEndTime = userForm.eduTime[1]
+          userForm.eduStartTime = userForm.eduTime[0].format(dateFormat)
+          userForm.eduEndTime = userForm.eduTime[1].format(dateFormat)
         }
         if (selectedTags) {
-          userForm.tagIds = selectedTags.value.map(tag => tag.id)||[]
+          userForm.tagIds = selectedTags.value.map(tag => tag.id) || []
         }
         updateProfile(userForm).then(res => {
           message.info("更新成功")
         })
+
       })
 };
 
@@ -279,7 +290,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
           <a-input class="app-input" v-model:value="userForm.bilibli"/>
         </a-form-item>
         <a-form-item label="兴趣标签" name="tag" v-if="selectedTags">
-          <div class="selected-tags" style="margin-top: 5px" >
+          <div class="selected-tags" style="margin-top: 5px">
             <a-tag
                 v-for="tag in selectedTags"
                 :key="tag.id"

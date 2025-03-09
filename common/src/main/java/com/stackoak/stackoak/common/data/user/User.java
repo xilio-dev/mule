@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.Getter;
@@ -236,19 +237,19 @@ public class User implements Serializable {
      * 入学时间
      */
     @TableField("edu_start_time")
-    private LocalDateTime eduStartTime;
+    private LocalDate eduStartTime;
 
     /**
      * 毕业时间
      */
     @TableField("edu_end_time")
-    private LocalDateTime eduEndTime;
+    private LocalDate eduEndTime;
 
     /**
      * 开始工作时间
      */
     @TableField("job_time")
-    private LocalDateTime jobTime;
+    private LocalDate jobTime;
 
     /**
      * 用户二维码
