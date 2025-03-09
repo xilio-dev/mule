@@ -200,7 +200,7 @@ const toApply = (commentId: string) => {
             <div>领域: {{ category.categoryName }}</div>
           </a-flex>
           <a-button type="link" @click="onToEditEditor(articleInfo.id)"
-                    v-if="useUser.isLogin()&&userInfo.userId===useUser.userinfo.userId">编辑
+                    v-if="useUser.isLogin()&&userInfo.userId==useUser.userinfo.userId">编辑
           </a-button>
         </a-flex>
         <Markdown v-if="!isLoading" md-id="1000" :preview="false" :value="articleInfo.content"/>

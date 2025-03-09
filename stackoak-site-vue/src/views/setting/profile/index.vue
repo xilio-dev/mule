@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, toRaw} from 'vue';
+import {computed, nextTick, onMounted, reactive, ref, toRaw} from 'vue';
 import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import dayjs, {Dayjs} from 'dayjs';
@@ -16,8 +16,8 @@ type RangeValue = [Dayjs, Dayjs];
 const loadUserProfile = () => {
   getUserProfile().then(res => {
     Object.assign(userForm, res);
-    userForm.jobTime=dayjs(userForm.jobTime, dateFormat)
-    userForm.eduTime= ref<[Dayjs, Dayjs]>([
+    userForm.jobTime = dayjs(userForm.jobTime, dateFormat)
+    userForm.eduTime = ref<[Dayjs, Dayjs]>([
       dayjs(userForm.eduStartTime, dateFormat),
       dayjs(userForm.eduEndTime, dateFormat),
     ]);
@@ -153,8 +153,8 @@ const onSubmit = () => {
       .validate()
       .then(() => {
         console.log(userForm)
-        if (userForm.jobTime){
-          userForm.jobTime=userForm.jobTime.format(dateFormat)
+        if (userForm.jobTime) {
+          userForm.jobTime = userForm.jobTime.format(dateFormat)
         }
         if (userForm.eduTime) {
           userForm.eduStartTime = userForm.eduTime[0].format(dateFormat)
@@ -169,9 +169,20 @@ const onSubmit = () => {
 
       })
 };
-
-
-const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i + 1)}));
+const eduLevelOptions = [
+  {value: 1, label: '大专'},
+  {value: 2, label: '本科'},
+  {value: 3, label: '硕士'},
+  {value: 4, label: '博士'},
+]
+const careerFieldOptions = [
+  {value: 1, label: '后端'},
+  {value: 2, label: '前端'},
+  {value: 3, label: '人工智能'},
+  {value: 4, label: '大数据'},
+  {value: 5, label: '网络安全'},
+  {value: 6, label: '测试'},
+]
 
 
 import {ref} from 'vue';
@@ -289,8 +300,8 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
         <a-form-item label="哔哩哔哩" name="bilibli">
           <a-input class="app-input" v-model:value="userForm.bilibli"/>
         </a-form-item>
-        <a-form-item label="兴趣标签" name="tag" v-if="selectedTags">
-          <div class="selected-tags" style="margin-top: 5px">
+        <a-form-item label="兴趣标签" name="tag">
+          <div v-if="selectedTags.length>0&&tags" class="selected-tags" style="margin-top: 5px">
             <a-tag
                 v-for="tag in selectedTags"
                 :key="tag.id"
@@ -337,7 +348,14 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
           <a-input class="app-input" v-model:value="userForm.majorName"/>
         </a-form-item>
         <a-form-item ref="name" label="学历" name="eduLevel">
-          <a-input class="app-input" v-model:value="userForm.eduLevel"/>
+          <a-select
+              v-model:value="userForm.eduLevel"
+              :options="eduLevelOptions"
+              size="small"
+              class="app-input"
+              placeholder="选择学历"
+              style="width: 100%"
+          ></a-select>
         </a-form-item>
         <a-form-item label="入学时间" name="eduTime">
           <a-range-picker
@@ -356,7 +374,15 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
           :wrapper-col="wrapperCol"
           :model="userForm">
         <a-form-item ref="name" label="职业方向" name="careerField">
-          <a-input class="app-input" v-model:value="userForm.careerField"/>
+          <a-select
+              v-model:value="userForm.careerField"
+              :options="careerFieldOptions"
+              size="small"
+              class="app-input"
+              placeholder="职业领域"
+              style="width: 100%"
+          ></a-select>
+
         </a-form-item>
         <a-form-item ref="name" label="任职公司" name="company">
           <a-input class="app-input" v-model:value="userForm.company"/>

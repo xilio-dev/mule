@@ -61,6 +61,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!ObjectUtils.isEmpty(request.getTagIds())) {
             String tags = org.apache.commons.lang3.StringUtils.join(request.getTagIds(), ",");
             user.setTagIds(tags);
+        }else {
+            user.setTagIds(null);
         }
         updateById(user);
     }

@@ -21,7 +21,7 @@ public class ArticleDetailVO implements Serializable {
 
 @Data
 class UserInfoDTO {
-    private Long userId;
+    private String userId;
     private String nickname;
     private String avatar;
 
@@ -111,7 +111,7 @@ class ArticleInfoDTO {
 
 @Data
 class CategoryInfoDTO {
-    private Long categoryId;
+    private String categoryId;
     private String categoryName;
 }
 
