@@ -261,4 +261,10 @@ public class User implements Serializable {
      */
     @TableField("career_field")
     private Integer careerField;
+
+    /**
+     * 兴趣标签
+     */
+    @TableField("tag_ids")
+    private String tagIds;
 }

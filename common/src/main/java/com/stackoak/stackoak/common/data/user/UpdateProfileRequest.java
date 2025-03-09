@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class UpdateProfileRequest implements Serializable {
@@ -115,4 +116,8 @@ public class UpdateProfileRequest implements Serializable {
      * 职业领域
      */
     private Integer careerField;
+    /**
+     * 用户标签列表
+     */
+    private List<String>tagIds;
 }

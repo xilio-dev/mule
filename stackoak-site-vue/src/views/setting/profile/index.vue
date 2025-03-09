@@ -1,22 +1,85 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref, toRaw} from 'vue';
+import {computed, onMounted, reactive, ref, toRaw} from 'vue';
 import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import type {Dayjs} from 'dayjs';
 import {getUserProfile, updateProfile} from "@/api/user.ts";
 import {message} from "ant-design-vue";
 
+interface Tag {
+  id: number;
+  name: string;
+  checked: boolean;
+}
+
 type RangeValue = [Dayjs, Dayjs];
-const loadUserProfile=()=>{
-  getUserProfile().then(res=>{
+const loadUserProfile = () => {
+  getUserProfile().then(res => {
     Object.assign(userForm, res);
+    intSelectTags()
   })
 }
-onMounted(()=>{
+const intSelectTags = () => {
+  // 创建一个映射表，将 id 映射到 name
+  const tagMap = new Map<string, string>();
+  tags.value.forEach(tag => tagMap.set(tag.id, tag.name));
+  // 初始化 selectedTags
+  let ids = userForm.tagIds || [];
+  if (ids) {
+    ids.forEach(tagId => {
+      const tagName = tagMap.get(tagId); // 直接从映射表中获取名称
+      if (tagName) {
+        selectedTags.value.push({id: tagId, name: tagName, checked: true}); // 存储选中的 ID
+        // 同时更新 tags 的状态
+        const tagIndex = tags.value.findIndex(tag => tag.id === tagId);
+        if (tagIndex !== -1) {
+          tags.value[tagIndex].checked = true;
+        }
+      }
+    });
+  }
+}
+const tags = ref()
+const loadTagList = () => {
+  tagList().then(res => {
+    tags.value = res || []
+  })
+}
+
+// 定义已选择的标签列表
+const selectedTags = ref<Tag[]>([]);
+
+// 处理标签的选中状态变化
+const handleChanges = (tag: Tag) => {
+  if (tag.checked) {
+    // 如果选中，添加到已选择的标签列表
+    selectedTags.value.push(tag);
+  } else {
+    // 如果取消选中，从已选择的标签列表中移除
+    selectedTags.value = selectedTags.value.filter(t => t.id !== tag.id);
+  }
+};
+
+// 从已选择的标签列表中移除标签
+const removeTag = (tagId: number) => {
+  const index = selectedTags.value.findIndex(tag => tag.id === tagId);
+  if (index !== -1) {
+    selectedTags.value.splice(index, 1);
+    // 同时更新 tags 的状态
+    const tagIndex = tags.value.findIndex(tag => tag.id === tagId);
+    if (tagIndex !== -1) {
+      tags.value[tagIndex].checked = false;
+    }
+  }
+};
+onMounted(() => {
+  loadTagList()
   loadUserProfile()
+
 })
+
 interface UserForm {
-  id:undefined,
+  id: undefined,
   avatar: string,
   nickname: string,
   gender: string,
@@ -27,27 +90,25 @@ interface UserForm {
   csdn: string,
   bokeyuan: string,
   bilibli: string,
-
   authorQr: string,
-
   eduLevel: string,
   universityName: string,
   majorName: string,
   eduStartTime: string,
   eduEndTime: string,
   eduTime: RangeValue,
-
   careerField: string,
   company: string,
   jobTitle: string,
   jobTime: string,
+  tagIds: undefined,
 }
 
 const formRef = ref();
 const labelCol = {span: 4};
 const wrapperCol = {span: 20};
 const userForm: UnwrapRef<UserForm> = reactive({
-  id:undefined,
+  id: undefined,
   avatar: '',
   nickname: undefined,
   gender: 2,
@@ -58,9 +119,7 @@ const userForm: UnwrapRef<UserForm> = reactive({
   csdn: '',
   bokeyuan: '',
   bilibli: '',
-
   authorQr: '',
-
   eduLevel: '',
   universityName: '',
   majorName: '',
@@ -71,6 +130,7 @@ const userForm: UnwrapRef<UserForm> = reactive({
   company: '',
   jobTitle: '',
   jobTime: '',
+  tagIds: []
 });
 const rules: Record<string, Rule[]> = {
   nickname: [
@@ -90,6 +150,9 @@ const onSubmit = () => {
           userForm.eduStartTime = userForm.eduTime[0]
           userForm.eduEndTime = userForm.eduTime[1]
         }
+        if (selectedTags) {
+          userForm.tagIds = selectedTags.value.map(tag => tag.id)||[]
+        }
         updateProfile(userForm).then(res => {
           message.info("更新成功")
         })
@@ -104,6 +167,7 @@ import {ref} from 'vue';
 import {PlusOutlined, LoadingOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import type {UploadChangeParam, UploadProps} from 'ant-design-vue';
+import {tagList} from "@/api/tag.ts";
 
 function getBase64(img: Blob, callback: (base64Url: string) => void) {
   const reader = new FileReader();
@@ -166,7 +230,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
               :before-upload="beforeUpload"
               @change="handleChange"
           >
-            <a-avatar v-if="userForm.avatar"  :size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 100, xxl: 120 }">
+            <a-avatar v-if="userForm.avatar" :size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 100, xxl: 120 }">
               <template #icon>
                 <a-image :preview="false" :src="userForm.avatar" alt="avatar"/>
               </template>
@@ -214,11 +278,39 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
         <a-form-item label="哔哩哔哩" name="bilibli">
           <a-input class="app-input" v-model:value="userForm.bilibli"/>
         </a-form-item>
-        <a-form-item label="作者二维码" name="authorQr">
-          <a-input class="app-input" v-model:value="userForm.authorQr"/>
+        <a-form-item label="兴趣标签" name="tag" v-if="selectedTags">
+          <div class="selected-tags" style="margin-top: 5px" >
+            <a-tag
+                v-for="tag in selectedTags"
+                :key="tag.id"
+                closable
+                @close="() => removeTag(tag.id)"
+                class="tag-item"
+                :class="{ 'last-tag': tag === selectedTags[selectedTags.length - 1] }"
+            >
+              {{ tag.name }}
+            </a-tag>
+          </div>
+          <!-- 可选择的标签列表 -->
+          <div class="tag-list dashed-border" style="margin-top: 15px; padding: 15px">
+            <a-checkable-tag
+                v-for="tag in tags"
+                :key="tag.id"
+                v-model:checked="tag.checked"
+                @change="() => handleChanges(tag)"
+                class="tag-item"
+                :class="{ 'last-tag': tag === tags[tags.length - 1] }"
+            >
+              {{ tag.name }}
+            </a-checkable-tag>
+          </div>
         </a-form-item>
-        <a-form-item label="兴趣标签" name="tag">
-          <a-tag v-for="i in 50">java{{ i }}</a-tag>
+        <a-form-item label="作者名片" name="authorQr">
+          <a-qrcode
+              error-level="H"
+              :value="userForm.authorQr"
+              icon="https://www.antdv.com/assets/logo.1ef800a8.svg"
+          />
         </a-form-item>
       </a-form>
     </a-card>
@@ -300,6 +392,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
   width: 128px;
   height: 128px;
 }
+
 .ant-upload-select-picture-card i {
   font-size: 32px;
   color: #999;
@@ -308,5 +401,19 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
 .ant-upload-select-picture-card .ant-upload-text {
   margin-top: 8px;
   color: #666;
+}
+
+/*虚线div*/
+.dashed-border {
+  border: 2px dashed #999; /* 虚线边框，颜色为黑色 */
+  padding: 15px; /* 添加一些内边距以便内容显示更清晰 */
+}
+
+.tag-item {
+  margin: 0 8px 8px 0; /* 标签之间的间距 */
+}
+
+.last-tag {
+  margin-right: 0; /* 最后一个标签不显示右边距 */
 }
 </style>
