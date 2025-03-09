@@ -14,7 +14,7 @@ public class MessageItem implements Serializable {
     /**
      * 目标作者用户名
      */
-    private String username;
+    private String nickname;
     private Integer status;
     /**
      * 通知创建时间

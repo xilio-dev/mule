@@ -22,7 +22,7 @@ public class ArticleDetailVO implements Serializable {
 @Data
 class UserInfoDTO {
     private Long userId;
-    private String userName;
+    private String nickname;
     private String avatar;
 
 }

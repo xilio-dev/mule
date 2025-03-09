@@ -4,7 +4,7 @@
     <a-col :span="4">
       <div style="text-align: center;background-color: white;padding-top: 30px;padding-bottom: 12px">
         <img style="width: 100px;height: 100px;border-radius: 4px;margin-bottom: 5px" :src="userStore.userinfo.avatar"/>
-        <div>{{ userStore.userinfo.username }}</div>
+        <div>{{ userStore.userinfo.nickname }}</div>
       </div>
       <a-affix offset-bottom="bottom" :offset-top="60">
         <a-menu

@@ -3,7 +3,7 @@
 <mapper namespace="com.stackoak.stackoak.repository.article.ArticleMapper">
     <select id="selectByCategoryAndRecent" resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
         SELECT a.id, a.title, a.cover, a.like_count AS likeCount, a.view_count AS viewCount,
-        a.collect_count AS collectCount, a.description, m.username, m.id AS userId,
+        a.collect_count AS collectCount, a.description, m.nickname, m.id AS userId,
         a.visible_status as visibleStatus,
         a.publish_time AS publishTime,
         GROUP_CONCAT(t.id) AS tagIds,
@@ -42,7 +42,7 @@
         <result property="articleInfo.creativeType" column="creativeType"/>
         <result property="articleInfo.originalUrl" column="originalUrl"/>
         <result property="userInfo.userId" column="userId"/>
-        <result property="userInfo.userName" column="userName"/>
+        <result property="userInfo.nickname" column="nickname"/>
         <result property="userInfo.avatar" column="avatar"/>
         <result property="category.categoryId" column="categoryId"/>
         <result property="category.categoryName" column="categoryName"/>
@@ -66,7 +66,7 @@
             a.creative_type as creativeType,
             a.original_url as originalUrl,
             m.id AS userId,
-            m.username AS userName,
+            m.nickname AS nickname,
             m.avatar,
             c.id AS categoryId,
             c.name AS categoryName,

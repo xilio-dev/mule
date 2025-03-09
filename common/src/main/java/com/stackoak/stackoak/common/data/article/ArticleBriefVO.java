@@ -56,7 +56,7 @@ public class ArticleBriefVO {
     /**
      * 用户名
      */
-    private String username;
+    private String nickname;
     /**
      * 标签列表
      */

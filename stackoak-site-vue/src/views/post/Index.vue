@@ -146,7 +146,7 @@ const toApply = (commentId: string) => {
           <a-col :span="18" style="padding-left: 7px">
             <a-row>
               <RouterLink :to="`/author/${userInfo.userId}`">
-                <span style="font-size: 17px;color: black">{{ userInfo.userName }}</span>
+                <span style="font-size: 17px;color: black">{{ userInfo.nickname }}</span>
               </RouterLink>
             </a-row>
             <a-row>
@@ -193,7 +193,7 @@ const toApply = (commentId: string) => {
         <h1>{{ articleInfo.title }}</h1>
         <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 30px">
           <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
-            <div style="color: #515767;">{{ userInfo.userName }}</div>
+            <div style="color: #515767;">{{ userInfo.nickname }}</div>
             <div>{{ articleInfo.publishTime }}</div>
             <div>12566</div>
             <div>字数 {{ NumberUtils.formatNumber(articleInfo.contentCount) }}</div>
@@ -254,7 +254,7 @@ const toApply = (commentId: string) => {
 
           </template>
           <template #author>
-            <a>{{ comment.user.username }}</a>
+            <a>{{ comment.user.nickname }}</a>
           </template>
           <template #avatar>
             <a-avatar :src="comment.user.avatar" alt="Avatar"/>
@@ -284,7 +284,7 @@ const toApply = (commentId: string) => {
               </a-popconfirm>
             </template>
             <template #author>
-              <a>{{ reply.user.username }} 回复 {{ reply.toUser ? reply.toUser.username : '' }}</a>
+              <a>{{ reply.user.nickname }} 回复 {{ reply.toUser ? reply.toUser.nickname : '' }}</a>
             </template>
             <template #avatar>
               <a-avatar :src="reply.user.avatar" alt="Avatar"/>

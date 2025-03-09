@@ -8,7 +8,7 @@
 
 // interface User {
 //   id: number;
-//   username: string;
+//   nickname: string;
 //   avatar: string;
 // }
 
@@ -28,7 +28,7 @@ interface ListItem {
   likeCount: number;
   cover: string;
   userId: string;
-  username: string;
+  nickname: string;
 
   tags: Tag[];
 }
@@ -60,7 +60,7 @@ const props = defineProps<{
               <ul class="action-list ">
                 <li class="item meta-container">
                   <a class="xx-link user-message">
-                    <div class="popover-box user-popover">{{ item.username }}</div>
+                    <div class="popover-box user-popover">{{ item.nickname }}</div>
                   </a>
                   <div class="footer-divider"></div>
                 </li>

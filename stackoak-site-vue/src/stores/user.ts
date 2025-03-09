@@ -4,7 +4,7 @@ import {sendLogout} from "@/api/auth.ts";
 
 interface UserInfo {
     userId?: number;
-    username?: string;
+    nickname?: string;
     email?: string;
     avatar?: string;
     token?: string;
@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', () => {
     // 使用 UserInfo 接口定义 userinfo 的类型
     const userinfo = ref<UserInfo>({
         userId: undefined,
-        username: undefined,
+        nickname: undefined,
         email: undefined,
         avatar: undefined,
         token: undefined
@@ -29,7 +29,7 @@ export const useUserStore = defineStore('user', () => {
     function logout() {
         userinfo.value = {
             userId: undefined,
-            username: undefined,
+            nickname: undefined,
             email: undefined,
             avatar: undefined,
         };

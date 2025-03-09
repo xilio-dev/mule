@@ -5,7 +5,7 @@
     <select id="selectFans"   resultType="com.stackoak.stackoak.common.data.follow.FollowUserVO">
         SELECT
             u.id AS userId,
-            u.username,
+            u.nickname,
             u.avatar,
             u.description,
             CASE
@@ -23,7 +23,7 @@
     </select>
     <select id="selectFollow" resultType="com.stackoak.stackoak.common.data.follow.FollowUserVO">
                 SELECT  u.id    AS userId,
-               u.username,
+               u.nickname,
                u.avatar,
                u.description,
                CASE

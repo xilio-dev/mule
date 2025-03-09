@@ -4,17 +4,21 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 /**
  * <p>
  * 用户信息表
  * </p>
  *
  * @author stackoak.com
- * @since 2025-03-05 16:20:53
+ * @since 2025-03-09 17:50:08
  */
 @Getter
 @Setter
@@ -33,8 +37,8 @@ public class User implements Serializable {
     /**
      * 用户名
      */
-    @TableField("username")
-    private String username;
+    @TableField("nickname")
+    private String nickname;
 
     /**
      * 公司
@@ -67,22 +71,16 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * 是否允许通知
-     */
-    @TableField("allow_notification")
-    private Integer allowNotification;
-
-    /**
      * 描述
      */
-    @TableField("description")
-    private String description;
+    @TableField("desc")
+    private String desc;
 
     /**
-     * 博客地址
+     * 个人博客地址
      */
-    @TableField("blog_address")
-    private String blogAddress;
+    @TableField("person_blog_address")
+    private String personBlogAddress;
 
     /**
      * 是否黑名单
@@ -111,8 +109,8 @@ public class User implements Serializable {
     /**
      * 粉丝数
      */
-    @TableField("follower_count")
-    private Integer followerCount;
+    @TableField("fans_count")
+    private Integer fansCount;
 
     /**
      * 发布文章数
@@ -157,12 +155,6 @@ public class User implements Serializable {
     private Integer collectSetCount;
 
     /**
-     * GitHub昵称
-     */
-    @TableField("github_nickname")
-    private String githubNickname;
-
-    /**
      * 大学名称
      */
     @TableField("university_name")
@@ -197,4 +189,76 @@ public class User implements Serializable {
      */
     @TableField("password")
     private String password;
+
+    /**
+     * Github主页
+     */
+    @TableField("github")
+    private String github;
+
+    /**
+     * Gitee主页
+     */
+    @TableField("gitee")
+    private String gitee;
+
+    /**
+     * 性别：0女、1男、2保密
+     */
+    @TableField("gender")
+    private Integer gender;
+
+    /**
+     * csdn主页
+     */
+    @TableField("csdn")
+    private String csdn;
+
+    /**
+     * 博客园主页
+     */
+    @TableField("bokeyuan")
+    private String bokeyuan;
+
+    /**
+     * 哔哩哔哩主页
+     */
+    @TableField("bilibli")
+    private String bilibli;
+
+    /**
+     * 学历背景
+     */
+    @TableField("edu_level")
+    private Integer eduLevel;
+
+    /**
+     * 入学时间
+     */
+    @TableField("edu_start_time")
+    private LocalDateTime eduStartTime;
+
+    /**
+     * 毕业时间
+     */
+    @TableField("edu_end_time")
+    private LocalDateTime eduEndTime;
+
+    /**
+     * 开始工作时间
+     */
+    @TableField("job_time")
+    private LocalDateTime jobTime;
+
+    /**
+     * 用户二维码
+     */
+    @TableField("author_qr")
+    private String authorQr;
+
+    /**
+     * 职业领域
+     */
+    @TableField("career_field")
+    private Integer careerField;
 }

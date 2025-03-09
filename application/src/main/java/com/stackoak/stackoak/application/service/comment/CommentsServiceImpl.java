@@ -254,7 +254,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         }
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
+        userDTO.setNickname(user.getNickname());
         userDTO.setAvatar(user.getAvatar());
         userDTO.setDescription(user.getDescription());
         return userDTO;

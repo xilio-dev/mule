@@ -15,7 +15,7 @@ public class FollowUserVO implements Serializable {
     /**
      * 用户名
      */
-    private String username;
+    private String nickname;
     /**
      * 大头像链接
      */

@@ -58,7 +58,7 @@ public class UserLoginServiceImpl implements ILoginService {
             User newUser = new User();
             newUser.setEmail(dto.getEmail());
             newUser.setStatus(UserStatusEnum.NORMAL.getStatus());
-            newUser.setUsername(dto.getEmail());
+            newUser.setNickname(dto.getEmail());
             userService.save(newUser);
             userId = newUser.getId();
             email = newUser.getEmail();
