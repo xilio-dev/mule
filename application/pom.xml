@@ -13,6 +13,7 @@
     <properties>
 
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.minio</groupId>

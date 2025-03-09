@@ -7,7 +7,7 @@
 REMOTE_USER="root"
 REMOTE_HOST="124.221.53.234"
 REMOTE_DIR="/www/wwwroot/stackoak.com/"
-PASSWORD="your_password"
+PASSWORD="Y0su!@$SX%"
 
 # 本地文件路径
 LOCAL_DIR="/Users/liuxin/Desktop/stakoak-server/stackoak-site-vue/dist/*"

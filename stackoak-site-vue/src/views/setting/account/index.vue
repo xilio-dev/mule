@@ -166,7 +166,7 @@ function startCountdown() {
   </a-card>
 
   <a-modal width="350px" :footer="null" v-model:open="openChangeEmailBindModel" title="邮箱变更" @ok="handleOk">
-    <div v-if="!next2">原邮箱号：{{ userStore.userinfo.email }}</div>
+    <div  v-if="!next2">原邮箱号：<span class="gray-label">{{ userStore.userinfo.email }}</span></div>
     <a-input v-if="next2" placeholder="请输入新的邮箱号" v-model:value="emailForm.email"/>
     <a-input v-model:value="emailForm.code" :bordered="false" placeholder="验证码"
              style="margin-top: 10px;background-color: #f2f3f5;border-radius: 6px;">

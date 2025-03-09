@@ -7,7 +7,7 @@ import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.strategy.SaAnnotationStrategy;
 import cn.dev33.satoken.util.SaResult;
-import com.stackoak.stackoak.common.message.RestResult;
+import com.stackoak.stackoak.common.message.Result;
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +44,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
                 // 异常处理函数：每次认证函数发生异常时执行此函数
                 .setError(e -> {
                     System.out.println("---------- 进入Sa-Token异常处理 -----------");
-                    return RestResult.error(401,e.getMessage());
+                    return Result.error(401,e.getMessage());
                 })
 
                 // 前置函数：在每次认证函数之前执行（BeforeAuth 不受 includeList 与 excludeList 的限制，所有请求都会进入）

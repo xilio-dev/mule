@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {Dayjs} from 'dayjs';
 import {reactive, ref, toRaw} from 'vue';
 import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';

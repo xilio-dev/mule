@@ -13,20 +13,23 @@ import {getFans, getFollows} from "@/api/user.ts";
 
 
 const activeKey = ref('1')
-const loadFollows=async ()=>{
-  const res=getFollows({current:1,size:10})
+const loadFollows = async () => {
+  const res = getFollows({current: 1, size: 10})
 }
-const loadFans=async ()=>{
-  const res=getFans({current:1,size:10})
+const loadFans = async () => {
+  const res = getFans({current: 1, size: 10})
 }
-onMounted(async ()=>{
+onMounted(async () => {
   await loadFollows()
   await loadFans()
 })
+const onEnterPD = () => {
+
+}
 </script>
 
 <template>
-  <a-row  class="background" style="width: 100%" >
+  <a-row class="background" style="width: 100%">
     <div style="width: 100%;">
       <div class="user-header">
         <div class="toutu user-header-toutu">
@@ -122,6 +125,9 @@ onMounted(async ()=>{
           </a-tab-pane>
           <a-tab-pane key="3" tab="粉丝">Content of Tab Pane 3</a-tab-pane>
           <a-tab-pane key="4" tab="关注的人">Content of Tab Pane 3</a-tab-pane>
+          <template #rightExtra>
+            <a-button @click="onEnterPD" type="link" size="small" style="margin-right: 15px">进入私域</a-button>
+          </template>
         </a-tabs>
       </div>
     </a-col>

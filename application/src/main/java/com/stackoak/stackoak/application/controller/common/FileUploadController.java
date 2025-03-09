@@ -1,7 +1,7 @@
 package com.stackoak.stackoak.application.controller.common;
 
 import com.stackoak.stackoak.application.service.common.IUploadService;
-import com.stackoak.stackoak.common.message.RestResult;
+import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ public class FileUploadController {
     @Autowired
     private IUploadService uploadService;
     @PostMapping("upload")
-    public RestResult uploadFile(@RequestParam("file") MultipartFile file) {
-        return RestResult.success(uploadService.uploadImage(file));
+    public Result uploadFile(@RequestParam("file") MultipartFile file) {
+        return Result.success(uploadService.uploadImage(file));
     }
 }

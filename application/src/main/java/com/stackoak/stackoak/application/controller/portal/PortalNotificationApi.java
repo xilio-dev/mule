@@ -1,7 +1,7 @@
 package com.stackoak.stackoak.application.controller.portal;
 
 import com.stackoak.stackoak.application.service.notification.SseClient;
-import com.stackoak.stackoak.common.message.RestResult;
+import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +29,9 @@ public class PortalNotificationApi {
     }
 
     @GetMapping("/closeSse/{uid}")
-    public RestResult closeSseSession(@PathVariable String uid) {
+    public Result closeSseSession(@PathVariable String uid) {
         sseClient.closeSse(uid);
-        return RestResult.success("sse session closed");
+        return Result.success("sse session closed");
     }
 
 }

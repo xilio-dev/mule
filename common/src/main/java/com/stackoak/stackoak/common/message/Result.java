@@ -1,99 +1,191 @@
 package com.stackoak.stackoak.common.message;
 
 
-import java.io.Serializable;
+import com.stackoak.stackoak.common.data.HttpStatus;
+import org.springframework.util.ObjectUtils;
 
-public class Result<T> implements Serializable {
+import java.util.HashMap;
+import java.util.Objects;
 
+
+public class Result extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
-    private Integer code;
+    /**
+     * 状态码
+     */
+    public static final String CODE_TAG = "code";
 
-    private String msg;
+    /**
+     * 返回内容
+     */
+    public static final String MSG_TAG = "msg";
 
-    private T data;
+    /**
+     * 数据对象
+     */
+    public static final String DATA_TAG = "data";
 
+    /**
+     * 初始化一个新创建的 Result 对象，使其表示一个空消息。
+     */
     public Result() {
     }
 
-    public Result(Integer code, T data) {
-        this.code = code;
-        this.data = data;
-    }
-    public Result(Integer code,String msg, T data) {
-        this.code = code;
-        this.msg=msg;
-        this.data = data;
-    }
-
-    public Result(Integer code, String msg) {
-        this.code = code;
-        this.msg = msg;
+    /**
+     * 初始化一个新创建的 Result 对象
+     *
+     * @param code 状态码
+     * @param msg  返回内容
+     */
+    public Result(int code, String msg) {
+        super.put(CODE_TAG, code);
+        super.put(MSG_TAG, msg);
     }
 
-    public Result(ResultEnum resultEnum) {
-        this.code = resultEnum.getCode();
-        this.msg = resultEnum.getMsg();
+    /**
+     * 初始化一个新创建的 Result 对象
+     *
+     * @param code 状态码
+     * @param msg  返回内容
+     * @param data 数据对象
+     */
+    public Result(int code, String msg, Object data) {
+        super.put(CODE_TAG, code);
+        super.put(MSG_TAG, msg);
+        if (!ObjectUtils.isEmpty(data)) {
+            super.put(DATA_TAG, data);
+        }
     }
 
-    public static Result success(){
-        return new Result<>(ResultEnum.SUCCESS);
-    }
-    public static Result success(int code,String msg){
-        return new Result<>(code,msg);
-    }
-
-    public static Result success(Object data){
-        return new Result<>(1,ResultEnum.SUCCESS.getMsg(),data);
+    /**
+     * 返回成功消息
+     *
+     * @return 成功消息
+     */
+    public static Result success() {
+        return Result.success("操作成功");
     }
 
-    public static Result fail(){
-        return new Result<>(ResultEnum.NO_CHANGE);
+    /**
+     * 返回成功数据
+     *
+     * @return 成功消息
+     */
+    public static Result success(Object data) {
+        return Result.success("操作成功", data);
     }
 
-    public static Result error(int code, String msg){
-        return new Result<>(code,msg);
+    /**
+     * 返回成功消息
+     *
+     * @param msg  返回内容
+     * @param data 数据对象
+     * @return 成功消息
+     */
+    public static Result success(String msg, Object data) {
+        return new Result(HttpStatus.SUCCESS, msg, data);
     }
 
-    public static Result error(){
-        return new Result<>(ResultEnum.BIZ_ERROR);
+    /**
+     * 返回警告消息
+     *
+     * @param msg 返回内容
+     * @return 警告消息
+     */
+    public static Result warn(String msg) {
+        return Result.warn(msg, null);
     }
 
-    public static Result error(ResultEnum result){
-        return new Result<>(result);
+    /**
+     * 返回警告消息
+     *
+     * @param msg  返回内容
+     * @param data 数据对象
+     * @return 警告消息
+     */
+    public static Result warn(String msg, Object data) {
+        return new Result(HttpStatus.WARN, msg, data);
     }
 
-
-    public Integer getCode() {
-        return code;
+    /**
+     * 返回错误消息
+     *
+     * @return 错误消息
+     */
+    public static Result error() {
+        return Result.error("操作失败");
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    /**
+     * 返回错误消息
+     *
+     * @param msg 返回内容
+     * @return 错误消息
+     */
+    public static Result error(String msg) {
+        return Result.error(msg, null);
     }
 
-    public String getMsg() {
-        return msg;
+    /**
+     * 返回错误消息
+     *
+     * @param msg  返回内容
+     * @param data 数据对象
+     * @return 错误消息
+     */
+    public static Result error(String msg, Object data) {
+        return new Result(HttpStatus.ERROR, msg, data);
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    /**
+     * 返回错误消息
+     *
+     * @param code 状态码
+     * @param msg  返回内容
+     * @return 错误消息
+     */
+    public static Result error(int code, String msg) {
+        return new Result(code, msg, null);
     }
 
-    public T getData() {
-        return data;
+    /**
+     * 是否为成功消息
+     *
+     * @return 结果
+     */
+    public boolean isSuccess() {
+        return Objects.equals(HttpStatus.SUCCESS, this.get(CODE_TAG));
     }
 
-    public void setData(T data) {
-        this.data = data;
+    /**
+     * 是否为警告消息
+     *
+     * @return 结果
+     */
+    public boolean isWarn() {
+        return Objects.equals(HttpStatus.WARN, this.get(CODE_TAG));
     }
 
+    /**
+     * 是否为错误消息
+     *
+     * @return 结果
+     */
+    public boolean isError() {
+        return Objects.equals(HttpStatus.ERROR, this.get(CODE_TAG));
+    }
+
+    /**
+     * 方便链式调用
+     *
+     * @param key   键
+     * @param value 值
+     * @return 数据对象
+     */
     @Override
-    public String toString() {
-        return "Result{" +
-                "code=" + code +
-                ", msg='" + msg + '\'' +
-                ", data=" + data +
-                '}';
+    public Result put(String key, Object value) {
+        super.put(key, value);
+        return this;
     }
 }

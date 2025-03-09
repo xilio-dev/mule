@@ -1,7 +1,7 @@
 package com.stackoak.stackoak.application.controller.common;
 
 import com.stackoak.stackoak.application.service.user.IScanCodeService;
-import com.stackoak.stackoak.common.message.RestResult;
+import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,17 +15,17 @@ public class ScanLoginApi {
     private IScanCodeService scanCodeService;
 
     @GetMapping("get-qr-code")
-    public RestResult getQrCode() {
-        return RestResult.success(scanCodeService.qrCode());
+    public Result getQrCode() {
+        return Result.success(scanCodeService.qrCode());
     }
 
     @PostMapping("qr-login")
-    public RestResult qrLogin() {
-        return RestResult.success(scanCodeService.qrCode());
+    public Result qrLogin() {
+        return Result.success(scanCodeService.qrCode());
     }
 
     @GetMapping("check-status")
-    public RestResult checkStatus() {
-        return RestResult.success(scanCodeService.qrCode());
+    public Result checkStatus() {
+        return Result.success(scanCodeService.qrCode());
     }
 }
