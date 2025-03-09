@@ -14,8 +14,8 @@ interface FormState {
 }
 
 const formRef = ref();
-const labelCol = {span: 5};
-const wrapperCol = {span: 13};
+const labelCol = {span: 4};
+const wrapperCol = {span: 20};
 const formState: UnwrapRef<FormState> = reactive({
   name: '天才程序员',
   region: undefined,
@@ -56,6 +56,7 @@ const onSubmit = () => {
 const resetForm = () => {
   formRef.value.resetFields();
 };
+
 const value1 = ref("1");
 const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i + 1)}));
 </script>
@@ -64,6 +65,8 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
   <a-row style="width: 100%;">
     <a-card title="基本信息" class="base-info-card">
       <a-form
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
           ref="formRef"
           :model="formState"
           :rules="rules">
@@ -75,7 +78,7 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
           </a-avatar>
         </a-form-item>
         <a-form-item ref="name" label="显示昵称" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item label="性别" name="resource">
           <a-radio-group v-model:value="formState.resource">
@@ -84,28 +87,28 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
           </a-radio-group>
         </a-form-item>
         <a-form-item label="个人简介" name="desc">
-          <a-textarea v-model:value="formState.desc"/>
+          <a-textarea class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
         <a-form-item label="个人博客" name="desc">
-          <a-input v-model:value="formState.desc"/>
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
-        <a-form-item label="Github主页" name="desc">
-          <a-input v-model:value="formState.desc"/>
+        <a-form-item label="Github" name="desc">
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
-        <a-form-item label="Gitee主页" name="desc">
-          <a-input v-model:value="formState.desc"/>
+        <a-form-item label="Gitee" name="desc">
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
         <a-form-item label="CSDN" name="desc">
-          <a-input v-model:value="formState.desc"/>
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
         <a-form-item label="博客园" name="desc">
-          <a-input v-model:value="formState.desc"/>
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
         <a-form-item label="哔哩哔哩" name="desc">
-          <a-input v-model:value="formState.desc"/>
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
         <a-form-item label="作者二维码" name="desc">
-          <a-input v-model:value="formState.desc"/>
+          <a-input class="app-input" v-model:value="formState.desc"/>
         </a-form-item>
         <a-form-item label="兴趣标签" name="desc">
           <a-tag v-for="i in 50">java{{ i }}</a-tag>
@@ -115,20 +118,23 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
     <a-card title="教育信息" class="base-info-card">
       <a-form
           ref="formRef"
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
           :model="formState"
           :rules="rules">
         <a-form-item ref="name" label="学校" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item ref="name" label="专业" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item ref="name" label="学历" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item label="入学时间" required name="date1">
           <a-date-picker
               v-model:value="formState.date1"
+              class="app-input"
               show-time
               type="date"
               placeholder="Pick a date"
@@ -139,14 +145,17 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
     </a-card>
     <a-card title="工作信息" class="base-info-card">
       <a-form
+          :label-col="labelCol"
+          :wrapper-col="wrapperCol"
           ref="formRef"
           :model="formState"
           :rules="rules">
         <a-form-item ref="name" label="工作状况" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item label="开始工作" required name="date1">
           <a-date-picker
+              class="app-input"
               v-model:value="formState.date1"
               show-time
               type="date"
@@ -155,13 +164,13 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
           />
         </a-form-item>
         <a-form-item ref="name" label="职业方向" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item ref="name" label="岗位" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item ref="name" label="公司" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input class="app-input" v-model:value="formState.name"/>
         </a-form-item>
         <a-form-item :wrapper-col="{offset: 1 }">
           <a-button type="primary" @click="onSubmit">保存修改</a-button>
@@ -175,5 +184,17 @@ const options = [...Array(25)].map((_, i) => ({value: (i + 10).toString(36) + (i
 .base-info-card {
   width: 100%;
   margin-bottom: 15px;
+}
+
+.app-input {
+  border-radius: 4px;
+  background: #f2f3f5;
+  color: #252933;
+  border: none #f2f3f5;
+}
+
+.app-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 </style>
