@@ -1,8 +1,8 @@
 <template>
-  <div style="position: fixed;width: 100%">
+  <div style="position: fixed;width: 100%" v-if="articleDetailForm">
     <a-row style="width: 100%;background-color: white;">
       <a-col :span="18">
-        <a-input v-model:value="articleDetailVo.articleInfo.title" :bordered="false" show-count :maxlength="100"
+        <a-input  v-model:value="articleDetailForm.title" :bordered="false" show-count :maxlength="100"
                  class="custom-placeholder"
                  placeholder="请输入一个简短的文章标题"
                  style="font-size:20px;min-height: 50px;"/>
@@ -18,15 +18,15 @@
       </a-col>
     </a-row>
     <Markdown @markdown-change="onMarkdownChange" v-if="!isLoading" :height="95" md-id="9999" :preview="true"
-              :value="articleDetailVo.articleInfo.content"/>
+              :value="articleDetailForm.content"/>
   </div>
   <a-modal style="top: 20px" width="45%" ok-text="立即发布" cancel-text="取消" v-model:open="openPublish"
            title="文章发布" @ok="onPublishArticle">
-    <a-form ref="formRef" :model="articleDetailVo" :rules="rules">
+    <a-form ref="formRef" :model="articleDetailForm" :rules="rules">
       <a-form-item label="分类领域" name="categoryId">
         <div class="domain-container">
-          <a-button :type="articleDetailVo.category.categoryId == item.id ? 'primary' : 'dashed'"
-                    v-for="item in categorys"
+          <a-button :type="articleDetailForm.categoryId == item.id ? 'primary' : 'dashed'"
+                    v-for="item in categories"
                     @click="selectDomainItem(item.id)" size="small" class="domain-item">{{ item.name }}
           </a-button>
         </div>
@@ -35,11 +35,10 @@
         <div class="upload-container" @click="showDrawer">
           <!-- 图片显示区域 -->
           <img
-              v-if="articleDetailVo.articleInfo.cover"
-              :src="ImageUtils.getImgUrl(articleDetailVo.articleInfo.cover)"
+              v-if="articleDetailForm.cover"
+              :src="ImageUtils.getImgUrl(articleDetailForm.cover)"
               style="width: 150px; height: 100px; object-fit: cover;"
-              alt="Uploaded Image"
-          />
+              alt="Uploaded Image"/>
           <!-- 上传按钮和加号图标 -->
           <div v-else class="upload-button">
             <PlusOutlined/>
@@ -55,26 +54,27 @@
       </a-form-item>
 
       <a-form-item label="文章类型" name="creativeType">
-        <a-radio-group v-model:value="articleDetailVo.articleInfo.creativeType">
+        <a-radio-group v-model:value="articleDetailForm.creativeType">
           <a-radio v-for="item in ARTICLE.CREATIVE_TYPE_LIST" :value="item.id">{{ item.label }}</a-radio>
         </a-radio-group>
-        <a-row v-if="articleDetailVo.articleInfo.creativeType===2">
-          <a-input v-model:value="articleDetailVo.articleInfo.originalUrl" placeholder="请输入原文作者链接"
+        <a-row v-if="articleDetailForm.creativeType===2">
+          <a-input   v-model:value="articleDetailForm.originalUrl" placeholder="请输入原文作者链接"
                    style="margin-top: 10px"/>
-          <a-checkbox style="margin-top: 10px" v-model:checked="isAuthorized">已获得原文作者授权许可</a-checkbox>
+          <a-checkbox  style="margin-top: 10px" v-model:checked="isAuthorized">已获得原文作者授权许可</a-checkbox>
         </a-row>
       </a-form-item>
+
       <a-form-item label="可见范围" name="visibleStatus">
-        <a-radio-group v-model:value="articleDetailVo.articleInfo.visibleStatus">
+        <a-radio-group v-model:value="articleDetailForm.visibleStatus">
           <a-radio v-for="item in ARTICLE.VISIBLE_STATUS_LIST" :value="item.id">{{ item.label }}</a-radio>
         </a-radio-group>
-        <a-input v-if="articleDetailVo.articleInfo.visibleStatus===4"
-                 v-model:value="articleDetailVo.articleInfo.visitPassword"
+        <a-input v-if="articleDetailForm.visibleStatus===4"
+                 v-model:value="articleDetailForm.visitPassword"
                  placeholder="请输入文章访问密码" style="margin-top: 15px"/>
       </a-form-item>
       <a-form-item label="文章摘要" name="description">
         <a-textarea placeholder="文章摘要：用于展示在网站各种推荐列表，以便读者快速了解文章内容，建议填写，增加曝光度。"
-                    :auto-size="{ minRows: 2, maxRows: 5 }" v-model:value="articleDetailVo.articleInfo.description"/>
+                    :auto-size="{ minRows: 2, maxRows: 5 }" v-model:value="articleDetailForm.description"/>
       </a-form-item>
     </a-form>
 
@@ -98,26 +98,26 @@ import router from "@/router";
 import {tagList} from "@/api/tag.ts";
 import TagInput from '@/components/TagInput/index.vue'
 import {ARTICLE} from "@/constants/article.ts";
-/*------------------------------------变量定义--------------------------------------------*/
-const useUser = useUserStore()
-const route = useRoute();
-const isLoading = ref(true);
-const isAuthorized = ref(false);
 
-const selectColumns = ref()
-const selectTags = ref()
-const categorys = ref([]);/*分类领域*/
-const columns = ref();
-const tags = ref();
+/*------------------------------------变量定义--------------------------------------------*/
+const useUser = useUserStore()/*用户状态*/
+const route = useRoute();/*路由状态*/
+const isLoading = ref(true);/*加载中开关*/
+const isAuthorized = ref(true);/*转载文章是否被授权*/
+const selectColumns = ref()/*用户选择的分类专栏*/
+const selectTags = ref([])/*用户选择的标签列表*/
+const categories = ref([]);/*分类领域*/
+const columns = ref();/*用户分类专栏列表*/
+const tags = ref();/*推荐标签列表*/
+const articleTags = ref();/*文章标签列表*/
 const open = ref<boolean>(false);/*图片选择抽屉开关*/
 const openPublish = ref<boolean>(false);/*发布文章对话框开关*/
+const formRef = ref()
 
 /*-------------------------------------------生命周期---------------------------------------------*/
 onMounted(async () => {
   if (!isAdd.value) {
     await loadArticleDetail()
-  } else {
-    initForm()
   }
   isLoading.value = false
   await loadCategories()
@@ -125,21 +125,19 @@ onMounted(async () => {
   await loadTagList()
 })
 /*-----------------------------------------初始化-----------------------------------------------*/
-const articleDetailVo = reactive({
+const articleDetailVo2 = reactive({
   articleInfo: {
     title: undefined,
     content: undefined,
-    visibleStatus: 1
+    visibleStatus: ARTICLE.VisibilityStatusEnum.ALL,
+    creativeType: ARTICLE.CreativeTypeEnum.ORIGINAL
   },
   tags: [],
   category: {
     categoryId: undefined
   }
 })
-const initForm = () => {
-  articleDetailVo.articleInfo.visibleStatus = 1
-  articleDetailVo.articleInfo.creativeType = 1
-}
+const articleDetailForm=ref()
 // 判断是否是新增模式
 const isAdd = computed(() => !route.query || route.query.id == undefined || route.query.id == '');
 const rules: Record<string, Rule[]> = {
@@ -153,14 +151,11 @@ const loadArticleDetail = async () => {
   try {
     const data = await postDetail({id: route.query.id});
     if (data) {
-      Object.assign(articleDetailVo, {
-        articleInfo: data.articleInfo || {},
-        tags: data.tags || [],
-        category: data.category || {}
-      });
-      isAuthorized.value = articleDetailVo.articleInfo.creativeType === 2 || false
+      articleDetailForm.value={...data.articleInfo,...data.category}
       //初始化标签
-      selectTags.value = articleDetailVo.tags.map(tag => tag.name) || [];
+      if (data.tags){
+        selectTags.value = data.tags.map(tag => tag.name) || [];
+      }
       isLoading.value = false
     }
   } catch (err) {
@@ -172,7 +167,7 @@ const loadCategories = async () => {
   try {
     const data = await categoryList();
     // 过滤掉 item.id === 0 的记录
-    categorys.value = (data || []).filter(item => item.id !== '0');
+    categories.value = (data || []).filter(item => item.id !== '0');
   } catch (err) {
   }
 };
@@ -187,24 +182,28 @@ const loadTagList = async () => {
 /*------------------------------------------核心业务----------------------------------------------*/
 //发布文章
 const onPublishArticle = () => {
-  let body = {
-    ...articleDetailVo.articleInfo,
-    tagNames: selectTags.value || [],
-    columnNames: selectColumns.value || [],
-    categoryId: articleDetailVo.category.categoryId
-  }
-  //发布新文章
-  if (isAdd.value) {
-    addArticle(body).then(articleId => {
-      router.push({path: `/post/${articleId}`})
-    })
-  } else {
-    //更新文章
-    updateArticle(body).then(articleId => {
-      router.push({path: `/post/${articleId}`})
-    })
-  }
-  openPublish.value = false;
+  formRef.value
+      .validate()
+      .then(() => {
+        let body = {
+          ...articleDetailVo.articleInfo,
+          tagNames: selectTags.value || [],
+          columnNames: selectColumns.value || [],
+          categoryId: articleDetailVo.category.categoryId
+        }
+        //发布新文章
+        if (isAdd.value) {
+          addArticle(body).then(articleId => {
+            router.push({path: `/post/${articleId}`})
+          })
+        } else {
+          //更新文章
+          updateArticle(body).then(articleId => {
+            router.push({path: `/post/${articleId}`})
+          })
+        }
+        openPublish.value = false;
+      })
 };
 /*-------------------------------------------其他函数---------------------------------------------*/
 //发布对话框

@@ -46,6 +46,7 @@
         <result property="userInfo.avatar" column="avatar"/>
         <result property="category.categoryId" column="categoryId"/>
         <result property="category.categoryName" column="categoryName"/>
+        <result property="category.authorizeStatus" column="authorizeStatus"/>
     </resultMap>
     <select id="selectArticleDetail" resultMap="ArticleDetailResultMap">
         SELECT
@@ -65,6 +66,7 @@
             a.publish_status as publishStatus,
             a.creative_type as creativeType,
             a.original_url as originalUrl,
+            a.authorize_status as authorizeStatus
             m.id AS userId,
             m.nickname AS nickname,
             m.avatar,

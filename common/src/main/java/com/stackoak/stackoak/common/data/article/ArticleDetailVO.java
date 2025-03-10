@@ -117,6 +117,11 @@ class ArticleInfoDTO {
      */
     private String originalUrl;
 
+    /**
+     * 授权状态
+     */
+    private Integer authorizeStatus;
+
 }
 
 
@@ -124,7 +129,7 @@ class ArticleInfoDTO {
 // 定义一个CategoryInfoDTO类，用于存储分类信息
 class CategoryInfoDTO {
     // 分类ID
-    private String  categoryId;
+    private String categoryId;
     // 分类名称
     private String categoryName;
 }

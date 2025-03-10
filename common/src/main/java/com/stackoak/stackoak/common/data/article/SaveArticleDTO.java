@@ -18,6 +18,7 @@ public class SaveArticleDTO extends BaseDTO {
     private Integer visibleStatus;
     private Integer publishStatus;
     private Integer creativeType;
+    private Integer authorizeStatus;
     /**
      * visibleStatus密码访问才有效
      */

@@ -139,7 +139,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String saveArticle(SaveArticleDTO dto) {
-        String userId = "1";
+        String userId = StpKit.USER.getLoginIdAsString();
         boolean isAdd = !StringUtils.hasLength(dto.getId());
         String categoryId = dto.getCategoryId();
         List<String> tagNames = dto.getTagNames();
@@ -182,6 +182,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (dto.getCreativeType() == 2) {
             if (!StringUtils.hasLength(dto.getOriginalUrl())) {
                 throw new BizException("当前文章类型是转载，需要填写原文链接！");
+            }
+            if (ObjectUtils.isEmpty(dto.getAuthorizeStatus())) {
+                throw new BizException("当前文章类型是转载，需要填写授权状态！");
+            }
+            if (dto.getAuthorizeStatus() != 1) {
+                throw new BizException("当前文章类型是转载，请确认已获得原文作者授权");
             }
             saveArticle.setOriginalUrl(dto.getOriginalUrl());
         }
@@ -261,7 +267,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //如果数据库没有专栏则创建专栏
         return saveArticle.getId();
     }
-
 
     private void createTagIfNotExist(String userId, List<String> tagNames, Article saveArticle) {
         for (String tagName : tagNames) {

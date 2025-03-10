@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 /**
  * <p>
  * 文章表
@@ -28,7 +31,7 @@ public class Article implements Serializable {
     /**
      * 编号
      */
-    @TableId(value = "id", type=IdType.ASSIGN_UUID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     /**
@@ -159,8 +162,15 @@ public class Article implements Serializable {
     @TableField("original_url")
     private String originalUrl;
     /**
-     *状态：1正常、2回收站
+     * 状态：1正常、2回收站
      */
     @TableField("status")
     private Integer status;
+
+    /**
+     * 转载文章是否被授权
+     */
+    @TableField("authorize_status")
+    private Integer authorizeStatus;
+
 }
