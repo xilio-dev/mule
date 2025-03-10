@@ -222,8 +222,8 @@ const onPublishArticle = () => {
 /*-------------------------------------------其他函数---------------------------------------------*/
 //发布对话框
 const showModal = () => {
-  // if (!validateFieldAndLength(articleDetailForm.title, 5, '文章标题')) return;
-  // if (!validateFieldAndLength(articleDetailForm.content, 20, '文章内容')) return;
+  if (!validateFieldAndLength(articleDetailForm.title, 5, '文章标题')) return;
+  if (!validateFieldAndLength(articleDetailForm.content, 20, '文章内容')) return;
   openPublish.value = true;
 };
 // 更新选中的按钮ID
