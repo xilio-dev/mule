@@ -1,8 +1,8 @@
 <template>
-  <div style="position: fixed;width: 100%" v-if="articleDetailForm">
+  <div style="position: fixed;width: 100%">
     <a-row style="width: 100%;background-color: white;">
       <a-col :span="18">
-        <a-input  v-model:value="articleDetailForm.title" :bordered="false" show-count :maxlength="100"
+        <a-input v-model:value="articleDetailForm.title" :bordered="false" show-count :maxlength="100"
                  class="custom-placeholder"
                  placeholder="请输入一个简短的文章标题"
                  style="font-size:20px;min-height: 50px;"/>
@@ -57,10 +57,12 @@
         <a-radio-group v-model:value="articleDetailForm.creativeType">
           <a-radio v-for="item in ARTICLE.CREATIVE_TYPE_LIST" :value="item.id">{{ item.label }}</a-radio>
         </a-radio-group>
-        <a-row v-if="articleDetailForm.creativeType===2">
-          <a-input   v-model:value="articleDetailForm.originalUrl" placeholder="请输入原文作者链接"
+        <a-row v-if="articleDetailForm.creativeType==2">
+          <a-input v-model:value="articleDetailForm.originalUrl" placeholder="请输入原文作者链接"
                    style="margin-top: 10px"/>
-          <a-checkbox  style="margin-top: 10px" v-model:checked="isAuthorized">已获得原文作者授权许可</a-checkbox>
+          <a-checkbox style="margin-top: 10px" v-model:checked="authorizedStatus">
+            已获得原文作者授权许可
+          </a-checkbox>
         </a-row>
       </a-form-item>
 
@@ -98,17 +100,18 @@ import router from "@/router";
 import {tagList} from "@/api/tag.ts";
 import TagInput from '@/components/TagInput/index.vue'
 import {ARTICLE} from "@/constants/article.ts";
+import {message} from "ant-design-vue";
 
 /*------------------------------------变量定义--------------------------------------------*/
 const useUser = useUserStore()/*用户状态*/
 const route = useRoute();/*路由状态*/
 const isLoading = ref(true);/*加载中开关*/
-const isAuthorized = ref(true);/*转载文章是否被授权*/
 const selectColumns = ref()/*用户选择的分类专栏*/
 const selectTags = ref([])/*用户选择的标签列表*/
 const categories = ref([]);/*分类领域*/
 const columns = ref();/*用户分类专栏列表*/
 const tags = ref();/*推荐标签列表*/
+const authorizedStatus = ref(false)/*转载文章是否被授权*/
 const articleTags = ref();/*文章标签列表*/
 const open = ref<boolean>(false);/*图片选择抽屉开关*/
 const openPublish = ref<boolean>(false);/*发布文章对话框开关*/
@@ -125,24 +128,18 @@ onMounted(async () => {
   await loadTagList()
 })
 /*-----------------------------------------初始化-----------------------------------------------*/
-const articleDetailVo2 = reactive({
-  articleInfo: {
-    title: undefined,
-    content: undefined,
-    visibleStatus: ARTICLE.VisibilityStatusEnum.ALL,
-    creativeType: ARTICLE.CreativeTypeEnum.ORIGINAL
-  },
-  tags: [],
-  category: {
-    categoryId: undefined
-  }
+
+const articleDetailForm = ref({
+  categoryId: '',
+  authorizeStatus: 0,
+  creativeType: ARTICLE.CreativeTypeEnum.ORIGINAL,
+  visibleStatus: ARTICLE.VisibilityStatusEnum.ALL
 })
-const articleDetailForm=ref()
 // 判断是否是新增模式
 const isAdd = computed(() => !route.query || route.query.id == undefined || route.query.id == '');
 const rules: Record<string, Rule[]> = {
-  categoryId: [{required: true, message: '选择分类', trigger: 'change'}],
-  visibleStatus: [{required: true, message: '可见状态', trigger: 'change'}],
+  categoryId: [{required: true, message: '请选择分类领域', trigger: 'change'}],
+  visibleStatus: [{required: true, message: '请选择可见范围', trigger: 'change'}],
   creativeType: [{required: true, message: '文章类型', trigger: 'change'}],
 };
 /*----------------------------------------数据加载------------------------------------------------*/
@@ -151,9 +148,10 @@ const loadArticleDetail = async () => {
   try {
     const data = await postDetail({id: route.query.id});
     if (data) {
-      articleDetailForm.value={...data.articleInfo,...data.category}
+      articleDetailForm.value = {...data.articleInfo, ...data.category}
+      authorizedStatus.value = articleDetailForm.value.authorizeStatus == 1
       //初始化标签
-      if (data.tags){
+      if (data.tags) {
         selectTags.value = data.tags.map(tag => tag.name) || [];
       }
       isLoading.value = false
@@ -185,11 +183,15 @@ const onPublishArticle = () => {
   formRef.value
       .validate()
       .then(() => {
+        if (articleDetailForm.value.creativeType == ARTICLE.CreativeTypeEnum.REPRINT && !authorizedStatus.value) {
+          message.warning("转载类型文章需得到作者的授权,请确认已获得授权!")
+          return
+        }
         let body = {
-          ...articleDetailVo.articleInfo,
+          ...articleDetailForm.value,
+          authorizedStatus: authorizedStatus.value,
           tagNames: selectTags.value || [],
           columnNames: selectColumns.value || [],
-          categoryId: articleDetailVo.category.categoryId
         }
         //发布新文章
         if (isAdd.value) {
@@ -215,13 +217,13 @@ const showModal = () => {
 //分类领域选择
 const selectDomainItem = (id: any) => {
   // 更新选中的按钮ID
-  articleDetailVo.category.categoryId = id
+  articleDetailForm.value.categoryId = id
 }
 const onMarkdownChange = (e: any) => {
-  articleDetailVo.articleInfo.content = e.content
+  articleDetailForm.value.content = e.content
 }
 const onConfirmSelectImg = (imgUrl: string) => {
-  articleDetailVo.articleInfo.cover = ImageUtils.removeSuffixPath(imgUrl)
+  articleDetailForm.value.cover = ImageUtils.removeSuffixPath(imgUrl)
 }
 const showDrawer = () => {
   open.value = true;
