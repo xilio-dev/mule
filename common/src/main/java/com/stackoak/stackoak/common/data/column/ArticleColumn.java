@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.common.data.column;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
@@ -32,10 +33,12 @@ public class ArticleColumn implements Serializable {
     /**
      * 专栏编号
      */
+    @TableField("column_id")
     private String columnId;
 
     /**
      * 文章编号
      */
+    @TableField("article_id")
     private String articleId;
 }

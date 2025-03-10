@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.common.data.article;
 
+import com.stackoak.stackoak.common.data.column.ColumnDTO;
 import com.stackoak.stackoak.common.data.tag.TagInfoDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -24,6 +25,9 @@ public class ArticleDetailVO implements Serializable {
     private String tagIds;
     // 标签名称
     private String tagNames;
+    private List<ColumnDTO> columns;
+    private String columnIds;
+    private String columnNames;
 }
 
 @Data

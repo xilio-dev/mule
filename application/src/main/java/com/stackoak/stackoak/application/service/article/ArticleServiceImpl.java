@@ -15,6 +15,7 @@ import com.stackoak.stackoak.common.data.collect.ArticleCollect;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.column.ArticleColumn;
 import com.stackoak.stackoak.common.data.column.Column;
+import com.stackoak.stackoak.common.data.column.ColumnDTO;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
 import com.stackoak.stackoak.common.data.likes.Likes;
 import com.stackoak.stackoak.common.data.tag.Tag;
@@ -107,10 +108,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public ArticleDetailVO detail(ArticleDetailDTO dto) {
         ArticleDetailVO articleDetail = baseMapper.selectArticleDetail(dto.getId());
-        if (articleDetail != null) {
+        if (!ObjectUtils.isEmpty(articleDetail)) {
             String tagIdStr = articleDetail.getTagIds();
-            if (tagIdStr != null) {
-                String[] tagIds = articleDetail.getTagIds().split(",");
+            if (StringUtils.hasText(tagIdStr)) {
+                String[] tagIds = tagIdStr.split(",");
                 String[] tagNames = articleDetail.getTagNames().split(",");
                 List<TagInfoDTO> tags = IntStream.range(0, tagIds.length)
                         .mapToObj(i -> {
@@ -121,6 +122,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         })
                         .collect(Collectors.toList());
                 articleDetail.setTags(tags);
+            }
+
+            String columnIdStr = articleDetail.getColumnIds();
+            if (StringUtils.hasText(columnIdStr)) {
+                String[] columnIds = columnIdStr.split(",");
+                String[] columnNames = articleDetail.getColumnNames().split(",");
+                List<ColumnDTO> columns = IntStream.range(0, columnIds.length)
+                        .mapToObj(i -> {
+                            ColumnDTO column = new ColumnDTO();
+                            column.setId(columnIds[i]);
+                            column.setName(columnNames[i]);
+                            return column;
+                        })
+                        .collect(Collectors.toList());
+                articleDetail.setColumns(columns);
             }
         }
         //判断是否是登陆用户
@@ -169,7 +185,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         saveArticle.setPublishTime(LocalDateTime.now());
         saveArticle.setVisibleStatus(dto.getVisibleStatus());
         if (!StringUtils.hasText(dto.getDescription())) {
-            saveArticle.setDescription(dto.getContent().trim().substring(0, 200));
+            String content = dto.getContent().trim();
+            saveArticle.setDescription(content.length() > 200 ? content.substring(0, 200) : content);
         }
         if (dto.getVisibleStatus() == 4) {
             if (!StringUtils.hasLength(dto.getVisitPassword())) {
@@ -223,13 +240,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             createColumIfNotExist(userId, newColumnsToAdd, saveArticle);
             // 移除旧的专栏关联
             for (String columnName : oldColumnsToRemove) {
-                Column column = oldColumns.stream().filter(c -> c.getName().equals(columnName)).findFirst().orElse(null);
-                if (column != null) {
-                    articleColumnMapper.deleteById(new ArticleColumn(column.getId(), saveArticle.getId()));
-                }
+                oldColumns.stream().filter(c -> c.getName().equals(columnName)).findFirst().ifPresent(column ->
+                {
+                    LambdaQueryWrapper<ArticleColumn> wrapper = new LambdaQueryWrapper<>();
+                    wrapper.eq(ArticleColumn::getArticleId, saveArticle.getId())
+                            .eq(ArticleColumn::getColumnId, column.getId());
+                    articleColumnMapper.delete(wrapper);
+                });
             }
-        } else {
-            // 新增文章：如果用户提交的专栏名字已经在数据库则建立关联，不存在则创建后再关联
+        }
+        // 新增文章：如果用户提交的专栏名字已经在数据库则建立关联，不存在则创建后再关联
+        if (isAdd) {
             createColumIfNotExist(userId, columnNames, saveArticle);
         }
         /*--------------------------------------------------------------------------------------*/
@@ -251,13 +272,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
             // 添加新的标签并建立关联
             createTagIfNotExist(userId, newTagsToAdd, saveArticle);
-
-            // 移除旧的标签关联
+            // 移除旧的专栏关联
             for (String tagName : oldTagsToRemove) {
-                Tag tag = oldTags.stream().filter(t -> t.getName().equals(tagName)).findFirst().orElse(null);
-                if (tag != null) {
-                    articleColumnMapper.deleteById(new ArticleTag(saveArticle.getId(), tag.getId()));
-                }
+                oldTags.stream().filter(t -> t.getName().equals(tagName)).findFirst().ifPresent(tag -> {
+                    LambdaQueryWrapper<ArticleTag> wrapper = new LambdaQueryWrapper<>();
+                    wrapper.eq(ArticleTag::getArticleId, saveArticle.getId())
+                            .eq(ArticleTag::getTagId, tag.getId());
+                    articleTagService.remove(wrapper);
+                });
             }
         } else {
             // 新增文章：如果用户提交的标签名字已经在数据库则建立关联，不存在则创建后再关联
@@ -291,8 +313,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     private void createColumIfNotExist(String userId, List<String> columnNames, Article saveArticle) {
         for (String columnName : columnNames) {
-            //todo userid
-            Column column = columnService.getColumnByName(columnName, "1");
+            Column column = columnService.getColumnByName(columnName, StpKit.USER.getLoginIdAsString());
             if (column == null) {
                 // 如果专栏不存在，创建专栏
                 column = new Column();
@@ -340,11 +361,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         Likes likes = new Likes();
         likes.setTargetId(article.getId());
-        likes.setUserId("1");//todo 临时用户
+        likes.setUserId(StpKit.USER.getLoginIdAsString());
         likes.setType(LikeTypeEnum.ARTICLE.getType());
         if (op == 1) {
             //判断是否已经点过赞了，不能重复点赞
-            Likes like = likesService.getLike("1", article.getId(), LikeTypeEnum.ARTICLE);
+            Likes like = likesService.getLike(StpKit.USER.getLoginIdAsString(), article.getId(), LikeTypeEnum.ARTICLE);
             if (!ObjectUtils.isEmpty(like)) {
                 throw new BizException("不能重复点赞！");
             }
@@ -374,7 +395,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             throw new BizException("文章不存在！");
         }
         //检查收藏夹是否存在
-        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), "1");
+        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), StpKit.USER.getLoginIdAsString());
         if (ObjectUtils.isEmpty(collect)) {
             throw new BizException("收藏夹不存在！");
         }
@@ -396,13 +417,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
-        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), "1");
+        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), StpKit.USER.getLoginIdAsString());
         if (ObjectUtils.isEmpty(collect)) {
             throw new BizException("收藏夹不存在！");
         }
         //删除文章与收藏夹的关联
-        ArticleCollect articleCollect = new ArticleCollect(favorRequest.getAid(), favorRequest.getCollectId());
-        articleCollectMapper.deleteById(articleCollect);
+        LambdaQueryWrapper<ArticleCollect> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ArticleCollect::getArticleId, favorRequest.getAid()).eq(ArticleCollect::getCollectId, favorRequest.getCollectId());
+        articleCollectMapper.delete(wrapper);
     }
 
     /**

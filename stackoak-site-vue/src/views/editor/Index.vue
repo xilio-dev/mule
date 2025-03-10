@@ -95,7 +95,6 @@ import {addArticle, postDetail, updateArticle} from "@/api/post.ts";
 import {useUserStore} from "@/stores/user.ts";
 import {categoryList} from "@/api/category.ts";
 import {columnList} from "@/api/column.ts";
-import {reactive} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import {PlusOutlined} from '@ant-design/icons-vue';
 import {ImageUtils} from "@/utils/file.ts";
@@ -116,7 +115,6 @@ const categories = ref([]);/*分类领域*/
 const columns = ref();/*用户分类专栏列表*/
 const tags = ref();/*推荐标签列表*/
 const authorizedStatus = ref(false)/*转载文章是否被授权*/
-const articleTags = ref();/*文章标签列表*/
 const open = ref<boolean>(false);/*图片选择抽屉开关*/
 const openPublish = ref<boolean>(false);/*发布文章对话框开关*/
 const formRef = ref()
@@ -159,6 +157,9 @@ const loadArticleDetail = async () => {
       //初始化标签
       if (data.tags) {
         selectTags.value = data.tags.map(tag => tag.name) || [];
+      }
+      if (data.columns) {
+        selectColumns.value = data.columns.map(c => c.name) || [];
       }
       isLoading.value = false
     }
@@ -222,8 +223,8 @@ const onPublishArticle = () => {
 /*-------------------------------------------其他函数---------------------------------------------*/
 //发布对话框
 const showModal = () => {
-  if (!validateFieldAndLength(articleDetailForm.title, 5, '文章标题')) return;
-  if (!validateFieldAndLength(articleDetailForm.content, 20, '文章内容')) return;
+  if (!validateFieldAndLength(articleDetailForm.value.title, 5, '文章标题')) return;
+  if (!validateFieldAndLength(articleDetailForm.value.content, 20, '文章内容')) return;
   openPublish.value = true;
 };
 // 更新选中的按钮ID

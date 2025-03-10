@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, nextTick, onMounted, reactive, ref, toRaw} from 'vue';
+import {onMounted, reactive, ref, toRaw} from 'vue';
 import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import dayjs, {Dayjs} from 'dayjs';
@@ -21,10 +21,12 @@ const loadUserProfile = () => {
       dayjs(userForm.eduStartTime, dateFormat),
       dayjs(userForm.eduEndTime, dateFormat),
     ]);
-    intSelectTags()
+    if (tags.value) {
+      initSelectedTags()
+    }
   })
 }
-const intSelectTags = () => {
+const initSelectedTags = () => {
   // 创建一个映射表，将 id 映射到 name
   const tagMap = new Map<string, string>();
   tags.value.forEach(tag => tagMap.set(tag.id, tag.name));
@@ -46,8 +48,8 @@ const intSelectTags = () => {
 }
 const tags = ref()
 const loadTagList = () => {
-  tagList().then(res => {
-    tags.value = res || []
+  tagList({current: 1, size: 100}).then(res => {
+    tags.value = res.records || []
   })
 }
 
@@ -185,7 +187,6 @@ const careerFieldOptions = [
 ]
 
 
-
 import {PlusOutlined, LoadingOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import type {UploadChangeParam, UploadProps} from 'ant-design-vue';
@@ -301,7 +302,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
           <a-input class="app-input" v-model:value="userForm.bilibli"/>
         </a-form-item>
         <a-form-item label="兴趣标签" name="tag">
-          <div v-if="selectedTags.length>0&&tags" class="selected-tags" style="margin-top: 5px">
+          <div  class="selected-tags" style="margin-top: 5px">
             <a-tag
                 v-for="tag in selectedTags"
                 :key="tag.id"

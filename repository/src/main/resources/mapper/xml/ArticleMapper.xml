@@ -62,28 +62,30 @@
             a.publish_time AS publishTime,
             a.collect_count AS collectCount,
             a.content_count AS contentCount,
-            a.column_id as columnId,
-            a.visible_status as visibleStatus,
-            a.publish_status as publishStatus,
-            a.creative_type as creativeType,
-            a.original_url as originalUrl,
-            a.authorize_status as authorizeStatus,
-            a.visit_password as visitPassword,
+            a.column_id AS columnId,
+            a.visible_status AS visibleStatus,
+            a.publish_status AS publishStatus,
+            a.creative_type AS creativeType,
+            a.original_url AS originalUrl,
+            a.authorize_status AS authorizeStatus,
+            a.visit_password AS visitPassword,
             m.id AS userId,
             m.nickname AS nickname,
             m.avatar,
             c.id AS categoryId,
             c.name AS categoryName,
-
-            GROUP_CONCAT(t.id) AS tagIds,
-            GROUP_CONCAT(t.name) AS tagNames
+            GROUP_CONCAT(DISTINCT t.id ORDER BY t.id) AS tagIds,
+            GROUP_CONCAT(DISTINCT t.name ORDER BY t.name) AS tagNames,
+            GROUP_CONCAT(DISTINCT col.id ORDER BY col.id) AS columnIds,
+            GROUP_CONCAT(DISTINCT col.name ORDER BY col.name) AS columnNames
         FROM article a
                  LEFT JOIN user m ON a.user_id = m.id
                  LEFT JOIN category c ON a.category_id = c.id
                  LEFT JOIN article_tag at ON a.id = at.article_id
             LEFT JOIN tag t ON at.tag_id = t.id
+            LEFT JOIN article_column ac ON a.id = ac.article_id
+            LEFT JOIN columns col ON ac.column_id = col.id
         WHERE a.id = #{id}
         GROUP BY a.id;
-
     </select>
 </mapper>
