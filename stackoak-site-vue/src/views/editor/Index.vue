@@ -1,166 +1,5 @@
-<script setup lang="ts">
-import Markdown from "@/components/Markdown.vue";
-import RightDrawer from "@/views/editor/components/right-drawer/index.vue"
-import {computed, onMounted, ref} from "vue";
-import {useRoute} from "vue-router";
-import {addArticle, postDetail, updateArticle} from "@/api/post.ts";
-import {useUserStore} from "@/stores/user.ts";
-import {categoryList} from "@/api/category.ts";
-import {columnList} from "@/api/column.ts";
-import {reactive} from 'vue';
-import type {Rule} from 'ant-design-vue/es/form';
-import {PlusOutlined} from '@ant-design/icons-vue';
-import {nextTick} from 'vue';
-import {ImageUtils} from "@/utils/file.ts";
-import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
-import router from "@/router";
-import {tagList} from "@/api/tag.ts";
-import TagInput from '@/components/TagInput/index.vue'
-
-const useUser = useUserStore()
-const route = useRoute();
-const isLoading = ref(true);
-const isAuthorized = ref(false);
-//可见范围
-const visibleStatusList = ref([
-  {id: 1, label: '全部'},
-  {id: 2, label: '仅自己'},
-  {id: 3, label: '粉丝'},
-  {id: 4, label: '密码访问'}
-])
-//创作类型
-const creativeTypeList = ref([
-  {id: 1, label: '原创'},
-  {id: 2, label: '转载'}])
-// 判断是否是新增模式
-const isAdd = computed(() => !route.query || route.query.id == undefined || route.query.id == '');
-const articleDetailVo = reactive({
-  articleInfo: {
-    title: undefined,
-    content: undefined
-  },
-  tags: [],
-  category: {
-    categoryId: undefined
-  }
-})
-const selectColumns = ref()
-const selectTags = ref()
-//获取文章详情数据
-const loadArticleDetail = async () => {
-  try {
-    const data = await postDetail({id: route.query.id});
-    if (data) {
-      Object.assign(articleDetailVo, {
-        articleInfo: data.articleInfo || {},
-        tags: data.tags || [],
-        category: data.category || {}
-      });
-
-      isAuthorized.value = articleDetailVo.articleInfo.creativeType === 2 || false
-      //初始化标签
-      selectTags.value = articleDetailVo.tags.map(tag => tag.name) || [];
-      isLoading.value = false
-    }
-  } catch (err) {
-    isLoading.value = false
-  }
-};
-//获取分类领域
-const categorys = ref([]);
-const loadCategorys = async () => {
-  try {
-    // 获取数据
-    const data = await categoryList();
-    // 过滤掉 item.id === 0 的记录
-    categorys.value = (data || []).filter(item => item.id !== '0');
-  } catch (err) {
-  }
-};
-//获取用户的专栏列表
-const columns = ref();
-const loadColumnList = async () => {
-  columns.value = await columnList() || []
-}
-//分页获取系统中所有标签
-const tags = ref();
-const loadTagList = async () => {
-  tags.value = await tagList() || []
-}
-const initForm = () => {
-  articleDetailVo.articleInfo.visibleStatus = 1
-  articleDetailVo.articleInfo.creativeType = 1
-}
-onMounted(async () => {
-  if (!isAdd.value) {
-    await loadArticleDetail()
-  } else {
-    initForm()
-  }
-  isLoading.value = false
-  await loadCategorys()
-  await loadColumnList()
-  await loadTagList()
-})
-
-const rules: Record<string, Rule[]> = {
-  categoryId: [{required: true, message: '选择分类', trigger: 'change'}],
-  visibleStatus: [{required: true, message: '可见状态', trigger: 'change'}],
-  creativeType: [{required: true, message: '文章类型', trigger: 'change'}],
-};
-
-
-//图片选择抽屉
-const open = ref<boolean>(false);
-const showDrawer = () => {
-  open.value = true;
-};
-//发布对话框
-const openPublish = ref<boolean>(false);
-const showModal = () => {
-  //todo if (!validateFieldAndLength(articleDetailVo.articleInfo.title, 5, '文章标题')) return;
-  // todo if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
-  openPublish.value = true;
-};
-//发布文章
-const onPublishArticle = () => {
-  let body = {
-    ...articleDetailVo.articleInfo,
-    tagNames: selectTags.value||[],
-    columnNames: selectColumns.value||[],
-    categoryId: articleDetailVo.category.categoryId
-  }
-  //发布新文章
-  if (isAdd.value) {
-    addArticle(body).then(articleId => {
-      router.push({path: `/post/${articleId}`})
-    })
-  } else {
-    //更新文章
-    updateArticle(body).then(articleId => {
-      router.push({path: `/post/${articleId}`})
-    })
-  }
-  openPublish.value = false;
-};
-
-//分类领域选择
-const selectDomainItem = (id: any) => {
-  // 更新选中的按钮ID
-  articleDetailVo.category.categoryId = id
-}
-
-const onMarkdownChange = (e: any) => {
-  articleDetailVo.articleInfo.content = e.content
-}
-const onConfirmSelectImg = (imgUrl: string) => {
-  articleDetailVo.articleInfo.cover = ImageUtils.removeSuffixPath(imgUrl)
-}
-</script>
-
 <template>
   <div style="position: fixed;width: 100%">
-
     <a-row style="width: 100%;background-color: white;">
       <a-col :span="18">
         <a-input v-model:value="articleDetailVo.articleInfo.title" :bordered="false" show-count :maxlength="100"
@@ -217,7 +56,7 @@ const onConfirmSelectImg = (imgUrl: string) => {
 
       <a-form-item label="文章类型" name="creativeType">
         <a-radio-group v-model:value="articleDetailVo.articleInfo.creativeType">
-          <a-radio v-for="item in creativeTypeList" :value="item.id">{{ item.label }}</a-radio>
+          <a-radio v-for="item in ARTICLE.CREATIVE_TYPE_LIST" :value="item.id">{{ item.label }}</a-radio>
         </a-radio-group>
         <a-row v-if="articleDetailVo.articleInfo.creativeType===2">
           <a-input v-model:value="articleDetailVo.articleInfo.originalUrl" placeholder="请输入原文作者链接"
@@ -227,7 +66,7 @@ const onConfirmSelectImg = (imgUrl: string) => {
       </a-form-item>
       <a-form-item label="可见范围" name="visibleStatus">
         <a-radio-group v-model:value="articleDetailVo.articleInfo.visibleStatus">
-          <a-radio v-for="item in visibleStatusList" :value="item.id">{{ item.label }}</a-radio>
+          <a-radio v-for="item in ARTICLE.VISIBLE_STATUS_LIST" :value="item.id">{{ item.label }}</a-radio>
         </a-radio-group>
         <a-input v-if="articleDetailVo.articleInfo.visibleStatus===4"
                  v-model:value="articleDetailVo.articleInfo.visitPassword"
@@ -241,8 +80,154 @@ const onConfirmSelectImg = (imgUrl: string) => {
 
   </a-modal>
   <RightDrawer @confirm-select="onConfirmSelectImg" :open-drawer="open" @close-drawer="open=false"/>
-
 </template>
+<script setup lang="ts">
+import Markdown from "@/components/Markdown.vue";
+import RightDrawer from "@/views/editor/components/right-drawer/index.vue"
+import {computed, onMounted, ref} from "vue";
+import {useRoute} from "vue-router";
+import {addArticle, postDetail, updateArticle} from "@/api/post.ts";
+import {useUserStore} from "@/stores/user.ts";
+import {categoryList} from "@/api/category.ts";
+import {columnList} from "@/api/column.ts";
+import {reactive} from 'vue';
+import type {Rule} from 'ant-design-vue/es/form';
+import {PlusOutlined} from '@ant-design/icons-vue';
+import {ImageUtils} from "@/utils/file.ts";
+import router from "@/router";
+import {tagList} from "@/api/tag.ts";
+import TagInput from '@/components/TagInput/index.vue'
+import {ARTICLE} from "@/constants/article.ts";
+/*------------------------------------变量定义--------------------------------------------*/
+const useUser = useUserStore()
+const route = useRoute();
+const isLoading = ref(true);
+const isAuthorized = ref(false);
+
+const selectColumns = ref()
+const selectTags = ref()
+const categorys = ref([]);/*分类领域*/
+const columns = ref();
+const tags = ref();
+const open = ref<boolean>(false);/*图片选择抽屉开关*/
+const openPublish = ref<boolean>(false);/*发布文章对话框开关*/
+
+/*-------------------------------------------生命周期---------------------------------------------*/
+onMounted(async () => {
+  if (!isAdd.value) {
+    await loadArticleDetail()
+  } else {
+    initForm()
+  }
+  isLoading.value = false
+  await loadCategories()
+  await loadColumnList()
+  await loadTagList()
+})
+/*-----------------------------------------初始化-----------------------------------------------*/
+const articleDetailVo = reactive({
+  articleInfo: {
+    title: undefined,
+    content: undefined,
+    visibleStatus: 1
+  },
+  tags: [],
+  category: {
+    categoryId: undefined
+  }
+})
+const initForm = () => {
+  articleDetailVo.articleInfo.visibleStatus = 1
+  articleDetailVo.articleInfo.creativeType = 1
+}
+// 判断是否是新增模式
+const isAdd = computed(() => !route.query || route.query.id == undefined || route.query.id == '');
+const rules: Record<string, Rule[]> = {
+  categoryId: [{required: true, message: '选择分类', trigger: 'change'}],
+  visibleStatus: [{required: true, message: '可见状态', trigger: 'change'}],
+  creativeType: [{required: true, message: '文章类型', trigger: 'change'}],
+};
+/*----------------------------------------数据加载------------------------------------------------*/
+//获取文章详情数据
+const loadArticleDetail = async () => {
+  try {
+    const data = await postDetail({id: route.query.id});
+    if (data) {
+      Object.assign(articleDetailVo, {
+        articleInfo: data.articleInfo || {},
+        tags: data.tags || [],
+        category: data.category || {}
+      });
+      isAuthorized.value = articleDetailVo.articleInfo.creativeType === 2 || false
+      //初始化标签
+      selectTags.value = articleDetailVo.tags.map(tag => tag.name) || [];
+      isLoading.value = false
+    }
+  } catch (err) {
+    isLoading.value = false
+  }
+};
+//加载分类领域
+const loadCategories = async () => {
+  try {
+    const data = await categoryList();
+    // 过滤掉 item.id === 0 的记录
+    categorys.value = (data || []).filter(item => item.id !== '0');
+  } catch (err) {
+  }
+};
+//加载用户的专栏列表
+const loadColumnList = async () => {
+  columns.value = await columnList({current: 1, size: 10}) || []
+}
+//加载系统中所有标签
+const loadTagList = async () => {
+  tags.value = await tagList() || []
+}
+/*------------------------------------------核心业务----------------------------------------------*/
+//发布文章
+const onPublishArticle = () => {
+  let body = {
+    ...articleDetailVo.articleInfo,
+    tagNames: selectTags.value || [],
+    columnNames: selectColumns.value || [],
+    categoryId: articleDetailVo.category.categoryId
+  }
+  //发布新文章
+  if (isAdd.value) {
+    addArticle(body).then(articleId => {
+      router.push({path: `/post/${articleId}`})
+    })
+  } else {
+    //更新文章
+    updateArticle(body).then(articleId => {
+      router.push({path: `/post/${articleId}`})
+    })
+  }
+  openPublish.value = false;
+};
+/*-------------------------------------------其他函数---------------------------------------------*/
+//发布对话框
+const showModal = () => {
+  //todo if (!validateFieldAndLength(articleDetailVo.articleInfo.title, 5, '文章标题')) return;
+  // todo if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
+  openPublish.value = true;
+};
+//分类领域选择
+const selectDomainItem = (id: any) => {
+  // 更新选中的按钮ID
+  articleDetailVo.category.categoryId = id
+}
+const onMarkdownChange = (e: any) => {
+  articleDetailVo.articleInfo.content = e.content
+}
+const onConfirmSelectImg = (imgUrl: string) => {
+  articleDetailVo.articleInfo.cover = ImageUtils.removeSuffixPath(imgUrl)
+}
+const showDrawer = () => {
+  open.value = true;
+};
+</script>
 <style scoped>
 .operation-button {
   display: flex; /* 使用 Flexbox 布局 */

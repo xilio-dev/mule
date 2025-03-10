@@ -1,10 +1,14 @@
 package com.stackoak.stackoak.application.service.column;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.application.actors.security.StpKit;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +29,7 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
 
     @Override
     public List<Column> getColumnsByArticleId(String id, String userId) {
-        return columnMapper.selectColumnsByArticleId(id,userId);
+        return columnMapper.selectColumnsByArticleId(id, userId);
     }
 
     @Override
@@ -36,16 +40,10 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         return getOne(wrapper);
     }
 
-    /**
-     * 获取用户的专栏，如果是专栏本人，可以看到所有，其他人只能看到开放的
-     *
-     * @return 专栏列表
-     */
-    @Override
-    public List<Column> getUserColumns() {
-        String currentUser="1";
+
+    public Page getUserColumns(PageQuery query) {
         LambdaQueryWrapper<Column> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Column::getUserId, currentUser);
-        return List.of();
+        wrapper.eq(Column::getUserId, StpKit.USER.getLoginIdAsString());
+        return page(query.getPage(), wrapper);
     }
 }

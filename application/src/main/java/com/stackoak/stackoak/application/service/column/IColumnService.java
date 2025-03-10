@@ -1,7 +1,9 @@
 package com.stackoak.stackoak.application.service.column;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.column.Column;
 
 import java.util.List;
@@ -24,6 +26,6 @@ public interface IColumnService extends IService<Column> {
      * 获取用户的专栏，如果是专栏本人，可以看到所有，其他人只能看到开放的
      * @return 专栏列表
      */
-    List<Column> getUserColumns();
+    IPage<Column> getUserColumns(PageQuery pageQuery);
 
 }

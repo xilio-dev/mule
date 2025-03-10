@@ -104,8 +104,8 @@ interface UserForm {
   eduTime: RangeValue,
   careerField: string,
   company: string,
-  jobTitle: string,
-  jobTime: Dayjs,
+  jobTitle?: string,
+  jobTime?: Dayjs,
   tagIds: undefined,
 }
 
@@ -185,7 +185,7 @@ const careerFieldOptions = [
 ]
 
 
-import {ref} from 'vue';
+
 import {PlusOutlined, LoadingOutlined} from '@ant-design/icons-vue';
 import {message} from 'ant-design-vue';
 import type {UploadChangeParam, UploadProps} from 'ant-design-vue';

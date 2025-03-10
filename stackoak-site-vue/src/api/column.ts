@@ -4,6 +4,6 @@ const Api = {
     COLUMN_LIST: '/column/list',
 
 };
-export function columnList() {
-    return request.get(Api.COLUMN_LIST)
+export function columnList(pageQuery:any) {
+    return request.post(Api.COLUMN_LIST,pageQuery)
 }
