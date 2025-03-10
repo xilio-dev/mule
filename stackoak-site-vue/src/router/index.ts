@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory, createWebHashHistory} from 'vue-router'
-import {useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 // createWebHistory 模式URL不会显示#号
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -141,40 +141,23 @@ const router = createRouter({
             ]
         },
         {
-            path: '/login',
-            name: 'login',
-            component: () => import('@/views/login.vue'),
-        },
-        {
             path: '/search',
-            name: 'search',
+            name: 'Search',
             component: () => import('@/views/search/index.vue'),
         },
-
-        {
-            path: '/test',
-            name: 'login',
-            component: () => import('@/views/test.vue'),
-        },
-        {
-            path: '/qus',
-            name: 'qus',
-            component: () => import('@/views/question/index.vue'),
-        },
-
         {
             path: '/author',
-            name: 'author',
+            name: 'Author',
             component: () => import('@/views/author/Index.vue'),
         },
         {
             path: '/editor',
-            name: 'editor',
+            name: 'Editor',
             component: () => import('@/views/editor/Index.vue'),
         },
         {
             path: '/post/:id',
-            name: 'post',
+            name: 'pPost',
             component: () => import('@/views/post/Index.vue'),
         },
         {
@@ -206,10 +189,14 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-    const userStore=useUserStore()
+    const userStore = useUserStore()
+    //如果已经登陆了就限制跳转到登陆界面
     if (userStore.isLogin() && to.name == 'Login') {
         return false
     }
-    return true
+    //权限限制，部分功能只能登陆以后才能使用
+    return !(!userStore.isLogin() && (to.path.startsWith('/creator') ||
+        to.path.startsWith('/msg') || to.path.startsWith('/setting') ||
+        to.path.startsWith('/editor')))
 })
 export default router
