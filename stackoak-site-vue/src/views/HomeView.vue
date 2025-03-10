@@ -225,7 +225,7 @@ import type {ItemType, MenuProps} from "ant-design-vue";
 import {categoryList} from "@/api/category.ts";
 import {articleList} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore } from '@/store';
 
 const userStore = useUserStore()
 import router from "@/router";

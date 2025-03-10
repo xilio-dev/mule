@@ -2,7 +2,7 @@
 import {reactive, ref} from "vue";
 import {sendEmail, validEmailCode} from "@/api/email.ts";
 import {message} from "ant-design-vue";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore } from '@/store';
 import {changeEmailBind} from "@/api/auth.ts";
 
 const userStore = useUserStore()

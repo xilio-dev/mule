@@ -33,7 +33,7 @@
 </template>
 <script lang="ts" setup>
 import router from "@/router";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore } from '@/store';
 
 const userStore = useUserStore()
 const listData: Record<string, string>[] = [];

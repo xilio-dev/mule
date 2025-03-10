@@ -4,7 +4,7 @@ import {ref, onMounted, reactive} from 'vue';
 import Markdown from "@/components/Markdown.vue";
 import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore } from '@/store';
 import router from "@/router";
 import {NumberUtils} from "@/utils/number-util.ts";
 import {message} from "ant-design-vue";

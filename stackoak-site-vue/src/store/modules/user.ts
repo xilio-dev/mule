@@ -37,7 +37,6 @@ export const useUserStore = defineStore('user', () => {
         localStorage.removeItem('userinfo');
         sendLogout()
     }
-
     // 定义 setUserInfo 方法，参数类型为 UserInfo
     function setUserInfo(userInfo: UserInfo) {
         userinfo.value = {...userinfo.value, ...userInfo};
@@ -48,14 +47,11 @@ export const useUserStore = defineStore('user', () => {
         userinfo.value = {...userinfo.value, token};
         localStorage.setItem('token', token)
     }
+
     // 定义 updateEmail 方法，用于更新 email 字段并同步到 localStorage
     function updateEmail(newEmail: string) {
-        setUserInfo({ ...userinfo.value, email: newEmail });
+        setUserInfo({...userinfo.value, email: newEmail});
     }
-    function getToken() {
-        localStorage.getItem('token')
-    }
-
     // 获取用户信息
     function getUserInfo(): UserInfo {
         const storedUserInfo = localStorage.getItem('userinfo');
@@ -69,5 +65,5 @@ export const useUserStore = defineStore('user', () => {
     if (localStorage.getItem('userinfo')) {
         userinfo.value = getUserInfo();
     }
-    return {userinfo, setUserInfo, logout, getToken, setToken, isLogin,updateEmail};
+    return {userinfo, setUserInfo, logout, setToken, isLogin, updateEmail};
 });

@@ -20,7 +20,7 @@
     <Markdown @markdown-change="onMarkdownChange" v-if="!isLoading" :height="95" md-id="9999" :preview="true"
               :value="articleDetailForm.content"/>
   </div>
-  <a-modal style="top: 20px" width="45%" ok-text="立即发布" cancel-text="取消" v-model:open="openPublish"
+  <a-modal style="top: 20px" width="50%" ok-text="立即发布" cancel-text="取消" v-model:open="openPublish"
            title="文章发布" @ok="onPublishArticle">
     <a-form ref="formRef" :model="articleDetailForm" :rules="rules">
       <a-form-item label="分类领域" name="categoryId">
@@ -92,7 +92,7 @@ import RightDrawer from "@/views/editor/components/right-drawer/index.vue"
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {addArticle, postDetail, updateArticle} from "@/api/post.ts";
-import {useUserStore} from "@/stores/user.ts";
+import {useUserStore } from '@/store';
 import {categoryList} from "@/api/category.ts";
 import {columnList} from "@/api/column.ts";
 import type {Rule} from 'ant-design-vue/es/form';
@@ -102,9 +102,14 @@ import router from "@/router";
 import {tagList} from "@/api/tag.ts";
 import TagInput from '@/components/TagInput/index.vue'
 import {ARTICLE} from "@/constants/article.ts";
-import {message} from "ant-design-vue";
+import {message, Modal} from "ant-design-vue";
 import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
-
+import {onBeforeRouteLeave, onBeforeRouteUpdate} from 'vue-router'
+/*----------------------------------------------------------------------*/
+//离开页面之前
+onBeforeRouteLeave((to, from) => {
+  return window.confirm('您确定要离开吗？您文章内容尚未保存！')
+})
 /*------------------------------------变量定义--------------------------------------------*/
 const useUser = useUserStore()/*用户状态*/
 const route = useRoute();/*路由状态*/

@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory, createWebHashHistory} from 'vue-router'
+import {useUserStore } from '@/store';
 // createWebHistory 模式URL不会显示#号
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -198,10 +199,17 @@ const router = createRouter({
         },
         {
             path: '/login',
-            name: 'login',
+            name: 'Login',
             component: () => import('@/views/login/Index.vue'),
         },
     ],
 })
 
+router.beforeEach(async (to, from) => {
+    const userStore=useUserStore()
+    if (userStore.isLogin() && to.name == 'Login') {
+        return false
+    }
+    return true
+})
 export default router

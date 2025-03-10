@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, nextTick, ref} from 'vue';
 import {reactive} from 'vue';
-import {useUserStore} from '@/stores/user'
+import {useUserStore } from '@/store';
 
 const isLogin = ref(false)
 const userStore = useUserStore()
@@ -207,7 +207,6 @@ function startCountdown() {
           </a-flex>
         </a-flex>
       </a-row>
-
     </a-col>
     <a-col :span="10" class="row-with-line">
       <h3 style="margin-bottom: 15px;">APP扫码登陆</h3>

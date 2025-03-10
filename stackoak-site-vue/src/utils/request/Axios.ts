@@ -1,6 +1,6 @@
 import axios from "axios";
 import {message} from "ant-design-vue";
-
+import router from "@/router";
 
 const baseApi = import.meta.env.VITE_APP_BASE_API;
 const instance = axios.create({
@@ -11,7 +11,6 @@ const instance = axios.create({
 
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
-
     // 添加权限请求头
     const token = localStorage.getItem('token'); // 假设Token存储在localStorage中
     if (token) {
@@ -28,8 +27,12 @@ instance.interceptors.response.use(function (response) {
     const {code, msg, data} = response.data
     if (code === 1) {
         return data;
-    }else {
-        message.error(msg);
+    } else if (code === 401) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('userinfo');
+        window.location.href = "/login"
+    } else {
+
     }
 }, function (error) {
     return Promise.reject(error);
