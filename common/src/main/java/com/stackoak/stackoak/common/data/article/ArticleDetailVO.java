@@ -111,7 +111,7 @@ class ArticleInfoDTO {
 
 @Data
 class CategoryInfoDTO {
-    private String categoryId;
+    private String  categoryId;
     private String categoryName;
 }
 
