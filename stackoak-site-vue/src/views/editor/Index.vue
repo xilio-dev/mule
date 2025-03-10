@@ -47,10 +47,12 @@
       </a-form-item>
 
       <a-form-item label="保存合集" name="columnId">
-        <TagInput name="columns" label="合集" v-model:model-value="selectColumns" max-tags="3" max-length="10"/>
+        <TagInput name="columns" label="合集" v-model:model-value="selectColumns" max-tags="3" max-length="10"
+                  :selectItems="columns"/>
       </a-form-item>
-      <a-form-item label="文章标签" name="tag">
-        <TagInput name="tags" label="标签" v-model:model-value="selectTags" max-tags="4" max-length="4"/>
+      <a-form-item id="2" label="文章标签" name="tag">
+        <TagInput id="1" name="tags" label="标签" v-model:model-value="selectTags" max-tags="4" max-length="10"
+                  :selectItems="tags"/>
       </a-form-item>
 
       <a-form-item label="文章类型" name="creativeType">
@@ -75,8 +77,9 @@
                  placeholder="请输入文章访问密码" style="margin-top: 15px"/>
       </a-form-item>
       <a-form-item label="文章摘要" name="description">
-        <a-textarea placeholder="文章摘要：用于展示在网站各种推荐列表，以便读者快速了解文章内容，建议填写，增加曝光度。如果不填，系统将自动生成！"
-                    :auto-size="{ minRows: 2, maxRows: 5 }" v-model:value="articleDetailForm.description"/>
+        <a-textarea
+            placeholder="文章摘要：用于展示在网站各种推荐列表，以便读者快速了解文章内容，建议填写，增加曝光度。如果不填，系统将自动生成！"
+            :auto-size="{ minRows: 2, maxRows: 5 }" v-model:value="articleDetailForm.description"/>
       </a-form-item>
     </a-form>
 
@@ -129,13 +132,12 @@ onMounted(async () => {
   await loadTagList()
 })
 /*-----------------------------------------初始化-----------------------------------------------*/
-
 const articleDetailForm = ref({
-  title:'',
-  content:'',
+  title: '',
+  content: '',
   categoryId: '',
   authorizeStatus: 0,
-  visitPassword:'',
+  visitPassword: '',
   creativeType: ARTICLE.CreativeTypeEnum.ORIGINAL,
   visibleStatus: ARTICLE.VisibilityStatusEnum.ALL
 })
@@ -175,11 +177,13 @@ const loadCategories = async () => {
 };
 //加载用户的专栏列表
 const loadColumnList = async () => {
-  columns.value = await columnList({current: 1, size: 10}) || []
+  const res = await columnList({current: 1, size: 10})
+  columns.value = res.records || []
 }
 //加载系统中所有标签
 const loadTagList = async () => {
-  tags.value = await tagList() || []
+  const res = await tagList({current: 1, size: 10})
+  tags.value = res.records || []
 }
 /*------------------------------------------核心业务----------------------------------------------*/
 //发布文章
@@ -191,7 +195,7 @@ const onPublishArticle = () => {
           message.warning("转载类型文章需得到作者的授权,请确认已获得授权!")
           return
         }
-        if (articleDetailForm.value.visibleStatus == ARTICLE.VisibilityStatusEnum.PASSWORD && articleDetailForm.value.visitPassword=='') {
+        if (articleDetailForm.value.visibleStatus == ARTICLE.VisibilityStatusEnum.PASSWORD && articleDetailForm.value.visitPassword == '') {
           message.warning("请输入访问密码！")
           return
         }
@@ -218,13 +222,12 @@ const onPublishArticle = () => {
 /*-------------------------------------------其他函数---------------------------------------------*/
 //发布对话框
 const showModal = () => {
- // if (!validateFieldAndLength(articleDetailForm.title, 5, '文章标题')) return;
- // if (!validateFieldAndLength(articleDetailForm.content, 20, '文章内容')) return;
+  // if (!validateFieldAndLength(articleDetailForm.title, 5, '文章标题')) return;
+  // if (!validateFieldAndLength(articleDetailForm.content, 20, '文章内容')) return;
   openPublish.value = true;
 };
-//分类领域选择
+// 更新选中的按钮ID
 const selectDomainItem = (id: any) => {
-  // 更新选中的按钮ID
   articleDetailForm.value.categoryId = id
 }
 const onMarkdownChange = (e: any) => {

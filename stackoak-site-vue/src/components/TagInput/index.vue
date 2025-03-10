@@ -1,53 +1,63 @@
 <template>
-    <div class="tag-container">
-      <template v-for="(tag, index) in tagState.tags" :key="tag">
-        <a-tooltip v-if="tag.length > maxLength" :title="tag">
-          <a-tag :closable="true" @close="handleClose(tag)" @dblclick="showInput">
-            {{ `${tag.slice(0, maxLength)}...` }}
-          </a-tag>
-        </a-tooltip>
-        <a-tag v-else :closable="true" @close="handleClose(tag)" @dblclick="showInput">
-          {{ tag }}
+  <div class="tag-container">
+    <template v-for="(tag, index) in tagState.tags" :key="tag">
+      <a-tooltip v-if="tag.length > maxLength" :title="tag">
+        <a-tag :closable="true" @close="handleClose(tag)" @dblclick="showInput">
+          {{ `${tag.slice(0, maxLength)}...` }}
         </a-tag>
-      </template>
-      <a-popover
-          style="z-index: 20"
-          v-if="tagState.tags.length < maxTags"
-          v-model:visible="tagState.inputVisible"
-          :placement="tagState.tags.length>=2?'bottom':'bottomLeft'"
-          trigger="click"
-          @click="showInput"
-      >
-        <template #content>
-          <a-list style="width: 400px;height: 200px">
-            <a-input
-                ref="inputRef"
-                v-model:value="tagState.inputValue"
-                type="text"
-                size="medium"
-
-                @blur="handleInputConfirm"
-                @keyup.enter="handleInputConfirm"
-                :placeholder="`请输入${label}，按回车键确认`"
-            />
-          </a-list>
-        </template>
-        <a-tag style="background: #fff; border-style: dashed">
-          <plus-outlined/>
-          添加{{label}}
-        </a-tag>
-      </a-popover>
-      <a-tag v-else style="background: #fff; border-style: dashed"  >
-        <info-circle-outlined/>
-        {{ maxTagsTip }}
+      </a-tooltip>
+      <a-tag v-else :closable="true" @close="handleClose(tag)" @dblclick="showInput">
+        {{ tag }}
       </a-tag>
-    </div>
+    </template>
+    <a-popover
+        style="z-index: 20"
+        v-if="tagState.tags.length < maxTags"
+        v-model:visible="tagState.inputVisible"
+        placement="bottomLeft"
+        trigger="click"
+        @click="showInput"
+    >
+      <template #content>
+        <div style="width: 400px;min-height: 200px">
+          <a-input
+              ref="inputRef"
+              v-model:value="tagState.inputValue"
+              type="text"
+              size="medium"
+              @blur="handleInputConfirm"
+              @keyup.enter="handleInputConfirm"
+              :placeholder="`请输入${label}，按回车键确认`"
+          />
+          <a-checkable-tag
+              style="margin-top: 8px"
+              v-for="item in selectItems"
+              :key="item.name"
+              v-model:checked="item.checked"
+              @change="() => handleChanges(item)">
+            {{ item.name }}
+          </a-checkable-tag>
+        </div>
+
+
+      </template>
+      <a-tag style="background: #fff; border-style: dashed">
+        <plus-outlined/>
+        添加{{ label }}
+      </a-tag>
+    </a-popover>
+    <a-tag v-else style="background: #fff; border-style: dashed">
+      <info-circle-outlined/>
+      {{ maxTagsTip }}
+    </a-tag>
+  </div>
 </template>
 
 <script setup>
-import { ref, reactive, nextTick, watch } from 'vue';
-import { PlusOutlined, InfoCircleOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import {ref, reactive, nextTick, watch} from 'vue';
+import {PlusOutlined, InfoCircleOutlined} from '@ant-design/icons-vue';
+import {message} from 'ant-design-vue';
+
 const props = defineProps({
   label: {
     type: String,
@@ -73,29 +83,41 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  selectItems:{
-    type:Array,
-    default:()=>[]
+  selectItems: {
+    type: Array,
+    default: () => []
   }
 });
 
 const emit = defineEmits(['update:modelValue']);
-
+const inputRef = ref();
 const tagState = reactive({
   tags: [],
   inputVisible: false,
   inputValue: '',
 });
-
+// 处理标签的选中状态变化
+const handleChanges = (tag) => {
+  if (tag.checked) {
+    // 如果选中，添加到已选择的标签列表
+    tagState.tags.push(tag.name);
+    emit('update:modelValue', tagState.tags);
+  } else {
+    // 如果取消选中，从已选择的标签列表中移除
+    handleClose(tag.name)
+  }
+};
 // 监听父组件传入的 modelValue 变化，同步到本地状态
 watch(() => props.modelValue, (newValue) => {
   tagState.tags = newValue;
-}, { immediate: true });
-
-const inputRef = ref();
+}, {immediate: true});
 
 const handleClose = (removedTag) => {
   tagState.tags = tagState.tags.filter((tag) => tag !== removedTag);
+  const item = props.selectItems.find(item => item.name === removedTag);
+  if (item) {
+    item.checked = false;
+  }
   emit('update:modelValue', tagState.tags);
 };
 
@@ -108,7 +130,6 @@ const showInput = () => {
     inputRef.value.focus();
   });
 };
-
 const handleInputConfirm = () => {
   const inputValue = tagState.inputValue.trim();
   if (inputValue.length > props.maxLength) {
@@ -116,7 +137,6 @@ const handleInputConfirm = () => {
     tagState.inputValue = ''; // 清空输入框
     return;
   }
-
   if (inputValue && !tagState.tags.includes(inputValue)) {
     tagState.tags.push(inputValue);
     emit('update:modelValue', tagState.tags);

@@ -115,7 +115,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 List<TagInfoDTO> tags = IntStream.range(0, tagIds.length)
                         .mapToObj(i -> {
                             TagInfoDTO tag = new TagInfoDTO();
-                            tag.setId(Long.parseLong(tagIds[i]));
+                            tag.setId(tagIds[i]);
                             tag.setName(tagNames[i]);
                             return tag;
                         })
