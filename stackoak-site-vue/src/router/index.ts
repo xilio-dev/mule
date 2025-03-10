@@ -10,6 +10,11 @@ const router = createRouter({
             component: () => import('@/views/HomeView.vue'),
         },
         {
+            path: '/login',
+            name: 'Login',
+            component: () => import('@/views/login/Index.vue'),
+        },
+        {
             path: '/setting',
             name: 'Setting',
             component: () => import('@/layouts/SettingLayout.vue'),
@@ -41,7 +46,6 @@ const router = createRouter({
                     component: () => import('@/views/setting/privacy/index.vue'),
                 }
             ]
-
         },
         {
             path: '/creator',
@@ -51,8 +55,8 @@ const router = createRouter({
             children: [
                 {
                     path: 'index',
-                    name: 'Index',
-                    component: () => import('@/views/creator/index.vue'),
+                    name: 'dashboard',
+                    component: () => import('@/views/creator/home/index.vue'),
                 },
                 {
                     path: 'content/article',
@@ -157,9 +161,10 @@ const router = createRouter({
         },
         {
             path: '/post/:id',
-            name: 'pPost',
+            name: 'Post',
             component: () => import('@/views/post/Index.vue'),
         },
+
         {
             path: '/resource',
             name: 'resource',
@@ -180,11 +185,7 @@ const router = createRouter({
             name: 'project',
             component: () => import('@/views/opensource/project/Index.vue'),
         },
-        {
-            path: '/login',
-            name: 'Login',
-            component: () => import('@/views/login/Index.vue'),
-        },
+
     ],
 })
 

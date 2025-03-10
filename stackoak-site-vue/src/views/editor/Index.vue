@@ -17,7 +17,7 @@
         </div>
       </a-col>
     </a-row>
-    <Markdown @markdown-change="onMarkdownChange" v-if="!isLoading" :height="95" md-id="9999" :preview="true"
+    <Markdown @markdown-change="onMarkdownChange" v-if="!isLoading" :height="95" :md-id="9999" :preview="true"
               :value="articleDetailForm.content"/>
   </div>
   <a-modal style="top: 20px" width="50%" ok-text="立即发布" cancel-text="取消" v-model:open="openPublish"
@@ -92,7 +92,7 @@ import RightDrawer from "@/views/editor/components/right-drawer/index.vue"
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {addArticle, postDetail, updateArticle} from "@/api/post.ts";
-import {useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 import {categoryList} from "@/api/category.ts";
 import {columnList} from "@/api/column.ts";
 import type {Rule} from 'ant-design-vue/es/form';
@@ -107,9 +107,12 @@ import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from 'vue-router'
 /*----------------------------------------------------------------------*/
 //离开页面之前
-onBeforeRouteLeave((to, from) => {
-  return window.confirm('您确定要离开吗？您文章内容尚未保存！')
-})
+// onBeforeRouteLeave((to, from) => {
+//   if (publishFinish.value) {
+//     return true
+//   }
+//   return window.confirm('您确定要离开吗？您文章内容尚未保存！')
+// })
 /*------------------------------------变量定义--------------------------------------------*/
 const useUser = useUserStore()/*用户状态*/
 const route = useRoute();/*路由状态*/
@@ -123,7 +126,7 @@ const authorizedStatus = ref(false)/*转载文章是否被授权*/
 const open = ref<boolean>(false);/*图片选择抽屉开关*/
 const openPublish = ref<boolean>(false);/*发布文章对话框开关*/
 const formRef = ref()
-
+const publishFinish = ref(false)/*用于判断是否已经发布成功*/
 /*-------------------------------------------生命周期---------------------------------------------*/
 onMounted(async () => {
   if (!isAdd.value) {
@@ -214,11 +217,13 @@ const onPublishArticle = () => {
         //发布新文章
         if (isAdd.value) {
           addArticle(body).then(articleId => {
+            publishFinish.value = true
             router.push({path: `/post/${articleId}`})
           })
         } else {
           //更新文章
           updateArticle(body).then(articleId => {
+            publishFinish.value = true
             router.push({path: `/post/${articleId}`})
           })
         }

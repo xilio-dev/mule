@@ -203,7 +203,7 @@ const toApply = (commentId: string) => {
                     v-if="useUser.isLogin()&&userInfo.userId==useUser.userinfo.userId">编辑
           </a-button>
         </a-flex>
-        <Markdown v-if="!isLoading" md-id="1000" :preview="false" :value="articleInfo.content"/>
+        <Markdown v-if="!isLoading" :md-id="1000" :preview="false" :value="articleInfo.content"/>
         <a-flex justify="start" align="center" style="margin-top: 20px">
           <span>标签：</span>
           <a-flex justify="start" align="center" gap="small">

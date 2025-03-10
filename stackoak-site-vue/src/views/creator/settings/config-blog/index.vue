@@ -15,7 +15,17 @@
       </a-flex>
     </a-flex>
     <a-flex>
-      <div>代码样式：</div>
+      <div>内容主题：</div>
+      <a-flex vertical :gap="4">
+        <div>选择主题</div>
+        <div>
+          <a-image style="width: 150px;height: 100px" src="/avatar.jpeg"/>
+        </div>
+      </a-flex>
+    </a-flex>
+    <a-divider/>
+    <a-flex>
+      <div>代码主题：</div>
       <a-flex vertical :gap="4">
         <div>选择代码片</div>
         <div>
