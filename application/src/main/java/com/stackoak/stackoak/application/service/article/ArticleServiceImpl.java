@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -123,7 +124,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
         }
         //判断是否是登陆用户
-        if (true) {
+        if (StpKit.USER.isLogin()) {
             UserInteractDTO userInteract = getUserInteract(dto.getId());
             //设置交互信息为
             articleDetail.setUserInteract(userInteract);
@@ -149,7 +150,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (ObjectUtils.isEmpty(category)) {
             throw new BizException("分类领域不存在！");
         }
-
         //如果文章ID存在，通过文章ID查询是否存在当前用户文章
         Article saveArticle;
         if (!isAdd) {
@@ -164,14 +164,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         saveArticle.setTitle(dto.getTitle());
         saveArticle.setDescription(dto.getDescription());
         saveArticle.setContent(dto.getContent());
-        saveArticle.setUserId(userId);//todo user
+        saveArticle.setUserId(userId);
         saveArticle.setCover(dto.getCover());
         saveArticle.setPublishTime(LocalDateTime.now());
-        //todo test
-        if (!StringUtils.hasLength(dto.getCover())) {
-            saveArticle.setCover("https://picsum.photos/1920/1080?random=1");
-        }
         saveArticle.setVisibleStatus(dto.getVisibleStatus());
+        if (!StringUtils.hasText(dto.getDescription())) {
+            saveArticle.setDescription(dto.getContent().trim().substring(0, 200));
+        }
         if (dto.getVisibleStatus() == 4) {
             if (!StringUtils.hasLength(dto.getVisitPassword())) {
                 throw new BizException("文章可见状态为密码访问，必须输入密码！");
@@ -196,11 +195,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (isAdd) {
             //新增文章并加上索引
             save(saveArticle);
-            searchService.saveIndex(saveArticle);
+            //todo searchService.saveIndex(saveArticle);
         } else {
             //更新文章并更新索引
             updateById(saveArticle);
-            searchService.saveIndex(saveArticle);
+            //todo searchService.saveIndex(saveArticle);
 
         }
         //文章专栏保存与关联 一篇文章存在于3个专栏

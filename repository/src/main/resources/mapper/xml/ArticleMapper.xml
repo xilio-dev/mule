@@ -42,6 +42,7 @@
         <result property="articleInfo.creativeType" column="creativeType"/>
         <result property="articleInfo.originalUrl" column="originalUrl"/>
         <result property="articleInfo.authorizeStatus" column="authorizeStatus"/>
+        <result property="articleInfo.visitPassword" column="visitPassword"/>
         <result property="userInfo.userId" column="userId"/>
         <result property="userInfo.nickname" column="nickname"/>
         <result property="userInfo.avatar" column="avatar"/>
@@ -67,6 +68,7 @@
             a.creative_type as creativeType,
             a.original_url as originalUrl,
             a.authorize_status as authorizeStatus,
+            a.visit_password as visitPassword,
             m.id AS userId,
             m.nickname AS nickname,
             m.avatar,

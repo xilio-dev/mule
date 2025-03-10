@@ -75,7 +75,7 @@
                  placeholder="请输入文章访问密码" style="margin-top: 15px"/>
       </a-form-item>
       <a-form-item label="文章摘要" name="description">
-        <a-textarea placeholder="文章摘要：用于展示在网站各种推荐列表，以便读者快速了解文章内容，建议填写，增加曝光度。"
+        <a-textarea placeholder="文章摘要：用于展示在网站各种推荐列表，以便读者快速了解文章内容，建议填写，增加曝光度。如果不填，系统将自动生成！"
                     :auto-size="{ minRows: 2, maxRows: 5 }" v-model:value="articleDetailForm.description"/>
       </a-form-item>
     </a-form>
@@ -101,6 +101,7 @@ import {tagList} from "@/api/tag.ts";
 import TagInput from '@/components/TagInput/index.vue'
 import {ARTICLE} from "@/constants/article.ts";
 import {message} from "ant-design-vue";
+import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
 
 /*------------------------------------变量定义--------------------------------------------*/
 const useUser = useUserStore()/*用户状态*/
@@ -130,8 +131,11 @@ onMounted(async () => {
 /*-----------------------------------------初始化-----------------------------------------------*/
 
 const articleDetailForm = ref({
+  title:'',
+  content:'',
   categoryId: '',
   authorizeStatus: 0,
+  visitPassword:'',
   creativeType: ARTICLE.CreativeTypeEnum.ORIGINAL,
   visibleStatus: ARTICLE.VisibilityStatusEnum.ALL
 })
@@ -187,6 +191,10 @@ const onPublishArticle = () => {
           message.warning("转载类型文章需得到作者的授权,请确认已获得授权!")
           return
         }
+        if (articleDetailForm.value.visibleStatus == ARTICLE.VisibilityStatusEnum.PASSWORD && articleDetailForm.value.visitPassword=='') {
+          message.warning("请输入访问密码！")
+          return
+        }
         let body = {
           ...articleDetailForm.value,
           authorizedStatus: authorizedStatus.value,
@@ -210,8 +218,8 @@ const onPublishArticle = () => {
 /*-------------------------------------------其他函数---------------------------------------------*/
 //发布对话框
 const showModal = () => {
-  //todo if (!validateFieldAndLength(articleDetailVo.articleInfo.title, 5, '文章标题')) return;
-  // todo if (!validateFieldAndLength(articleDetailVo.articleInfo.content, 20, '文章内容')) return;
+ // if (!validateFieldAndLength(articleDetailForm.title, 5, '文章标题')) return;
+ // if (!validateFieldAndLength(articleDetailForm.content, 20, '文章内容')) return;
   openPublish.value = true;
 };
 //分类领域选择

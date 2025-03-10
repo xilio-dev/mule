@@ -116,6 +116,10 @@ class ArticleInfoDTO {
      * 原始URL
      */
     private String originalUrl;
+    /**
+     * 访问密码
+     */
+    private String visitPassword;
 
     /**
      * 授权状态
