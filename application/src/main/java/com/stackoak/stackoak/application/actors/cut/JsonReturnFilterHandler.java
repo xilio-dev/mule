@@ -17,10 +17,10 @@ public class JsonReturnFilterHandler implements HandlerMethodReturnValueHandler 
 
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
-        return AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), JsonFieldFilters.class)
-                || returnType.hasMethodAnnotation(JsonFieldFilters.class)
-                || AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), JsonFieldFilter.class)
-                || returnType.hasMethodAnnotation(JsonFieldFilter.class);
+        return AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), FieldFilters.class)
+                || returnType.hasMethodAnnotation(FieldFilters.class)
+                || AnnotatedElementUtils.hasAnnotation(returnType.getContainingClass(), FieldFilter.class)
+                || returnType.hasMethodAnnotation(FieldFilter.class);
     }
 
     @Override
@@ -31,10 +31,10 @@ public class JsonReturnFilterHandler implements HandlerMethodReturnValueHandler 
         Annotation[] annotations = returnType.getMethodAnnotations();
         ResponseJsonFilterSerializer jsonFilterSerializer = new ResponseJsonFilterSerializer();
         Arrays.asList(annotations).forEach(annotation -> {
-            if (annotation instanceof JsonFieldFilter json) {
+            if (annotation instanceof FieldFilter json) {
                 jsonFilterSerializer.filter(json.type(), json.include(), json.exclude());
-            } else if (annotation instanceof JsonFieldFilters) {
-                jsonFilterSerializer.filter((JsonFieldFilters) annotation);
+            } else if (annotation instanceof FieldFilters) {
+                jsonFilterSerializer.filter((FieldFilters) annotation);
             }
         });
 

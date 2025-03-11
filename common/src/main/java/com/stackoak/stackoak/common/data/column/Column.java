@@ -4,11 +4,15 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 /**
  * <p>
  *
@@ -31,7 +35,7 @@ public class Column implements Serializable {
         this.userId = userId;
     }
 
-    @TableId(value = "id", type= IdType.ASSIGN_UUID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     /**

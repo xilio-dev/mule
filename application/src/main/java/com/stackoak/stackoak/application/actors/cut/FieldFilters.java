@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JsonFieldFilters {
-    JsonFieldFilter[] value();
+public @interface FieldFilters {
+    FieldFilter[] value();
 }

@@ -1,7 +1,8 @@
 package com.stackoak.stackoak.common.data.article;
 
-import com.stackoak.stackoak.common.data.column.ColumnDTO;
-import com.stackoak.stackoak.common.data.tag.TagInfoDTO;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.stackoak.stackoak.common.data.column.Column;
+import com.stackoak.stackoak.common.data.tag.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class ArticleDetailVO implements Serializable {
     // 用户信息
     private UserInfoDTO userInfo;
     // 标签信息
-    private List<TagInfoDTO> tags;
+    private List<Tag> tags;
     // 用户互动信息
     private UserInteractDTO userInteract;
     // 分类信息
@@ -25,7 +26,7 @@ public class ArticleDetailVO implements Serializable {
     private String tagIds;
     // 标签名称
     private String tagNames;
-    private List<ColumnDTO> columns;
+    private List<Column> columns;
     private String columnIds;
     private String columnNames;
 }
@@ -43,6 +44,7 @@ class UserInfoDTO {
 }
 
 @Data
+@JsonFilter("articleInfoDTO")
 class ArticleInfoDTO {
     /**
      * 编号

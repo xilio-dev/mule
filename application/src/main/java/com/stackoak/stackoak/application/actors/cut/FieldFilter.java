@@ -4,8 +4,8 @@ import java.lang.annotation.*;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(JsonFieldFilters.class)
-public @interface JsonFieldFilter {
+@Repeatable(FieldFilters.class)
+public @interface FieldFilter {
 
     /**
      * 需要过滤的类型

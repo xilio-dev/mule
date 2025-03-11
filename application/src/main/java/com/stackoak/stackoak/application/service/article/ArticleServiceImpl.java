@@ -15,17 +15,12 @@ import com.stackoak.stackoak.common.data.collect.ArticleCollect;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.column.ArticleColumn;
 import com.stackoak.stackoak.common.data.column.Column;
-import com.stackoak.stackoak.common.data.column.ColumnDTO;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
 import com.stackoak.stackoak.common.data.likes.Likes;
 import com.stackoak.stackoak.common.data.tag.Tag;
 import com.stackoak.stackoak.common.message.ResultEnum;
 import com.stackoak.stackoak.application.exception.BizException;
-import com.stackoak.stackoak.common.data.tag.TagInfoDTO;
-
 import com.stackoak.stackoak.repository.article.ArticleMapper;
-
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,10 +31,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -113,9 +106,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             if (StringUtils.hasText(tagIdStr)) {
                 String[] tagIds = tagIdStr.split(",");
                 String[] tagNames = articleDetail.getTagNames().split(",");
-                List<TagInfoDTO> tags = IntStream.range(0, tagIds.length)
+                List<Tag> tags = IntStream.range(0, tagIds.length)
                         .mapToObj(i -> {
-                            TagInfoDTO tag = new TagInfoDTO();
+                            Tag tag = new Tag();
                             tag.setId(tagIds[i]);
                             tag.setName(tagNames[i]);
                             return tag;
@@ -128,9 +121,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             if (StringUtils.hasText(columnIdStr)) {
                 String[] columnIds = columnIdStr.split(",");
                 String[] columnNames = articleDetail.getColumnNames().split(",");
-                List<ColumnDTO> columns = IntStream.range(0, columnIds.length)
+                List<Column> columns = IntStream.range(0, columnIds.length)
                         .mapToObj(i -> {
-                            ColumnDTO column = new ColumnDTO();
+                            Column column = new Column();
                             column.setId(columnIds[i]);
                             column.setName(columnNames[i]);
                             return column;

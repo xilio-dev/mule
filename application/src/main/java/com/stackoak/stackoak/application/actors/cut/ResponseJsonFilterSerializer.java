@@ -23,8 +23,8 @@ public class ResponseJsonFilterSerializer {
         mapper.addMixIn(clazz, filterProvider.getClass());
     }
 
-    public void filter(JsonFieldFilters fieldFilters) {
-        for (JsonFieldFilter json : fieldFilters.value()) {
+    public void filter(FieldFilters fieldFilters) {
+        for (FieldFilter json : fieldFilters.value()) {
             this.filter(json.type(), json.include(), json.exclude());
         }
     }

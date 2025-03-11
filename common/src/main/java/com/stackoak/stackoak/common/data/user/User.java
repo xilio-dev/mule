@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,6 +26,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("user")
+@JsonFilter("userFilter")
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;

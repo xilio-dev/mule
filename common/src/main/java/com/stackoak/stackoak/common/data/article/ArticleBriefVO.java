@@ -1,4 +1,5 @@
 package com.stackoak.stackoak.common.data.article;
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.stackoak.stackoak.common.data.tag.Tag;
 import lombok.Data;
 

@@ -31,7 +31,7 @@ public class Category implements Serializable {
     /**
      * 编号
      */
-    @TableId(value = "id", type= IdType.ASSIGN_ID)
+    @TableId(value = "id", type= IdType.ASSIGN_UUID)
     private String id;
 
     /**
