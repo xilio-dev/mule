@@ -31,19 +31,19 @@ public class UserConfig implements Serializable {
      * 代码主题
      */
     @TableField("code_theme")
-    private Integer codeTheme;
+    private String codeTheme;
 
     /**
      * 编辑器主题
      */
     @TableField("main_theme")
-    private Integer mainTheme;
+    private String mainTheme;
 
     /**
      * 脚标风格
      */
     @TableField("anchor_style")
-    private Integer anchorStyle;
+    private String anchorStyle;
 
     /**
      * 编辑器是否开启悬浮工具栏

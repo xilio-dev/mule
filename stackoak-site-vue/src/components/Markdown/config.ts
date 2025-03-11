@@ -6,7 +6,7 @@ export const getConfig = ({
                               value = '',
                               preview = false,
                               float = false,
-                              codeTheme = 'default',
+                              codeTheme = 'tomorrow dark',
                               mainTheme = 'default',
                               anchorStyle = 'none',
                               cherryInstance,

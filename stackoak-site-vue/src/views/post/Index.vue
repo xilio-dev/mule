@@ -20,8 +20,8 @@ const articleInfo = ref({})
 const userInfo = ref({})
 const tags = ref({})
 const category = ref({})
-
 const userInteract = ref({})
+const config = ref({})
 
 async function fetchPostData() {
   try {
@@ -31,6 +31,7 @@ async function fetchPostData() {
     tags.value = res.tags || []
     category.value = res.category || {}
     userInteract.value = res.userInteract || {}
+    config.value=res.config||{}
     isLoading.value = false
   } catch (err) {
     isLoading.value = false
@@ -191,7 +192,7 @@ const toApply = (commentId: string) => {
     <a-col :span="18" style=" float: left">
       <a-card style="border: none">
         <h1>{{ articleInfo.title }}</h1>
-        <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 30px">
+        <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 15px">
           <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
             <div style="color: #515767;">{{ userInfo.nickname }}</div>
             <div>{{ articleInfo.publishTime }}</div>
@@ -203,7 +204,7 @@ const toApply = (commentId: string) => {
                     v-if="useUser.isLogin()&&userInfo.userId==useUser.userinfo.userId">编辑
           </a-button>
         </a-flex>
-        <Markdown v-if="!isLoading" :md-id="1000" :preview="false" :value="articleInfo.content"/>
+        <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="config.codeTheme" :main-theme="config.mainTheme" :anchor-style="config.anchorStyle" :preview="false" :value="articleInfo.content"/>
         <a-flex justify="start" align="center" style="margin-top: 20px">
           <span>标签：</span>
           <a-flex justify="start" align="center" gap="small">
@@ -384,11 +385,6 @@ const toApply = (commentId: string) => {
   inset-inline-end: -13px;
 }
 
-:deep(.cherry-previewer) {
-  border-left: none;
-  padding: 0 10px 0 10px;
-}
-
 /* 卡片修改*/
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;
@@ -399,5 +395,9 @@ const toApply = (commentId: string) => {
 :deep(.ant-comment .ant-comment-inner) {
   display: flex;
   padding: 5px 0;
+}
+:deep(.cherry-previewer) {
+  border-left: none;
+  padding: 0 15px 0 15px;
 }
 </style>

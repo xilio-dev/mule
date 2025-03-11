@@ -9,7 +9,7 @@ import Cherry from "cherry-markdown";
 import {getConfig} from "./config";
 
 const emit = defineEmits(['markdown-change'])
-const props = defineProps(['mdId', 'height', 'width', 'preview', 'value'])
+const props = defineProps(['mdId', 'height', 'width', 'preview', 'value','float','codeTheme','mainTheme','anchorStyle'])
 const cherryInstance = ref<Cherry | null>(null);
 onMounted(() => {
   initCherryMD()
@@ -26,10 +26,10 @@ const initCherryMD = () => {
     id: props.mdId,
     value: props.value,
     preview: !props.preview,
-    float: true,
-    codeTheme: 'tomorrow dark',
-    mainTheme: 'default',
-    anchorStyle: 'none',
+    float: props.float,
+    codeTheme: props.codeTheme,
+    mainTheme: props.mainTheme,
+    anchorStyle: props.anchorStyle,
     cherryInstance: cherryInstance,
     emit: emit
   }))
@@ -41,5 +41,4 @@ const initCherryMD = () => {
   border: none;
   min-height: 0;
 }
-
 </style>

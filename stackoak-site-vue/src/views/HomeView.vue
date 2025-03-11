@@ -231,9 +231,8 @@ const userStore = useUserStore()
 import router from "@/router";
 import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
-import {getSiteConfigInfo} from "@/api/config.ts";
 import {getSearchHistory} from "@/api/search.ts";
-
+import {getSysConfigInfo} from "@/api/config.ts";
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
 const selectedKeys = ref([0]);
@@ -294,7 +293,7 @@ const loadFriendLink = async () => {
 }
 const siteConfigInfo = ref({})
 const loadSiteConfigInfo = async () => {
-  const res = await getSiteConfigInfo()
+  const res = await getSysConfigInfo()
   if (res) {
     siteConfigInfo.value = res || {}
   }

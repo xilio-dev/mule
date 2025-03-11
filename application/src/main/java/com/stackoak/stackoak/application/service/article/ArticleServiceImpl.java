@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.article;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
+import com.stackoak.stackoak.application.service.user.IUserConfigService;
 import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.category.ICategoryService;
 import com.stackoak.stackoak.application.service.collect.ICollectService;
@@ -18,6 +19,7 @@ import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
 import com.stackoak.stackoak.common.data.likes.Likes;
 import com.stackoak.stackoak.common.data.tag.Tag;
+import com.stackoak.stackoak.common.data.user.UserConfig;
 import com.stackoak.stackoak.common.message.ResultEnum;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.repository.article.ArticleMapper;
@@ -66,6 +68,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private ArticleCollectMapper articleCollectMapper;
     @Autowired
     private ISearchService searchService;
+    @Autowired
+    private IUserConfigService userConfigService;
 
     @Override
     public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
@@ -139,7 +143,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             //设置交互信息为
             articleDetail.setUserInteract(userInteract);
         }
-
+        UserInfoDTO userInfo = articleDetail.getUserInfo();
+        String userId = userInfo.getUserId();
+        UserConfig userConfig = userConfigService.getById(userId);
+        articleDetail.setConfig(userConfig);
         return articleDetail;
     }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.tag.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.stackoak.stackoak.common.data.user.UserConfig;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -29,22 +30,12 @@ public class ArticleDetailVO implements Serializable {
     private List<Column> columns;
     private String columnIds;
     private String columnNames;
+    private UserConfig config;
 }
 
-@Data
-// 用户信息数据传输对象
-class UserInfoDTO {
-    // 用户ID
-    private String userId;
-    // 昵称
-    private String nickname;
-    // 头像
-    private String avatar;
 
-}
 
 @Data
-@JsonFilter("articleInfoDTO")
 class ArticleInfoDTO {
     /**
      * 编号
