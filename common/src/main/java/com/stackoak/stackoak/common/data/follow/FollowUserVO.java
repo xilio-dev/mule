@@ -23,7 +23,7 @@ public class FollowUserVO implements Serializable {
     /**
      * 描述
      */
-    private String description;
+    private String introduce;
     /**
      * 表示当前登陆用户与作者的关系，1表示关注了作者，0表示无关注作者
      */

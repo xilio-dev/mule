@@ -7,7 +7,7 @@
             u.id AS userId,
             u.nickname,
             u.avatar,
-            u.description,
+            u.introduce,
             CASE
                 WHEN f2.user_id IS NOT NULL THEN 1
                 ELSE 0
@@ -25,7 +25,7 @@
                 SELECT  u.id    AS userId,
                u.nickname,
                u.avatar,
-               u.description,
+               u.introduce,
                CASE
                    WHEN f2.user_id IS NOT NULL THEN 1
                    ELSE 0
