@@ -107,12 +107,12 @@ import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from 'vue-router'
 /*----------------------------------------------------------------------*/
 //离开页面之前
-// onBeforeRouteLeave((to, from) => {
-//   if (publishFinish.value) {
-//     return true
-//   }
-//   return window.confirm('您确定要离开吗？您文章内容尚未保存！')
-// })
+onBeforeRouteLeave((to, from) => {
+  if (publishFinish.value) {
+    return true
+  }
+  return window.confirm('您确定要离开吗？您文章内容尚未保存！')
+})
 /*------------------------------------变量定义--------------------------------------------*/
 const useUser = useUserStore()/*用户状态*/
 const route = useRoute();/*路由状态*/
