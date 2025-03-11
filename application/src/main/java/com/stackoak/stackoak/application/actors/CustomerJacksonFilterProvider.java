@@ -1,4 +1,4 @@
-package com.stackoak.stackoak.application.actors.cut;
+package com.stackoak.stackoak.application.actors;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -11,19 +11,23 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 
 import java.util.*;
 
-
 @JsonFilter("JacksonJsonFilter")
 public class CustomerJacksonFilterProvider extends FilterProvider {
 
     /**
      * 包含字段 Map
      */
-    private final Map<Class<?>, Set<String>> includeMap = new HashMap<>();
+    Map<Class<?>, Set<String>> includeMap = new HashMap<>();
 
     /**
      * 排除字段 Map
      */
-    private final Map<Class<?>, Set<String>> excludeMap = new HashMap<>();
+    Map<Class<?>, Set<String>> excludeMap = new HashMap<>();
+
+    /**
+     * 字段别名 Map
+     */
+    Map<Class<?>, Map<String, String>> aliasMap = new HashMap<>();
 
     public void include(Class<?> type, String... fields) {
         addToMap(includeMap, type, fields);
@@ -32,6 +36,18 @@ public class CustomerJacksonFilterProvider extends FilterProvider {
     public void exclude(Class<?> type, String... fields) {
         addToMap(excludeMap, type, fields);
     }
+
+    public void alias(Class<?> type, String... aliasFields) {
+        Map<String, String> alias = new HashMap<>();
+        for (String entry : aliasFields) {
+            String[] parts = entry.split(":");
+            if (parts.length == 2) {
+                alias.put(parts[0], parts[1]); // 原字段名 -> 别名
+            }
+        }
+        aliasMap.put(type, alias);
+    }
+
     private void addToMap(Map<Class<?>, Set<String>> map, Class<?> type, String... fields) {
         Set<String> fieldSet = map.getOrDefault(type, new HashSet<>());
         fieldSet.addAll(Arrays.asList(fields));
@@ -51,6 +67,11 @@ public class CustomerJacksonFilterProvider extends FilterProvider {
             public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider prov, PropertyWriter writer)
                     throws Exception {
                 if (apply(pojo.getClass(), writer.getName())) {
+                    // 应用字段别名
+                    String alias = getAlias(pojo.getClass(), writer.getName());
+                    if (alias != null) {
+                        jgen.writeFieldName(alias);
+                    }
                     writer.serializeAsField(pojo, jgen, prov);
                 } else if (!jgen.canOmitFields()) {
                     writer.serializeAsOmittedField(pojo, jgen, prov);
@@ -69,5 +90,10 @@ public class CustomerJacksonFilterProvider extends FilterProvider {
         } else {
             return includeFields == null && excludeFields == null;
         }
+    }
+
+    public String getAlias(Class<?> type, String name) {
+        Map<String, String> alias = aliasMap.get(type);
+        return alias != null ? alias.get(name) : null;
     }
 }

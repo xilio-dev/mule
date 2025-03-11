@@ -11,7 +11,6 @@ onMounted(() => {
     isLogin.value = true
   }
 })
-
 //邮箱账号-密码登陆
 interface EmailLoginDTO {
   email: string;
@@ -31,7 +30,7 @@ const onEmailLoginFinish = (values: EmailLoginDTO) => {
         return getUserInfo();
       })
       .then(user => {
-        userStore.setUserInfo(user);
+        userStore.setUserInfo({...user,userId:user.id});
         window.location.href = '/';
       })
       .catch(error => {

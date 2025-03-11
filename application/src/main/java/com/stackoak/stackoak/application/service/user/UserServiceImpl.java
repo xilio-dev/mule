@@ -32,15 +32,10 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
     @Override
-    public LoginUser getCurrentUser() {
-        Object loginId = StpKit.USER.getLoginId();
-        User byId = getById(String.valueOf(loginId));
-        LoginUser loginUser = new LoginUser();
-        BeanUtils.copyProperties(byId, loginUser);
-        loginUser.setUserId(byId.getId());
-        return loginUser;
+    public User getCurrentUser() {
+        String userId = StpKit.USER.getLoginIdAsString();
+        return getById(userId);
     }
-
     /**
      * @param email 邮箱账号
      * @return 用户信息

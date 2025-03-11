@@ -36,6 +36,7 @@ public class JsonReturnFilterHandler implements HandlerMethodReturnValueHandler 
             } else if (annotation instanceof FieldFilters) {
                 jsonFilterSerializer.filter((FieldFilters) annotation);
             }
+
         });
 
         Objects.requireNonNull(response).setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);

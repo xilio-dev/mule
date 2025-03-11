@@ -231,7 +231,7 @@ const userStore = useUserStore()
 import router from "@/router";
 import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
-import {getSiteConfigInfo} from "@/api/site-config.ts";
+import {getSiteConfigInfo} from "@/api/config.ts";
 import {getSearchHistory} from "@/api/search.ts";
 
 

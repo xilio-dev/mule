@@ -18,7 +18,7 @@ import jakarta.validation.constraints.Email;
  */
 public interface IUserService extends IService<User> {
 
-    LoginUser getCurrentUser();
+    User getCurrentUser();
 
     User getByEmail(@Email String email);
 
