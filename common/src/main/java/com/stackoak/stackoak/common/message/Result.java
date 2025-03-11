@@ -188,4 +188,11 @@ public class Result extends HashMap<String, Object> {
         super.put(key, value);
         return this;
     }
+
+    public void setData(Object data) {
+        put("data",data);
+    }
+    public Object getData() {
+         return get("data");
+    }
 }

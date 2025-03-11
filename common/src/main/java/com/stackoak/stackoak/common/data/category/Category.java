@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,6 +23,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("category")
+@JsonFilter("categoryFilter")
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
