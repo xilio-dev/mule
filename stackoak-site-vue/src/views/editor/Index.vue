@@ -87,7 +87,7 @@
   <RightDrawer @confirm-select="onConfirmSelectImg" :open-drawer="open" @close-drawer="open=false"/>
 </template>
 <script setup lang="ts">
-import Markdown from "@/components/Markdown.vue";
+import Markdown from "@/components/Markdown/index.vue";
 import RightDrawer from "@/views/editor/components/right-drawer/index.vue"
 import {computed, onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
@@ -100,6 +100,7 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import {ImageUtils} from "@/utils/file.ts";
 import router from "@/router";
 import {tagList} from "@/api/tag.ts";
+// @ts-ignore
 import TagInput from '@/components/TagInput/index.vue'
 import {ARTICLE} from "@/constants/article.ts";
 import {message, Modal} from "ant-design-vue";

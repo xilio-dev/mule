@@ -178,12 +178,6 @@ export default {
         previewer: {
           floatWhenClosePreviewer: true,
         },
-        keydown: [],
-        callback: {
-          onClickPreview: (event) => {
-            console.log("onClickPreview", event);
-          },
-        },
         editor: {
           id: "cherry-text",
           name: "cherry-text",
@@ -199,7 +193,6 @@ export default {
       };
 
       cherryInstance.value = new Cherry(basicConfig);
-
       // 监听内容变化并更新 v-model
       cherryInstance.value.on("change", (value) => {
         emit("update:modelValue", value);

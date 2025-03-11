@@ -51,9 +51,7 @@ const props = defineProps<{
             </div>
             <div class="abstract">
               <div class="xx-link">
-                <div>
-                  {{ item.description }}
-                </div>
+                {{ item.description }}
               </div>
             </div>
             <div class="entry-footer">

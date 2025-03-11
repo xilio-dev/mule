@@ -1,7 +1,7 @@
 <template>
   <a-upload-dragger
       v-model:fileList="fileList"
-      name="imgFile"
+      name="file"
       :multiple="false"
       :max-count="1"
       :headers="headers"
@@ -39,7 +39,7 @@ const handleChange = (info: UploadChangeParam) => {
     // console.log(info.file, info.fileList);
   }
   if (status === 'done') {
-    const {id,imgUrl} = info.file.response
+    const {id,imgUrl} = info.file.response.data
     emit("upload-success", {imgUrl: imgUrl,id:id})
     message.success('图片上传成功');
   } else if (status === 'error') {

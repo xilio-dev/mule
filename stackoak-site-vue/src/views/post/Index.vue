@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {QuestionCircleOutlined, CustomerServiceOutlined} from "@ant-design/icons-vue";
 import {ref, onMounted, reactive} from 'vue';
-import Markdown from "@/components/Markdown.vue";
+import Markdown from "@/components/Markdown/index.vue";
 import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
 import {useUserStore } from '@/store';

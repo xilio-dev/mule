@@ -25,6 +25,7 @@ instance.interceptors.request.use(function (config) {
 // 添加响应拦截器
 instance.interceptors.response.use(function (response) {
     const {code, msg, data} = response.data
+
     if (code === 1) {
         return data;
     } else if (code === 401) {
@@ -32,7 +33,7 @@ instance.interceptors.response.use(function (response) {
         localStorage.removeItem('userinfo');
         window.location.href = "/login"
     } else {
-
+        message.error(msg);
     }
 }, function (error) {
     return Promise.reject(error);

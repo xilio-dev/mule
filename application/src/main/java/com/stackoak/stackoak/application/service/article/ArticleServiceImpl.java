@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -179,7 +180,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         saveArticle.setVisibleStatus(dto.getVisibleStatus());
         if (!StringUtils.hasText(dto.getDescription())) {
             String content = dto.getContent().trim();
-            saveArticle.setDescription(content.length() > 200 ? content.substring(0, 200) : content);
+            saveArticle.setDescription(content.length() > 200 ? content.substring(0, 200).replace(" ", "") : content.replace(" ", ""));
         }
         if (dto.getVisibleStatus() == 4) {
             if (!StringUtils.hasLength(dto.getVisitPassword())) {

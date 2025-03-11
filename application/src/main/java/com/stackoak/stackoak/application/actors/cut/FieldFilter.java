@@ -20,5 +20,5 @@ public @interface FieldFilter {
     /**
      * 排除的字段
      */
-    String[] exclude() default {};
+    String[] exclude() default {"deleted"};
 }

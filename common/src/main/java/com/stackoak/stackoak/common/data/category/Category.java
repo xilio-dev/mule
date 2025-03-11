@@ -23,7 +23,6 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("category")
-@JsonFilter("categoryFilter")
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
