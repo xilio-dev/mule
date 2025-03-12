@@ -60,14 +60,14 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
     /**
      * 取消关注
      *
-     * @param followRequest 请求参数
+     * @param userId 请求参数
      */
     @Override
-    public void cancelFollow(FollowRequest followRequest) {
+    public void cancelFollow(String userId) {
         String currentUser = StpKit.USER.getLoginIdAsString();
         //检查是否已经关注了作者，如果关注了则删除 需要检查目标用户的状态，例如是否被禁
         LambdaQueryWrapper<Follows> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Follows::getTargetUserId, followRequest.getUserId());
+        wrapper.eq(Follows::getTargetUserId, userId);
         wrapper.eq(Follows::getUserId, currentUser);
         followsMapper.delete(wrapper);
     }
@@ -75,17 +75,17 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
     /**
      * 关注作者
      *
-     * @param followRequest 请求参数
+     * @param userId 请求参数
      */
     @Override
-    public void follow(FollowRequest followRequest) {
+    public void follow(String userId) {
         String currentUser = StpKit.USER.getLoginIdAsString();
         //不能够关注自己
-        if (currentUser.equals(followRequest.getUserId())) {
+        if (currentUser.equals(userId)) {
             throw new BizException("不能关注自己");
         }
         //检查关注的人是否存在
-        User user = userService.getById(followRequest.getUserId());
+        User user = userService.getById(userId);
         if (ObjectUtils.isEmpty(user)) {
             throw new BizException("期望关注的作者不存在！");
         }
@@ -93,13 +93,13 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
 
         //检查是否已经关注了作者，没有关注再关注
         LambdaQueryWrapper<Follows> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Follows::getTargetUserId, followRequest.getUserId());
+        wrapper.eq(Follows::getTargetUserId,userId);
         wrapper.eq(Follows::getUserId, currentUser);
         Follows follows = getOne(wrapper);
         if (!ObjectUtils.isEmpty(follows)) {
             throw new BizException("不能重复关注！");
         }
         //关注用户
-        save(new Follows(currentUser, followRequest.getUserId()));
+        save(new Follows(currentUser, userId));
     }
 }

@@ -8,16 +8,18 @@ import {
 
 import ColumnList from "@/components/ColumnList.vue";
 import {computed, onMounted, ref} from "vue";
-import {getFans, getFollows, getUserDetailInfo} from "@/api/user.ts";
+import {followUser, getFans, getFollows, getUserDetailInfo, unFollowUser} from "@/api/user.ts";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
+import router from "@/router";
+import {message} from "ant-design-vue";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
 const route = useRoute()
 const authorId = route.params.userId
 const authorInfo = ref({})
 const userStore = useUserStore()
-
+const openDrawer = ref(false)
 //判断是否是自己本人
 const isSelf = computed(() => {
   return userStore.userinfo.userId == authorId
@@ -55,7 +57,22 @@ const loadUserColumns = async () => {
 }
 
 /*------------------------------------核心业务--------------------------------------------*/
+//点击关注或取消关注
+const onFollowAuthor=()=>{
+  //如果没有关注，执行关注
+  //  followUser(authorId).then(res=>{
+  //    message.success("已关注")
+  //  })
+  unFollowUser(authorId).then(res=>{
+    message.success("已取消关注")
+  })
+  //如果已经关注，执行取消关注
 
+}
+//点击私信
+const onChat=()=>{
+
+}
 
 
 
@@ -64,7 +81,9 @@ const loadUserColumns = async () => {
 const onEnterPD = () => {
 
 }
-
+const openLink = (url: string) => {
+  window.open(url, '_blank')
+}
 
 </script>
 
@@ -72,7 +91,7 @@ const onEnterPD = () => {
   <a-row class="header-container">
     <a-row class="author-info">
       <a-row align="bottom" style="margin-bottom: 30px;width: 100%" :gutter="8">
-        <a-col :span="!isSelf?20:24">
+        <a-col :span="20">
           <a-flex :gap="12">
             <div>
               <a-avatar class="author-avatar" :src="authorInfo.avatar" :size="90"/>
@@ -96,17 +115,34 @@ const onEnterPD = () => {
           </a-flex>
         </a-col>
 
-        <a-col :span="4" v-if="!isSelf">
+        <a-col :span="4">
           <a-flex :gap="12" align="end" class="operation-btn">
-            <a-button type="primary">已关注</a-button>
-            <a-button type="default">私信</a-button>
+            <a-button @click="onFollowAuthor" v-if="!isSelf" type="primary">关注</a-button>
+            <a-button @click="onChat" v-if="!isSelf" type="default">私信</a-button>
+            <div class="change-theme" v-if="isSelf" @click="openDrawer=true">
+            </div>
           </a-flex>
         </a-col>
       </a-row>
     </a-row>
   </a-row>
-  <a-row style=" width: 100%;  padding-top: 15px;  ">
+  <a-row style=" width: 100%;  padding-top: 15px;">
     <a-col :span="6" style="padding-right: 15px">
+      <a-card :bordered=false style=" box-shadow: none;margin-bottom: 15px">
+        <a-flex wrap="wrap" gap="small" align="center" justify="space-around">
+          <a-image @click="openLink(authorInfo.personBlogAddress)" src="/icon/gerenwangzhan32.svg" :preview="false"/>
+          <a-image @click="openLink(authorInfo.github)" src="/icon/github32.png" :preview="false"/>
+          <a-image @click="openLink(authorInfo.gitee)" src="/icon/gitee32.png" :preview="false"/>
+          <a-image @click="openLink(authorInfo.csdn)" src="/icon/csdn32.svg" :preview="false"/>
+          <a-image v-if="authorInfo.bilibli" @click="openLink(authorInfo.bilibli)" src="/icon/Bilibili32.svg"
+                   :preview="false"/>
+          <a-image @click="openLink(authorInfo.bokeyuan)" src="/icon/cnblogs32.svg" :preview="false"/>
+          <a-image @click="openLink('#')" src="/icon/jinritoutiao.svg" :preview="false"/>
+          <a-image @click="openLink('#')" src="/icon/zhihu.svg" :preview="false"/>
+          <a-image @click="openLink('#')" src="/icon/weixin32.png" :preview="false"/>
+          <a-image @click="openLink('')" src="/icon/juejin32.svg" :preview="false"/>
+        </a-flex>
+      </a-card>
       <a-card :bordered=false title="个人成就" style=" box-shadow: none">
         <h3>文章被阅读 1,118,166 </h3>
         <h3>文章被点赞 13,034</h3>
@@ -114,35 +150,7 @@ const onEnterPD = () => {
         <h3>获得 26321 次收藏</h3>
         <h3>收获 14563 粉丝</h3>
       </a-card>
-      <a-card :bordered=false style=" box-shadow: none;margin-top: 15px">
-        <a-flex wrap="wrap" gap="small">
-          <a-tag color="#55acee">
-            <template #icon>
-              <twitter-outlined/>
-            </template>
-            Twitter
-          </a-tag>
-          <a-tag color="#cd201f">
-            <template #icon>
-              <youtube-outlined/>
-            </template>
-            Youtube
-          </a-tag>
-          <a-tag color="#3b5999">
-            <template #icon>
-              <facebook-outlined/>
-            </template>
-            Facebook
-          </a-tag>
-          <a-tag color="#55acee">
-            <template #icon>
-              <linkedin-outlined/>
-            </template>
-            LinkedIn
-          </a-tag>
-        </a-flex>
 
-      </a-card>
       <a-card :bordered=false title="阅读榜单" style=" box-shadow: none;margin-top: 15px;min-height: 150px">
 
       </a-card>
@@ -165,6 +173,17 @@ const onEnterPD = () => {
       </div>
     </a-col>
   </a-row>
+  <!-- 顶部封面选择器 -->
+  <a-drawer :closable="false" placement="bottom" v-model:open="openDrawer">
+    <a-tabs v-model:activeKey="activeKey">
+      <a-tab-pane key="1" tab="封面">
+        封面设置
+      </a-tab-pane>
+      <a-tab-pane key="2" tab="背景" force-render>
+        背景设置
+      </a-tab-pane>
+    </a-tabs>
+  </a-drawer>
 </template>
 
 <style scoped>
@@ -172,7 +191,7 @@ const onEnterPD = () => {
   height: 200px;
   width: 100%;
   background-size: cover;
-  background-image: url("/bg1.jpg");
+  background-image: url("/bg5.jpg");
   background-position: center; /* 背景图片居中 */
   position: relative; /* 为绝对定位的子元素提供参照 */
 }
@@ -236,6 +255,19 @@ const onEnterPD = () => {
   color: #ffffff;
 }
 
+.change-theme {
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background-color: rgba(255, 255, 255, .14);
+  transition: all .3s;
+}
 /* 卡片修改*/
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;

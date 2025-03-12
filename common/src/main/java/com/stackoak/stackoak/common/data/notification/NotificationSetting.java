@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.common.data.notification;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -31,7 +32,7 @@ public class NotificationSetting implements Serializable {
     /**
      * 用户ID，外键关联用户表
      */
-    @TableId("user_id")
+    @TableId(value = "user_id",type = IdType.ASSIGN_UUID)
     private String userId;
 
     /**

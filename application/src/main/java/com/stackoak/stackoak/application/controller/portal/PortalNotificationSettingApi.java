@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.application.controller.portal;
 
+import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
 import com.stackoak.stackoak.common.data.notification.NotificationSetting;
 import com.stackoak.stackoak.common.data.notification.SettingNotifyRequest;
@@ -28,7 +29,7 @@ public class PortalNotificationSettingApi {
         ns.setNotify(request);
         return Result.success();
     }
-
+    @SaUserCheckLogin
     @GetMapping(value = "get-setting", name = "获取消息配置")
     public Result getUserNotifySetting() {
         NotificationSetting setting = ns.getUserNotifySetting();

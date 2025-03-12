@@ -7,6 +7,8 @@ const Api = {
     FANS: '/user/fans',
     UPDATE_PROFILE: '/user/update-profile',
     GET_USER_PROFILE: '/user/get-profile',
+    USER_FOLLOW: '/user/follow',
+    USER_UNFOLLOW: '/user/unfollow',
 };
 
 export function getUserInfo() {
@@ -34,3 +36,10 @@ export function getUserProfile() {
     return request.get(Api.GET_USER_PROFILE)
 }
 
+export function followUser(userId: string) {
+    return request.post(Api.USER_FOLLOW + `?userId=${userId}`)
+}
+
+export function unFollowUser(userId: string) {
+    return request.put(Api.USER_UNFOLLOW + `?userId=${userId}`)
+}
