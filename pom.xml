@@ -12,12 +12,10 @@
         <java.version>17</java.version>
         <spring-boot.version>3.4.2</spring-boot.version>
         <swagger.version>3.0.0</swagger.version>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <modules>
-        <module>common</module>
-        <module>application</module>
-        <module>repository</module>
-    </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -163,16 +161,33 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
-                <scope>test</scope>
             </dependency>
 
         </dependencies>
     </dependencyManagement>
+
+   <!--
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.0</version> &lt;!&ndash; 指定版本 &ndash;&gt;
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -191,6 +206,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.0</version> &lt;!&ndash; 指定版本 &ndash;&gt;
                 <configuration>
                     <excludes>
                         <exclude>
@@ -201,9 +217,49 @@
                 </configuration>
             </plugin>
         </plugins>
+    </build>-->
+    <modules>
+        <module>common</module>
+        <module>application</module>
+        <module>repository</module>
+    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
-
-
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>

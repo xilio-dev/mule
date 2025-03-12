@@ -33,5 +33,5 @@ public class Tag implements Serializable {
     @TableField("user_id")
     private String userId;
     @TableField("type")
-    private String type;
+    private Integer type;
 }

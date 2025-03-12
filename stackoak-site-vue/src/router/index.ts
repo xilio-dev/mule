@@ -164,28 +164,6 @@ const router = createRouter({
             name: 'Post',
             component: () => import('@/views/post/Index.vue'),
         },
-
-        {
-            path: '/resource',
-            name: 'resource',
-            component: () => import('@/views/resource/Index.vue'),
-        },
-        {
-            path: '/opensource/document',
-            name: 'document',
-            component: () => import('@/views/opensource/document/Index.vue'),
-        },
-        {
-            path: '/opensource/document/detail',
-            name: 'document-detail',
-            component: () => import('@/views/opensource/document/detail/Index.vue'),
-        },
-        {
-            path: '/opensource/project',
-            name: 'project',
-            component: () => import('@/views/opensource/project/Index.vue'),
-        },
-
     ],
 })
 

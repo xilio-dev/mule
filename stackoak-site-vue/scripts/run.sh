@@ -3,7 +3,7 @@
 #ssh root@124.221.53.234 "cd /www/wwwroot/stackoak.com/ && rm -rf *"
 #pnpm build
 
-# 远程服务器信息
+ #远程服务器信息
 REMOTE_USER="root"
 REMOTE_HOST="124.221.53.234"
 REMOTE_DIR="/www/wwwroot/stackoak.com/"

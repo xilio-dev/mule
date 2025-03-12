@@ -236,30 +236,6 @@ const items1 = ref<MenuProps['items']>([
     key: '/',
     label: '首页',
   },
-  {
-    key: '/opensource',
-    label: '官方开源',
-    title: '官方开源',
-    children: [
-      {
-        label: '开源项目',
-        key: '/opensource/project',
-      },
-      {
-        label: '文档中心',
-        key: '/opensource/document',
-      },
-      {
-        label: '使用教程',
-        key: '/opensource/guide',
-      },
-    ],
-  },
-  {
-    key: '/resource',
-    label: '资源中心',
-    title: 'Navigation Four - Link',
-  },
 ]);
 
 const openKeys = ref<string[]>(['sub1']);

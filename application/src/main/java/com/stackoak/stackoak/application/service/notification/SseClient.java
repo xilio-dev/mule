@@ -1,7 +1,7 @@
 package com.stackoak.stackoak.application.service.notification;
 
 import com.google.gson.Gson;
-import com.stackoak.stackoak.common.data.notification.StackOakMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class SseClient {
         return sseEmitter;
     }
 
-    public boolean sendMessage(String uid, StackOakMessage message) {
+    public boolean sendMessage(String uid, Object message) {
         SseEmitter sseEmitter = sseEmitterMap.get(uid);
         if (sseEmitter == null) {
             log.warn("消息推送失败，未找到 UID: {}", uid);

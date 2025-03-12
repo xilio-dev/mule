@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public abstract class Message implements StackOakMessage, Serializable {
+public abstract class Message {
     private String messageId;
     private Integer type;
 

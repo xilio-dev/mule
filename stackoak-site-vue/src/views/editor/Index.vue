@@ -192,7 +192,7 @@ const loadColumnList = async () => {
 }
 //加载系统中所有标签
 const loadTagList = async () => {
-  const res = await tagList({current: 1, size: 10})
+  const res = await tagList({current: 1, size: 30})
   tags.value = res.records || []
 }
 /*------------------------------------------核心业务----------------------------------------------*/
