@@ -33,12 +33,11 @@ const pathName = computed(() =>{
     <Navbar style="position: fixed;z-index: 90"/>
   </header>
 
-  <main style="padding: 60px 10% 0;" v-if="pathName==='base'">
+  <main style="padding: 60px 10% 0;" v-if="pathName==='base'" >
     <RouterView/>
   </main>
 
   <RouterView v-if="pathName!=='base'"/>
-
 </template>
 
 <style scoped>
