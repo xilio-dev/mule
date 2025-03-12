@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoak.stackoak.common.data.user.LoginUser;
 import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
 import com.stackoak.stackoak.common.data.user.User;
+import com.stackoak.stackoak.common.data.user.UserDetailVo;
 import jakarta.validation.constraints.Email;
 
 /**
@@ -31,4 +32,10 @@ public interface IUserService extends IService<User> {
 
     UpdateProfileRequest getProfile();
 
+    /**
+     * 获取用户详细信息
+     * @param userId 用户ID
+     * @return 用户详细信息
+     */
+    UserDetailVo getUserDetail(String userId);
 }

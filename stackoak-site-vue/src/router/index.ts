@@ -150,7 +150,7 @@ const router = createRouter({
             component: () => import('@/views/search/index.vue'),
         },
         {
-            path: '/author',
+            path: '/author/:userId',
             name: 'Author',
             component: () => import('@/views/author/Index.vue'),
         },

@@ -42,7 +42,7 @@
         <a-popover v-if="isLogin" placement="bottomRight">
           <template #content>
             <a-flex vertical>
-              <router-link to="/author" target="_blank">
+              <router-link :to="`/author/${userStore.userinfo.userId}`" target="_blank">
                 <a-button type="text">个人主页</a-button>
               </router-link>
               <router-link to="/creator" target="_blank">
@@ -66,7 +66,7 @@
 <script lang="ts" setup>
 import {onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {reactive} from 'vue';
-import {useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 
 const isLogin = ref(false)
 const userStore = useUserStore()

@@ -3,7 +3,7 @@ import {ref} from "vue";
 import {sendLogout} from "@/api/auth.ts";
 
 interface UserInfo {
-    userId?: number;
+    userId?: string;
     nickname?: string;
     email?: string;
     avatar?: string;

@@ -7,6 +7,7 @@ import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.common.data.user.LoginUser;
 import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
 import com.stackoak.stackoak.common.data.user.User;
+import com.stackoak.stackoak.common.data.user.UserDetailVo;
 import com.stackoak.stackoak.repository.user.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +37,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String userId = StpKit.USER.getLoginIdAsString();
         return getById(userId);
     }
+
     /**
      * @param email 邮箱账号
      * @return 用户信息
@@ -50,13 +52,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateProfile(UpdateProfileRequest request) {
-        System.out.println(request);
         User user = getById(StpKit.USER.getLoginIdAsString());
         BeanUtils.copyProperties(request, user);
         if (!ObjectUtils.isEmpty(request.getTagIds())) {
             String tags = org.apache.commons.lang3.StringUtils.join(request.getTagIds(), ",");
             user.setTagIds(tags);
-        }else {
+        } else {
             user.setTagIds(null);
         }
         updateById(user);
@@ -71,5 +72,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         BeanUtils.copyProperties(user, dto);
         return dto;
+    }
+
+    /**
+     * 获取用户详细信息
+     *
+     * @param userId 用户ID
+     * @return 用户详细信息
+     */
+    @Override
+    public UserDetailVo getUserDetail(String userId) {
+        //如果当前用户已经登陆，那么需要返回作者与该用户的关系信息
+        if (StpKit.USER.isLogin()) {
+            String currentUser = StpKit.USER.getLoginIdAsString();
+        }
+        User byId = getById(userId);
+        UserDetailVo vo = new UserDetailVo();
+        BeanUtils.copyProperties(byId, vo);
+        return vo;
     }
 }

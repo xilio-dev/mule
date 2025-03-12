@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.service.user.IUserService;
 import com.stackoak.stackoak.common.data.PageQuery;
+import com.stackoak.stackoak.common.data.follow.FollowPageQuery;
 import com.stackoak.stackoak.common.data.follow.FollowRequest;
 import com.stackoak.stackoak.common.data.follow.FollowUserVO;
 import com.stackoak.stackoak.common.data.follow.Follows;
@@ -33,14 +35,14 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
     private IUserService userService;
 
     /**
-     * 获取我关注的人
+     * 获取我关注的人以及访问者与这些粉丝的关系
      *
      * @return 关注列表
      */
     @Override
-    public IPage<FollowUserVO> findFollow(PageQuery pageQuery) {
+    public IPage<FollowUserVO> findFollow(FollowPageQuery pageQuery) {
         Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
-        page.setRecords(followsMapper.selectFollow(page, "1", "3"));
+        page.setRecords(followsMapper.selectFollow(page, pageQuery.getAuthorId(), StpKit.USER.getLoginIdAsString()));
         return page;
     }
 
@@ -50,9 +52,9 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
      * @return 粉丝列表
      */
     @Override
-    public IPage<FollowUserVO> findFans(PageQuery pageQuery) {
+    public IPage<FollowUserVO> findFans(FollowPageQuery pageQuery) {
         Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
-        return followsMapper.selectFans(page, "1", null);
+        return followsMapper.selectFans(page, pageQuery.getAuthorId(), StpKit.USER.getLoginIdAsString());
     }
 
     /**
@@ -62,7 +64,7 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
      */
     @Override
     public void cancelFollow(FollowRequest followRequest) {
-        String currentUser = "1";//todo 临时测试
+        String currentUser = StpKit.USER.getLoginIdAsString();
         //检查是否已经关注了作者，如果关注了则删除 需要检查目标用户的状态，例如是否被禁
         LambdaQueryWrapper<Follows> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Follows::getTargetUserId, followRequest.getUserId());
@@ -77,7 +79,7 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
      */
     @Override
     public void follow(FollowRequest followRequest) {
-        String currentUser = "1";//todo 临时测试
+        String currentUser = StpKit.USER.getLoginIdAsString();
         //不能够关注自己
         if (currentUser.equals(followRequest.getUserId())) {
             throw new BizException("不能关注自己");

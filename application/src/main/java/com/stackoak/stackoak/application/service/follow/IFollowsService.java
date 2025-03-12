@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.service.follow;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoak.stackoak.common.data.PageQuery;
+import com.stackoak.stackoak.common.data.follow.FollowPageQuery;
 import com.stackoak.stackoak.common.data.follow.FollowRequest;
 import com.stackoak.stackoak.common.data.follow.FollowUserVO;
 import com.stackoak.stackoak.common.data.follow.Follows;
@@ -23,14 +24,14 @@ public interface IFollowsService extends IService<Follows> {
      * @return 关注列表
      */
 
-    IPage<FollowUserVO> findFollow(PageQuery pageQuery);
+    IPage<FollowUserVO> findFollow(FollowPageQuery pageQuery);
 
     /**
      * 获取我的粉丝
      *
      * @return 粉丝列表
      */
-    IPage<FollowUserVO> findFans(PageQuery pageQuery);
+    IPage<FollowUserVO> findFans(FollowPageQuery pageQuery);
 
     /**
      * 取消关注

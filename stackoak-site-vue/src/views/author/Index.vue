@@ -7,25 +7,65 @@ import {
 } from '@ant-design/icons-vue';
 
 import ColumnList from "@/components/ColumnList.vue";
-import {onMounted, ref} from "vue";
-import {getFans, getFollows} from "@/api/user.ts";
-
-
+import {computed, onMounted, ref} from "vue";
+import {getFans, getFollows, getUserDetailInfo} from "@/api/user.ts";
+import {useRoute} from "vue-router";
+import {useUserStore} from "@/store";
+/*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
-const loadFollows = async () => {
-  const res = getFollows({current: 1, size: 10})
-}
-const loadFans = async () => {
-  const res = getFans({current: 1, size: 10})
-}
+const route = useRoute()
+const authorId = route.params.userId
+const authorInfo = ref({})
+const userStore = useUserStore()
+
+//判断是否是自己本人
+const isSelf = computed(() => {
+  return userStore.userinfo.userId == authorId
+})
+/*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
+  await loadAuthorInfo()
   await loadFollows()
   await loadFans()
+
 })
+
+/*------------------------------------初始化---------------------------------------------*/
+
+
+
+
+/*------------------------------------数据加载--------------------------------------------*/
+//加载作者关注的人
+const loadFollows = async () => {
+  const res = getFollows({current: 1, size: 10, authorId: authorId})
+}
+//加载作者的粉丝
+const loadFans = async () => {
+  const res = getFans({current: 1, size: 10, authorId: authorId})
+}
+//加载作者信息
+const loadAuthorInfo = async () => {
+  const res = await getUserDetailInfo(authorId)
+  authorInfo.value = res || {}
+}
+//加载作者的专栏
+const loadUserColumns = async () => {
+
+}
+
+/*------------------------------------核心业务--------------------------------------------*/
+
+
+
+
+/*-------------------------------------其他函数-------------------------------------------*/
+//
 const onEnterPD = () => {
 
 }
-const isSelf = ref(false)
+
+
 </script>
 
 <template>
@@ -35,19 +75,28 @@ const isSelf = ref(false)
         <a-col :span="!isSelf?20:24">
           <a-flex :gap="12">
             <div>
-              <a-avatar class="author-avatar" src="/avatar.jpeg" :size="90"/>
+              <a-avatar class="author-avatar" :src="authorInfo.avatar" :size="90"/>
             </div>
             <a-flex vertical justify="space-around" style="width: 100%;">
-              <h2 class="author-title">超级大程序员</h2>
-              <h3 class="author-analyse">300k获赞 45224关注 74115粉丝</h3>
+              <div class="author-title">
+                {{ authorInfo.nickname }}
+                <span v-if="authorInfo.jobTitle" class="author-job">{{ authorInfo.jobTitle }}</span>
+              </div>
+              <div class="author-analyse">
+                <a-flex :gap="12" style="font-size: 18px;">
+                  <div>{{ authorInfo.gotViewCount }} 阅读量</div>
+                  <div>{{ authorInfo.gotLikeCount }} 获赞</div>
+                  <div>{{ authorInfo.fansCount }} 粉丝</div>
+                </a-flex>
+              </div>
               <div class="author-introduce">
-                我的第一篇博客文章 牛逼的人工智能工程师牛逼，我就
+                {{ authorInfo.introduce }}
               </div>
             </a-flex>
           </a-flex>
         </a-col>
 
-        <a-col :span="4" v-if="!isSelf" >
+        <a-col :span="4" v-if="!isSelf">
           <a-flex :gap="12" align="end" class="operation-btn">
             <a-button type="primary">已关注</a-button>
             <a-button type="default">私信</a-button>
@@ -150,6 +199,7 @@ const isSelf = ref(false)
 
 .author-avatar {
 }
+
 .author-title {
   color: white;
   font-size: 24px;
@@ -159,6 +209,7 @@ const isSelf = ref(false)
 
 .author-analyse {
   color: white;
+  font-size: 18px;
   display: inline-block; /* 使背景仅应用于文字 */
 }
 
@@ -179,6 +230,12 @@ const isSelf = ref(false)
   width: 100%;
   justify-content: flex-end;
 }
+
+.author-job {
+  font-size: 12px;
+  color: #ffffff;
+}
+
 /* 卡片修改*/
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;
