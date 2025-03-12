@@ -36,14 +36,14 @@ public interface IFollowsService extends IService<Follows> {
     /**
      * 取消关注
      *
-     * @param followRequest 请求参数
+     * @param userId 请求参数
      */
-    void cancelFollow(FollowRequest followRequest);
+    void cancelFollow(String userId);
 
     /**
      * 关注作者
      *
-     * @param followRequest 请求参数
+     * @param userId 请求参数
      */
-    void follow(FollowRequest followRequest);
+    void follow(String userId);
 }

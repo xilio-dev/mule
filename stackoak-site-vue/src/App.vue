@@ -21,6 +21,9 @@ const pathName = computed(() =>{
   }else if (currentPath.value==='/opensource/document/detail'){
     return 'doc'
   }
+  else if (currentPath.value==='/author'){
+    return 'author'
+  }
   else {
     return 'base'
   }
@@ -33,7 +36,7 @@ const pathName = computed(() =>{
     <Navbar style="position: fixed;z-index: 90"/>
   </header>
 
-  <main style="padding: 60px 10% 0;" v-if="pathName==='base'" >
+  <main style="padding: 60px 10% 0" class="main-container" v-if="pathName==='base'" >
     <RouterView/>
   </main>
 
@@ -41,5 +44,9 @@ const pathName = computed(() =>{
 </template>
 
 <style scoped>
-
+.main-container{
+  background-image: url("/bg6.jpg");
+  min-height:1000px;
+  background-size: cover;
+}
 </style>

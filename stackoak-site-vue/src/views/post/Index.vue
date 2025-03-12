@@ -140,7 +140,7 @@ const toApply = (commentId: string) => {
       <a-card style="height: 205px">
         <a-row style="text-align: left;width: 100%">
           <a-col :span="6">
-            <RouterLink to="/author">
+            <RouterLink :to="`/author/${userInfo.userId}`" target="_blank">
               <a-avatar :size="50" :src="userInfo.avatar"/>
             </RouterLink>
           </a-col>
