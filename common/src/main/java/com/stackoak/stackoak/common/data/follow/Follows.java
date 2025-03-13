@@ -31,10 +31,6 @@ public class Follows implements Serializable {
         this.userId = userId;
         this.targetUserId = targetUserId;
     }
-
-    @TableId(value = "id",type = IdType.ASSIGN_UUID)
-    private String id;
-
     @TableField("user_id")
     private String userId;
 

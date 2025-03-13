@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import {
-  TwitterOutlined,
-  YoutubeOutlined,
-  FacebookOutlined,
-  LinkedinOutlined,
-} from '@ant-design/icons-vue';
 
 import ColumnList from "@/components/ColumnList.vue";
 import {computed, onMounted, ref} from "vue";
-import {followUser, getFans, getFollows, getUserDetailInfo, unFollowUser} from "@/api/user.ts";
+import {getFans, getFollows, getUserDetailInfo, unFollowUser} from "@/api/user.ts";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
-import router from "@/router";
 import {message} from "ant-design-vue";
 import {columnLists} from "@/api/column.ts";
 import {authorArticleRank} from "@/api/post.ts";
@@ -23,6 +16,8 @@ const authorId = route.params.userId
 const authorInfo = ref({})
 const columns = ref([])
 const articleRank = ref([])
+const authorFansList=ref([])
+const authorFollowList=ref([])
 const openDrawer = ref(false)
 //判断是否是自己本人
 const isSelf = computed(() => {
@@ -46,11 +41,15 @@ onMounted(async () => {
 /*------------------------------------数据加载--------------------------------------------*/
 //加载作者关注的人
 const loadFollows = async () => {
-  const res = getFollows({current: 1, size: 10, authorId: authorId})
+  getFollows({current: 1, size: 10, authorId: authorId}).then(res=>{
+    authorFollowList.value=res.records
+  })
 }
 //加载作者的粉丝
 const loadFans = async () => {
-  const res = getFans({current: 1, size: 10, authorId: authorId})
+  getFans({current: 1, size: 10, authorId: authorId}).then(res=>{
+    authorFansList.value=res.records
+  })
 }
 //加载作者信息
 const loadAuthorInfo = async () => {
@@ -89,6 +88,7 @@ const onChat = () => {
 }
 
 
+
 /*-------------------------------------其他函数-------------------------------------------*/
 //
 const onEnterPD = () => {
@@ -97,7 +97,6 @@ const onEnterPD = () => {
 const openLink = (url: string) => {
   window.open(url, '_blank')
 }
-
 </script>
 
 <template>
@@ -181,11 +180,50 @@ const openLink = (url: string) => {
           <a-tab-pane key="2" tab="合集" force-render>
             <ColumnList v-model:column-list="columns"/>
           </a-tab-pane>
-          <a-tab-pane key="3" tab="粉丝">Content of Tab Pane 3</a-tab-pane>
-          <a-tab-pane key="4" tab="关注的人">Content of Tab Pane 3</a-tab-pane>
-          <template #rightExtra>
-            <a-button @click="onEnterPD" type="link" size="small" style="margin-right: 15px">进入私域</a-button>
-          </template>
+          <a-tab-pane key="3" tab="粉丝">
+            <a-list item-layout="horizontal" :data-source="authorFansList" :split="false">
+              <template #renderItem="{ item }">
+                <a-list-item>
+                  <template #actions>
+                    <a>{{item.relation==1?'互相关注':'关注'}}</a>
+                  </template>
+                  <a-list-item-meta>
+                    <template #title>
+                      <a href="https://www.antdv.com/">{{ item.nickname }}</a>
+                    </template>
+                    <template #description>
+                      <span class="no-wrap">{{item.introduce}}</span>
+                    </template>
+                    <template #avatar>
+                      <a-avatar :src="item.avatar"/>
+                    </template>
+                  </a-list-item-meta>
+                </a-list-item>
+              </template>
+            </a-list>
+          </a-tab-pane>
+          <a-tab-pane key="4" tab="关注的人">
+            <a-list item-layout="horizontal" :data-source="authorFollowList" :split="false">
+              <template #renderItem="{ item }">
+                <a-list-item>
+                  <template #actions>
+                    <a>{{item.relation==1?'互相关注':'关注'}}</a>
+                  </template>
+                  <a-list-item-meta>
+                    <template #title>
+                      <a href="https://www.antdv.com/">{{ item.nickname }}</a>
+                    </template>
+                    <template #description>
+                      <span class="no-wrap">{{item.introduce}}</span>
+                    </template>
+                    <template #avatar>
+                      <a-avatar :src="item.avatar"/>
+                    </template>
+                  </a-list-item-meta>
+                </a-list-item>
+              </template>
+            </a-list>
+          </a-tab-pane>
         </a-tabs>
       </div>
     </a-col>

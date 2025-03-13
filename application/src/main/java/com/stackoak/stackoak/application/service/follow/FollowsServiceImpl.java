@@ -42,7 +42,11 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
     @Override
     public IPage<FollowUserVO> findFollow(FollowPageQuery pageQuery) {
         Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
-        page.setRecords(followsMapper.selectFollow(page, pageQuery.getAuthorId(), StpKit.USER.getLoginIdAsString()));
+        String userId=null;
+        if (StpKit.USER.isLogin()) {
+            userId=StpKit.USER.getLoginIdAsString();
+        }
+        page.setRecords(followsMapper.selectFollow(page, pageQuery.getAuthorId(), userId));
         return page;
     }
 
@@ -54,7 +58,11 @@ public class FollowsServiceImpl extends ServiceImpl<FollowsMapper, Follows> impl
     @Override
     public IPage<FollowUserVO> findFans(FollowPageQuery pageQuery) {
         Page<FollowUserVO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
-        return followsMapper.selectFans(page, pageQuery.getAuthorId(), StpKit.USER.getLoginIdAsString());
+        String userId=null;
+        if (StpKit.USER.isLogin()) {
+            userId=StpKit.USER.getLoginIdAsString();
+        }
+        return followsMapper.selectFans(page, pageQuery.getAuthorId(), userId);
     }
 
     /**

@@ -31,7 +31,7 @@ instance.interceptors.response.use(function (response) {
     } else if (code === 401) {
         localStorage.removeItem('token')
         localStorage.removeItem('userinfo');
-        window.location.href = "/login"
+        //window.location.href = "/login"
     } else {
         message.error(msg);
     }
