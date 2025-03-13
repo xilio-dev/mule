@@ -72,9 +72,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private IUserConfigService userConfigService;
 
     @Override
-    public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
+    public Page<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
         Page<ArticleBriefVO> page = Page.of(articleListDTO.getCurrent(), articleListDTO.getSize());
-        IPage<ArticleBriefVO> articleBriefVOPage = null;
+        Page<ArticleBriefVO> articleBriefVOPage = null;
         if (articleListDTO.getShowType() == 1) {
             return articleBriefVOPage;
         } else if (articleListDTO.getShowType() == 2) {
@@ -339,7 +339,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public IPage<ArticleBriefVO> selectByCategoryAndRecent(Page<ArticleBriefVO> page, ArticleListDTO articleListDTO) {
+    public Page<ArticleBriefVO> selectByCategoryAndRecent(Page<ArticleBriefVO> page, ArticleListDTO articleListDTO) {
         return baseMapper.selectByCategoryAndRecent(page, articleListDTO);
     }
 
@@ -435,7 +435,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @return 文章列表
      */
     @Override
-    public IPage<ArticleBriefVO> getPublishArticle(ArticleQueryRequest request) {
+    public Page<ArticleBriefVO> getPublishArticle(ArticleQueryRequest request) {
 
         return null;
     }
@@ -450,5 +450,23 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setStatus(ArticleStatus.RECYCLE.getCode());
         updateById(article);
         //todo 更新搜索引擎或缓存
+    }
+
+    @Override
+    public Page authorRankList(AuthorRankListQuery request) {
+
+        return this.page(request.getPage());
+
+    }
+
+    @Override
+    public Page userRecentArticle(UserRecentArticleQuery request) {
+        //todo 需要完善，根据用户文章的可见状态进行展示，如果当前用户已经登陆，
+        // 如果是粉丝则返回，没有登陆或非粉丝不返回文章，私人可见不返回
+        LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(Article::getId, Article::getTitle, Article::getDescription)
+                .eq(Article::getUserId, request.getUserId())
+                .orderByDesc(Article::getPublishTime);
+        return page(request.getPage(), wrapper);
     }
 }

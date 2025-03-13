@@ -11,6 +11,7 @@ const Api = {
     UN_DIGG: '/article/undigg',
     ADD_TO_FAVOR: '/article/addToFavor',
     FROM_FAVOR_DEL: '/article/fromFavorDel',
+    RANK_IST: '/article/rank-list',
 
 };
 
@@ -52,4 +53,8 @@ export function addToFavor(data: any) {
 
 export function fromFavorDel(data: any) {
     return request.delete(Api.FROM_FAVOR_DEL, data)
+}
+
+export function authorArticleRank(query: any) {
+    return request.post(Api.RANK_IST, query)
 }

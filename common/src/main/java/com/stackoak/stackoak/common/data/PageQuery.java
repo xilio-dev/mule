@@ -12,9 +12,9 @@ import java.io.Serializable;
 public class PageQuery implements Serializable {
     private static final long serialVersionUID = 1L;
     @NonNull
-    private Long current;
+    private Long current=1L;
     @NonNull
-    private Long size;
+    private Long size=5L;
 
     public Page getPage() {
         return Page.of(current, size);

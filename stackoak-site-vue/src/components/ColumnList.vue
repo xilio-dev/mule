@@ -1,33 +1,43 @@
 <script setup lang="ts">
-import { PlusOutlined } from '@ant-design/icons-vue';
+import {PlusOutlined} from '@ant-design/icons-vue';
 import cover from '@/assets/avatar.jpeg';
+import {ImageUtils} from "@/utils/file.ts";
+
+const props = defineProps<{
+  columnList: [];
+}>();
+const onOpenColumn = (id: string) => {
+  window.open(`/column/${id}`, '_blank')
+}
 </script>
 
 <template>
   <div
-      v-for="(item, index) in 3"
+      @click="onOpenColumn(item.id)"
+      v-for="(item, index) in columnList"
       :key="index"
       :class="{ 'border-bottom': index !== 9 }"
       class="row-item">
-    <a-flex justify="space-between" align="stretch">
+    <a-flex justify="space-between" align="stretch" >
       <a-image
           style="width: 150px; height: 80px"
-          :src="cover"
+          :src="ImageUtils.getImgUrl(item.cover)" :preview="false"
       />
       <div
           style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;margin-left: 10px; margin-right: 15px">
         <a-flex justify="space-between" align="center">
-          <div class="column-title">并发编程</div>
+          <div class="column-title">{{ item.name }}</div>
           <div>
             <a-button type="primary" size="small">
               <template #icon>
-                <PlusOutlined />
+                <PlusOutlined/>
               </template>
-              已订阅</a-button>
+              已订阅
+            </a-button>
           </div>
         </a-flex>
         <div class="column-desc">
-          并发编程是非常有意思的学科并发编程是非常有意思的学科并发编程是非常有意思的学科并发编程是非常有意思的学科
+          {{ item.intro }}
         </div>
         <a-flex gap="small" class="column-info">
           <div>2023-02-25</div>
@@ -46,12 +56,15 @@ import cover from '@/assets/avatar.jpeg';
   padding-bottom: 5px; /* 调整线条位置 */
   transition: background-color 0.3s ease; /* 添加过渡效果 */
 }
-.row-item:hover{
+
+.row-item:hover {
   background-color: #F2F6FC;
 }
+
 .border-bottom {
   border-bottom: 1px solid #f1eeee; /* 添加灰色边框 */
 }
+
 .column-title {
   font-size: 16px;
   line-height: 24px;

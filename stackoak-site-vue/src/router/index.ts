@@ -164,6 +164,11 @@ const router = createRouter({
             name: 'Post',
             component: () => import('@/views/post/Index.vue'),
         },
+        {
+            path: '/column/:id',
+            name: 'column',
+            component: () => import('@/views/column/index.vue'),
+        },
     ],
 })
 

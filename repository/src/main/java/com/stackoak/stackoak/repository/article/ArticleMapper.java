@@ -10,6 +10,7 @@ import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleDetailVO;
 import com.stackoak.stackoak.common.data.article.ArticleListDTO;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.SelectProvider;
 
 
 /**
@@ -22,8 +23,10 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ArticleMapper extends BaseMapper<Article> {
 
-    IPage<ArticleBriefVO> selectByCategoryAndRecent(@Param("page") Page<ArticleBriefVO> page, @Param("dto") ArticleListDTO articleListDTO);
+    Page<ArticleBriefVO> selectByCategoryAndRecent(@Param("page") Page<ArticleBriefVO> page, @Param("dto") ArticleListDTO articleListDTO);
 
     ArticleDetailVO selectArticleDetail(@Param("id") String id);
+    @SelectProvider(type = ArticleSQLProvider.class, method = "selectUserRecentArticleList")
+    ArticleDetailVO selectUserRecentArticleList(@Param("page") Page<ArticleBriefVO> page);
 }
 

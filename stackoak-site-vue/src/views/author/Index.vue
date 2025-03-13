@@ -13,12 +13,16 @@ import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
 import router from "@/router";
 import {message} from "ant-design-vue";
+import {columnLists} from "@/api/column.ts";
+import {authorArticleRank} from "@/api/post.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
 const route = useRoute()
+const userStore = useUserStore()
 const authorId = route.params.userId
 const authorInfo = ref({})
-const userStore = useUserStore()
+const columns = ref([])
+const articleRank = ref([])
 const openDrawer = ref(false)
 //判断是否是自己本人
 const isSelf = computed(() => {
@@ -29,6 +33,8 @@ onMounted(async () => {
   await loadAuthorInfo()
   await loadFollows()
   await loadFans()
+  await loadUserColumns()
+  await loadAuthorArticleRank()
 
 })
 
@@ -53,27 +59,34 @@ const loadAuthorInfo = async () => {
 }
 //加载作者的专栏
 const loadUserColumns = async () => {
-
+  columnLists({current: 1, size: 10, userId: authorId}).then(res => {
+    columns.value = res.records
+  })
+}
+//
+const loadAuthorArticleRank = async () => {
+  authorArticleRank({current: 1, size: 5, authorId: authorId}).then(res => {
+    articleRank.value = res.records
+  })
 }
 
 /*------------------------------------核心业务--------------------------------------------*/
 //点击关注或取消关注
-const onFollowAuthor=()=>{
+const onFollowAuthor = () => {
   //如果没有关注，执行关注
   //  followUser(authorId).then(res=>{
   //    message.success("已关注")
   //  })
-  unFollowUser(authorId).then(res=>{
+  unFollowUser(authorId).then(res => {
     message.success("已取消关注")
   })
   //如果已经关注，执行取消关注
 
 }
 //点击私信
-const onChat=()=>{
+const onChat = () => {
 
 }
-
 
 
 /*-------------------------------------其他函数-------------------------------------------*/
@@ -143,17 +156,21 @@ const openLink = (url: string) => {
           <a-image @click="openLink('')" src="/icon/juejin32.svg" :preview="false"/>
         </a-flex>
       </a-card>
-      <a-card :bordered=false title="个人成就" style=" box-shadow: none">
-        <h3>文章被阅读 1,118,166 </h3>
-        <h3>文章被点赞 13,034</h3>
-        <h3>内容获得 183 次评论</h3>
-        <h3>获得 26321 次收藏</h3>
-        <h3>收获 14563 粉丝</h3>
-      </a-card>
+      <a-affix offset-bottom="bottom" :offset-top="60">
+        <a-card :bordered=false title="个人成就" style=" box-shadow: none;">
+          <h3>文章被阅读 1,118,166 </h3>
+          <h3>文章被点赞 13,034</h3>
+          <h3>内容获得 183 次评论</h3>
+          <h3>获得 26321 次收藏</h3>
+          <h3>收获 14563 粉丝</h3>
+        </a-card>
 
-      <a-card :bordered=false title="阅读榜单" style=" box-shadow: none;margin-top: 15px;min-height: 150px">
-
-      </a-card>
+        <a-card :bordered=false title="阅读榜单" style=" box-shadow: none;margin-top: 15px;min-height: 200px">
+          <div v-for="item in articleRank">
+            {{item.title}}
+          </div>
+        </a-card>
+      </a-affix>
     </a-col>
     <a-col :span="18" style="background-color: white">
       <div style="margin-left: 15px">
@@ -162,7 +179,7 @@ const openLink = (url: string) => {
 
           </a-tab-pane>
           <a-tab-pane key="2" tab="合集" force-render>
-            <ColumnList/>
+            <ColumnList v-model:column-list="columns"/>
           </a-tab-pane>
           <a-tab-pane key="3" tab="粉丝">Content of Tab Pane 3</a-tab-pane>
           <a-tab-pane key="4" tab="关注的人">Content of Tab Pane 3</a-tab-pane>
@@ -268,6 +285,7 @@ const openLink = (url: string) => {
   background-color: rgba(255, 255, 255, .14);
   transition: all .3s;
 }
+
 /* 卡片修改*/
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;

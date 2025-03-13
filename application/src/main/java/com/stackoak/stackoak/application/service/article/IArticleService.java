@@ -1,9 +1,9 @@
 package com.stackoak.stackoak.application.service.article;
 
 
-import com.stackoak.stackoak.common.data.article.*;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.common.data.article.*;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotNull;
  */
 public interface IArticleService extends IService<Article> {
 
-    public IPage<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO);
+    public Page<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO);
 
     ArticleDetailVO detail(ArticleDetailDTO dto);
 
@@ -28,7 +28,7 @@ public interface IArticleService extends IService<Article> {
 
     GetArticleVO getArticleById(@Valid @NotNull String id);
 
-    IPage<ArticleBriefVO> selectByCategoryAndRecent(Page<ArticleBriefVO> page, ArticleListDTO articleListDTO);
+    Page<ArticleBriefVO> selectByCategoryAndRecent(Page<ArticleBriefVO> page, ArticleListDTO articleListDTO);
 
     /**
      * 文章点赞
@@ -63,7 +63,12 @@ public interface IArticleService extends IService<Article> {
      * @param request 请求参数
      * @return 文章列表
      */
-    IPage<ArticleBriefVO> getPublishArticle(@Valid ArticleQueryRequest request);
+    Page<ArticleBriefVO> getPublishArticle(@Valid ArticleQueryRequest request);
 
     void deleteArticle(ArticleId aid);
+
+    Page<Article> authorRankList(@Valid AuthorRankListQuery request);
+
+    Page<ArticleBriefVO> userRecentArticle(@Valid UserRecentArticleQuery request);
+
 }
