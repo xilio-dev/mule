@@ -12,6 +12,7 @@ const Api = {
     ADD_TO_FAVOR: '/article/addToFavor',
     FROM_FAVOR_DEL: '/article/fromFavorDel',
     RANK_IST: '/article/rank-list',
+    LIST_BY_USER: '/article/list_by_user',
 
 };
 
@@ -33,6 +34,9 @@ export function deleteArticle(aid: string) {
 
 export function postDetail(data: any) {
     return request.post(Api.postDetail, data)
+}
+export function articleListByUser(query: any) {
+    return request.post(Api.LIST_BY_USER, query)
 }
 
 export function getArticleById(id: string) {

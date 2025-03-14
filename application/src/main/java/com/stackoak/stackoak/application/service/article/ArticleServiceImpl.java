@@ -455,7 +455,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Page authorRankList(AuthorRankListQuery request) {
 
-        return this.page(request.getPage());
+        return page(Page.of(request.getCurrent(), request.getSize()));
 
     }
 
@@ -467,6 +467,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         wrapper.select(Article::getId, Article::getTitle, Article::getDescription)
                 .eq(Article::getUserId, request.getUserId())
                 .orderByDesc(Article::getPublishTime);
-        return page(request.getPage(), wrapper);
+        return page(Page.of(request.getCurrent(), request.getSize()), wrapper);
+    }
+
+    @Override
+    public Page<Article> listByUser(ListByUserQuery request) {
+        String key = request.getKey();
+        Integer status = request.getStatus();
+        LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(!ObjectUtils.isEmpty(status),Article::getStatus, status);
+        wrapper.eq(Article::getUserId, StpKit.USER.getLoginIdAsString());
+        wrapper.like(StringUtils.hasText(key), Article::getTitle, key);
+        return page(Page.of(request.getCurrent(), request.getSize()), wrapper);
     }
 }

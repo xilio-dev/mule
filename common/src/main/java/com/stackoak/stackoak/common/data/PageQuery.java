@@ -15,8 +15,4 @@ public class PageQuery implements Serializable {
     private Long current=1L;
     @NonNull
     private Long size=5L;
-
-    public Page getPage() {
-        return Page.of(current, size);
-    }
 }

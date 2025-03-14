@@ -1,8 +1,44 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {columnListByUser} from "@/api/column.ts";
 
+
+/*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
 const activecolumnStatusTab = ref('1');
+const columns = ref([])
+const queryParam = ref({
+  current: 1,
+  size: 10,
+  key: '',
+  status: 1
+})
+
+/*------------------------------------生命周期-------------------------------------------*/
+onMounted(() => {
+  loadColumns()
+})
+
+
+/*------------------------------------初始化---------------------------------------------*/
+
+
+
+
+/*------------------------------------数据加载--------------------------------------------*/
+const loadColumns = async () => {
+  await columnListByUser(queryParam.value).then(res => {
+    columns.value = res.records
+  })
+}
+
+
+/*------------------------------------核心业务--------------------------------------------*/
+
+
+
+
+/*-------------------------------------其他函数-------------------------------------------*/
 </script>
 
 <template>

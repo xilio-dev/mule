@@ -71,4 +71,5 @@ public interface IArticleService extends IService<Article> {
 
     Page<ArticleBriefVO> userRecentArticle(@Valid UserRecentArticleQuery request);
 
+    Page<Article> listByUser(@Valid ListByUserQuery request);
 }

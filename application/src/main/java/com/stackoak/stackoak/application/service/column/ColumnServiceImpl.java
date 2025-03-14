@@ -4,12 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.common.data.PageQuery;
+import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.column.Column;
+import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -44,6 +48,17 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     public Page getUserColumns(PageQuery query) {
         LambdaQueryWrapper<Column> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Column::getUserId, StpKit.USER.getLoginIdAsString());
-        return page(query.getPage(), wrapper);
+        return page(Page.of(query.getCurrent(), query.getSize()), wrapper);
+    }
+
+    @Override
+    public Page<Column> listByUser(ListColumnByUserQuery request) {
+        String key = request.getKey();
+        Integer status = request.getStatus();
+        LambdaQueryWrapper<Column> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(-1!=status, Column::getStatus, status);
+        wrapper.eq(Column::getUserId, StpKit.USER.getLoginIdAsString());
+        wrapper.like(StringUtils.hasText(key), Column::getName, key);
+        return page(Page.of(request.getCurrent(), request.getSize()), wrapper);
     }
 }

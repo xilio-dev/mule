@@ -30,11 +30,6 @@ public class Column implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public Column(String name, String userId) {
-        this.name = name;
-        this.userId = userId;
-    }
-
     @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
@@ -61,4 +56,10 @@ public class Column implements Serializable {
      */
     @TableField("intro")
     private String intro;
+
+    /**
+     * 状态: 0-正常, 1-审核中,2-审核未通过
+     */
+    @TableField("status")
+    private String status;
 }

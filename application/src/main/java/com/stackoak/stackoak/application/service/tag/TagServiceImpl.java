@@ -42,6 +42,6 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements ITagS
     public Page<Tag> sysTags(PageQuery query) {
         LambdaQueryWrapper<Tag> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Tag::getType, TagTypeEnum.SYSTEM.getType());
-        return page(query.getPage(),wrapper);
+        return page(Page.of(query.getCurrent(),query.getSize()),wrapper);
     }
 }
