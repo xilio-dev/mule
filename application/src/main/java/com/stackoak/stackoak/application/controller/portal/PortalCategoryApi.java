@@ -6,6 +6,7 @@ import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.service.category.ICategoryService;
 import com.stackoak.stackoak.common.data.category.Category;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author stackoak.com
  * @since 2025-02-15
  */
-
+@Tag(name = "分类领域")
 @RestController
 @RequestMapping("/category")
 public class PortalCategoryApi {

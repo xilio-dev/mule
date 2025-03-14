@@ -4,6 +4,7 @@ import com.stackoak.stackoak.application.service.mail.MailService;
 import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
 import com.stackoak.stackoak.common.data.mail.SendEmailDTO;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
+@Tag(name = "邮件")
 @RestController
 @RequestMapping("/email")
 public class PortalEmailApi {

@@ -9,6 +9,7 @@ import com.stackoak.stackoak.common.data.mail.EmailLoginDTO;
 import com.stackoak.stackoak.common.data.mail.EmailRegisterDTO;
 import com.stackoak.stackoak.common.data.user.UpdatePwdRequest;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Tag(name = "认证")
 @RestController
 @RequestMapping("/auth")
 public class PortalAuthApi {

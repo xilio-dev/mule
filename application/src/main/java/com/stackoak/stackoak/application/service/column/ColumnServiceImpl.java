@@ -11,6 +11,7 @@ import com.stackoak.stackoak.common.data.column.ArticleColumn;
 import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
 import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
+import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.repository.column.ArticleColumnMapper;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -71,13 +72,13 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     }
 
     @Override
-    public Page<Column> subscribeToMe(CommonPageQuery query) {
-        return null;
+    public Page<User> subscribeToMe(CommonPageQuery query) {
+        return columnMapper.findSubscribersByColumnId(Page.of(query.getCurrent(), query.getSize()), query.getId());
     }
 
     @Override
     public Page<Column> subscribeFromMe(CommonPageQuery query) {
-        return null;
+        return columnMapper.findSubscribedColumnsByUserId(Page.of(query.getCurrent(), query.getSize()), StpKit.USER.getLoginIdAsString(), query.getKeyword());
     }
 
     @Override

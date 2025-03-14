@@ -10,6 +10,7 @@ import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.column.ColumnDetailVo;
 import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
 import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
+import com.stackoak.stackoak.common.data.user.User;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public interface IColumnService extends IService<Column> {
 
     Page<Column> listByUser(ListColumnByUserQuery query);
 
-    Page<Column>  subscribeToMe(CommonPageQuery query);
+    Page<User>  subscribeToMe(CommonPageQuery query);
 
     Page<Column>  subscribeFromMe(CommonPageQuery query);
 

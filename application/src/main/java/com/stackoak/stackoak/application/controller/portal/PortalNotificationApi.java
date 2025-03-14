@@ -2,6 +2,7 @@ package com.stackoak.stackoak.application.controller.portal;
 
 import com.stackoak.stackoak.application.service.notification.SseClient;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  * @author stackoak.com
  * @since 2025-03-05 16:20:53
  */
+@Tag(name = "通知")
 @RestController
 @RequestMapping("/notification")
 public class PortalNotificationApi {

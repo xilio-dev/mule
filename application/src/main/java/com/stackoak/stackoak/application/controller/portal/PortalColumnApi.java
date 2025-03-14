@@ -10,6 +10,7 @@ import com.stackoak.stackoak.common.data.column.ColumnQuery;
 import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
 import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import java.util.List;
  * @author stackoak.com
  * @since 2025-02-23
  */
+@Tag(name = "专栏")
 @RestController
 @RequestMapping("/column")
 public class PortalColumnApi {

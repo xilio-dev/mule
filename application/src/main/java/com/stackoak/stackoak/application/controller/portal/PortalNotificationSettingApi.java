@@ -5,6 +5,7 @@ import com.stackoak.stackoak.application.service.notification.INotificationSetti
 import com.stackoak.stackoak.common.data.notification.NotificationSetting;
 import com.stackoak.stackoak.common.data.notification.SettingNotifyRequest;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @author stackoak.com
  * @since 2025-03-08 15:44:39
  */
+@Tag(name = "通知设置")
 @RestController
 @RequestMapping("/notify-setting")
 public class PortalNotificationSettingApi {

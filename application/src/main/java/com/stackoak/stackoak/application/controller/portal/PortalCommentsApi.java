@@ -7,6 +7,7 @@ import com.stackoak.stackoak.common.data.comment.CommentId;
 import com.stackoak.stackoak.common.data.comment.CommentRequest;
 import com.stackoak.stackoak.common.data.comment.DeleteCommentRequest;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @author stackoak.com
  * @since 2025-02-27 23:00:30
  */
+@Tag(name = "评论")
 @RestController
 @RequestMapping("/comments")
 public class PortalCommentsApi {

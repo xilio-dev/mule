@@ -9,6 +9,7 @@ import com.stackoak.stackoak.common.data.Constants;
 import com.stackoak.stackoak.common.data.material.Material;
 import com.stackoak.stackoak.common.data.material.MaterialId;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import java.util.HashMap;
  * @author stackoak.com
  * @since 2025-02-24 18:00:56
  */
+@Tag(name = "素材")
 @RestController
 @RequestMapping("/material")
 public class PortalMaterialApi {

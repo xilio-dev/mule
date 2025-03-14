@@ -10,8 +10,10 @@ import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.article.IArticleService;
 
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * @author stackoak.com
  * @since 2025-02-15
  */
+@Tag(name = "文章管理")
 @RestController
 @RequestMapping("/article")
 public class PortalArticleApi {

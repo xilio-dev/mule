@@ -8,6 +8,7 @@ import com.stackoak.stackoak.application.service.user.IUserService;
 import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * @author stackoak.com
  * @since 2025-02-15
  */
+@Tag(name = "会员用户")
 @RestController
 @RequestMapping("/user")
 public class PortalUserApi {

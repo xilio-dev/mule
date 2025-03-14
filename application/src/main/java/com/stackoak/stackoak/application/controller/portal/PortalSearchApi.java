@@ -5,12 +5,13 @@ import com.stackoak.stackoak.application.service.search.ISearchHistoryService;
 import com.stackoak.stackoak.application.service.search.ISearchService;
 import com.stackoak.stackoak.common.data.search.SearchRequest;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@Tag(name = "全文搜索")
 @RestController
 @RequestMapping("/")
 public class PortalSearchApi {

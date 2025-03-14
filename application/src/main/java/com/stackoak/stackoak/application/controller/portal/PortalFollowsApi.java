@@ -35,6 +35,7 @@ public class PortalFollowsApi {
     }
 
     @PutMapping(value = "unfollow", name = "取消关注")
+    @Operation(summary = "取消关注")
     public Result unfollow(@RequestParam String userId) {
         followsService.cancelFollow(userId);
         return Result.success();

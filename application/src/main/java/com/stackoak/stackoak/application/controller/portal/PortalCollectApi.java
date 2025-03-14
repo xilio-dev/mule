@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.application.controller.portal;
 
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author stackoak.com
  * @since 2025-02-27 23:00:30
  */
+@Tag(name = "收藏夹")
 @RestController
 @RequestMapping("/collect")
 public class PortalCollectApi {

@@ -8,6 +8,7 @@ import com.stackoak.stackoak.application.service.user.IUserConfigService;
 import com.stackoak.stackoak.common.data.siteconfig.SiteConfig;
 import com.stackoak.stackoak.common.data.user.UserConfig;
 import com.stackoak.stackoak.common.message.Result;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author stackoak.com
  * @since 2025-03-04 09:15:27
  */
+@Tag(name = "配置")
 @RestController
 @RequestMapping("/config")
 public class PortalConfigApi {

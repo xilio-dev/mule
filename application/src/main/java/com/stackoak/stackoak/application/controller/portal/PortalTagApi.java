@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
  * @author stackoak.com
  * @since 2025-02-15
  */
+@io.swagger.v3.oas.annotations.tags.Tag(name = "标签")
 @RestController
 @RequestMapping("/tag")
 public class PortalTagApi {
