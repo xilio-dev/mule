@@ -59,7 +59,7 @@ public class PortalColumnApi {
         columnService.deleteColumn(column_id);
         return Result.success();
     }
-    @DeleteMapping(value = "save", name = "新增或更新专栏")
+    @PostMapping(value = "save", name = "新增或更新专栏")
     public Result save(@RequestBody ColumnSaveRequest body) {
         columnService.addOrUpdate(body);
         return Result.success();
