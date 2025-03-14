@@ -3,9 +3,11 @@ package com.stackoak.stackoak.application.service.column;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.StpKit;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.column.Column;
+import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
 import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -60,5 +62,25 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
         wrapper.eq(Column::getUserId, StpKit.USER.getLoginIdAsString());
         wrapper.like(StringUtils.hasText(key), Column::getName, key);
         return page(Page.of(request.getCurrent(), request.getSize()), wrapper);
+    }
+
+    @Override
+    public Page<Column> subscribeToMe(CommonPageQuery query) {
+        return null;
+    }
+
+    @Override
+    public Page<Column> subscribeFromMe(CommonPageQuery query) {
+        return null;
+    }
+
+    @Override
+    public void deleteColumn(String columnId) {
+
+    }
+
+    @Override
+    public void addOrUpdate(ColumnSaveRequest body) {
+
     }
 }

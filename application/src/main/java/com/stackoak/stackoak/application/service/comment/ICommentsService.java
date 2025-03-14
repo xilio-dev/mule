@@ -2,10 +2,7 @@ package com.stackoak.stackoak.application.service.comment;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.stackoak.stackoak.common.data.comment.CommentDTO;
-import com.stackoak.stackoak.common.data.comment.CommentId;
-import com.stackoak.stackoak.common.data.comment.CommentRequest;
-import com.stackoak.stackoak.common.data.comment.Comment;
+import com.stackoak.stackoak.common.data.comment.*;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
@@ -45,7 +42,9 @@ public interface ICommentsService extends IService<Comment> {
     /**
      * 删除评论
      *
-     * @param commentId 评论ID
+     * @param request 评论ID
      */
-    void delComment(CommentId commentId);
+    void delCommentByUser(DeleteCommentRequest request);
+
+    void delete(DeleteCommentRequest request);
 }

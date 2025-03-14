@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.service.comment;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.actors.mq.RedisStreamUtil;
 import com.stackoak.stackoak.application.service.article.IArticleService;
@@ -12,10 +13,7 @@ import com.stackoak.stackoak.application.service.notification.INotificationSetti
 import com.stackoak.stackoak.application.service.notification.INotificationsService;
 import com.stackoak.stackoak.application.service.user.IUserService;
 import com.stackoak.stackoak.common.data.article.Article;
-import com.stackoak.stackoak.common.data.comment.CommentDTO;
-import com.stackoak.stackoak.common.data.comment.CommentId;
-import com.stackoak.stackoak.common.data.comment.CommentRequest;
-import com.stackoak.stackoak.common.data.comment.Comment;
+import com.stackoak.stackoak.common.data.comment.*;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
 import com.stackoak.stackoak.common.data.likes.Likes;
 import com.stackoak.stackoak.common.data.notification.Notification;
@@ -144,20 +142,45 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
     /**
      * 删除评论
      *
-     * @param commentId 评论ID
+     * @param request 删除请求信息
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void delComment(CommentId commentId) {
+    public void delCommentByUser(DeleteCommentRequest request) {
         //检查评论是否属于用户自己的评论，避免删除别人的
-        Comment comments = getCommentByUser(commentId.getCommentId());
+        Comment comments = getCommentByUser(request.getCommentId());
         if (ObjectUtils.isEmpty(comments)) {
             throw new BizException("评论不存在！");
         }
         //如果有子评论需要删除所有子评论
-        removeByCommentPid(commentId);
+        removeByCommentPid(request.getCommentId());
         //删除当前评论
-        removeById(commentId.getCommentId());
+        removeById(request.getCommentId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(DeleteCommentRequest request) {
+        Article article = articleService.getById(request.getAid());
+        if (ObjectUtils.isEmpty(article)) {
+            throw new BizException("文章不存在！");
+        }
+        String userId = article.getUserId();
+        if (!userId.equals(StpKit.USER.getLoginIdAsString())) {
+            throw new BizException("只有文章作者才能删除评论！");
+        }
+        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Comment::getArticleId, request.getAid())
+                .eq(Comment::getId, request.getCommentId());
+        Comment comment = getOne(wrapper);
+        if (ObjectUtils.isEmpty(comment)) {
+            throw new BizException("评论不存在！");
+        }
+        //删除当前评论
+        removeById(request.getCommentId());
+        //如果有子评论需要删除所有子评论
+        removeByCommentPid(request.getCommentId());
+
     }
 
     /**
@@ -165,9 +188,9 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
      *
      * @param commentId。父评论编号
      */
-    private void removeByCommentPid(CommentId commentId) {
+    private void removeByCommentPid(String  commentId) {
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Comment::getPid, commentId.getCommentId());
+        wrapper.eq(Comment::getPid, commentId);
         remove(wrapper);
     }
 
@@ -179,7 +202,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
      */
 
     private Comment getCommentByUser(@NotEmpty(message = "评论ID不能为空") String commentId) {
-        String userId = "1";//todo 临时测试
+        String userId = StpKit.USER.getLoginIdAsString();
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Comment::getUserId, userId);
         wrapper.eq(Comment::getId, commentId);
