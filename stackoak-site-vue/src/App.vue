@@ -45,8 +45,6 @@ const pathName = computed(() =>{
 
 <style scoped>
 .main-container{
-  background-image: url("/bg6.jpg");
-  min-height:1000px;
-  background-size: cover;
+
 }
 </style>

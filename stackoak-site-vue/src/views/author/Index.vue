@@ -224,6 +224,10 @@ const openLink = (url: string) => {
               </template>
             </a-list>
           </a-tab-pane>
+
+          <a-tab-pane key="5" tab="收藏" force-render>
+
+          </a-tab-pane>
         </a-tabs>
       </div>
     </a-col>
