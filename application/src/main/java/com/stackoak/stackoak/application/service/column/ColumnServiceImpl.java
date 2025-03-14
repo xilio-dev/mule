@@ -7,9 +7,11 @@ import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.Article;
+import com.stackoak.stackoak.common.data.column.ArticleColumn;
 import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
 import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
+import com.stackoak.stackoak.repository.column.ArticleColumnMapper;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
 
     @Autowired
     private ColumnMapper columnMapper;
+    @Autowired
+    private ArticleColumnMapper articleColumnMapper;
 
     @Override
     public List<Column> getColumnsByArticleId(String id, String userId) {
@@ -77,8 +81,13 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteColumn(String columnId) {
         //删除专栏，需要解除专栏与文章的关联
+        removeById(columnId);
+        LambdaQueryWrapper<ArticleColumn> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ArticleColumn::getColumnId, columnId);
+        articleColumnMapper.delete(wrapper);
     }
 
     @Override
@@ -99,7 +108,7 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
             save(column);
         } else {
             //有ID，更新专栏
-            if (ObjectUtils.isEmpty(oldColumn)||!oldColumn.getId().equals(cid)) {
+            if (ObjectUtils.isEmpty(oldColumn) || !oldColumn.getId().equals(cid)) {
                 throw new BizException("专栏不存在，请检查专栏ID是否正确！");
             }
             column.setId(oldColumn.getId());

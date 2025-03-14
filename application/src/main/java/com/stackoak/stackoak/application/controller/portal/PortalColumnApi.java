@@ -55,8 +55,8 @@ public class PortalColumnApi {
     }
 
     @DeleteMapping(value = "del", name = "删除专栏")
-    public Result del(@RequestParam String column_id) {
-        columnService.deleteColumn(column_id);
+    public Result del(@RequestParam String columnId) {
+        columnService.deleteColumn(columnId);
         return Result.success();
     }
     @PostMapping(value = "save", name = "新增或更新专栏")
@@ -64,8 +64,4 @@ public class PortalColumnApi {
         columnService.addOrUpdate(body);
         return Result.success();
     }
-
-
-
-
 }
