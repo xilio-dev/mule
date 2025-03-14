@@ -17,6 +17,13 @@
   </a-card>
   <a-card :bordered="false" title="近期文章" style="margin-top: 20px;box-shadow: none">
     <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="recentArticle">
+      <template #loadMore>
+        <div
+            v-if="  !loading"
+            :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
+          <a-button @click="onLoadMore">加载更多</a-button>
+        </div>
+      </template>
       <template #renderItem="{ item }">
         <a-list-item key="item.title">
           <template #actions>
@@ -76,7 +83,7 @@ const pagination = {
   },
   pageSize: 5,
 };
-import {ref} from 'vue';
+import {nextTick, ref} from 'vue';
 import {message, Modal} from 'ant-design-vue';
 //删除近期文章
 const onRemoveRecentArticle = (id: string) => {
@@ -138,6 +145,31 @@ onMounted(() => {
         list.value = res.results;
       });
 });
+
+const loading = ref(false);
+
+const onLoadMore = () => {
+  loading.value = true;
+
+
+  queryParam.value.size+= 10
+  list.value = data.value.concat(
+      [...new Array(count)].map(() => ({loading: true, name: {}, picture: {}})),
+  );
+  fetch(fakeDataUrl)
+      .then(res => res.json())
+      .then(res => {
+        const newData = data.value.concat(res.results);
+        loading.value = false;
+        data.value = newData;
+        list.value = newData;
+        nextTick(() => {
+
+          window.dispatchEvent(new Event('resize'));
+        });
+      });
+};
+
 </script>
 
 <style scoped>
