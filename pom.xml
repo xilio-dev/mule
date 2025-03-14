@@ -163,11 +163,11 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mapstruct</groupId>
-                <artifactId>mapstruct</artifactId>
-                <version>${org.mapstruct.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.mapstruct</groupId>-->
+<!--                <artifactId>mapstruct</artifactId>-->
+<!--                <version>${org.mapstruct.version}</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -237,13 +237,13 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.mapstruct</groupId>
-                            <artifactId>mapstruct-processor</artifactId>
-                            <version>${org.mapstruct.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
+<!--                    <annotationProcessorPaths>-->
+<!--                        <path>-->
+<!--                            <groupId>org.mapstruct</groupId>-->
+<!--                            <artifactId>mapstruct-processor</artifactId>-->
+<!--                            <version>${org.mapstruct.version}</version>-->
+<!--                        </path>-->
+<!--                    </annotationProcessorPaths>-->
                     <compilerArgs>
                         <arg>-parameters</arg>
                     </compilerArgs>
