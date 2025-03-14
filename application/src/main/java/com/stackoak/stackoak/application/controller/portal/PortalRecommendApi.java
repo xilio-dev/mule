@@ -15,9 +15,24 @@ public class PortalRecommendApi {
     @Autowired
     private IRecommendService recommendService;
 
-    @PostMapping(value = "/user", name = "根据用户喜好精准推荐首页文章")
+    @PostMapping(value = "/article", name = "根据用户喜好精准推荐首页文章")
     @Operation(description = "根据用户喜好精准推荐首页文章")
     public Result homeRecommendByUserId(@RequestBody RecommendByUserQuery query) {
         return Result.success(recommendService.homeRecommendByUserId(query));
     }
+
+    @PostMapping(value = "/author", name = "首页作者推荐")
+    @Operation(description = "根据用户喜好推荐作者-未关注的")
+    public Result homeAuthorRecommendByUserId(@RequestBody RecommendByUserQuery query) {
+        return Result.success(recommendService.homeAuthorRecommendByUserId(query));
+    }
+
+    @PostMapping(value = "/related-articles", name = "相关文章推荐")
+    @Operation(description = "根据用户喜好推荐作者-未关注的")
+    public Result  getRelatedArticles(@RequestBody RecommendByUserQuery query) {
+        return Result.success(recommendService.getRelatedArticles(query));
+    }
+
+
+
 }

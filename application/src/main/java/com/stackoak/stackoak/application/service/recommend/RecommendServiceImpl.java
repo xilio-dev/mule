@@ -5,15 +5,13 @@ import com.stackoak.stackoak.application.service.article.IArticleService;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleBriefVO;
 import com.stackoak.stackoak.common.data.recommend.RecommendByUserQuery;
+import com.stackoak.stackoak.common.data.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class RecommendServiceImpl implements IRecommendService {
@@ -52,6 +50,32 @@ public class RecommendServiceImpl implements IRecommendService {
         for (Article o : list) {
             System.out.println("==>" + o.getId() + o.getTitle());
         }
+        return null;
+    }
+
+    /**
+     * 首页作者推荐
+     *
+     * @param query 查询参数
+     * @return 推荐作者列表
+     */
+    @Override
+    public Page<User> homeAuthorRecommendByUserId(RecommendByUserQuery query) {
+
+        return null;
+    }
+
+    /**
+     * 获取相关文章
+     * 推荐逻辑：
+     * 1、如果当前用户已经登陆，则基于：当前用户行为 + 文章内容
+     * 2、如果当前用户未登录，则基于：文章内容相关性推荐
+     *
+     * @param query 查询参数
+     * @return 推荐列表
+     */
+    @Override
+    public Page<ArticleBriefVO> getRelatedArticles(RecommendByUserQuery query) {
         return null;
     }
 
