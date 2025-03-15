@@ -44,7 +44,7 @@ declare module 'vue' {
     ARadioGroup: typeof import('ant-design-vue/es')['RadioGroup']
     ARangePicker: typeof import('ant-design-vue/es')['RangePicker']
     ARow: typeof import('ant-design-vue/es')['Row']
-    ArticleCenterList: typeof import('./src/components/ArticleCenterList/index.vue')['default']
+    ArticleCenterList: typeof import('./src/components/SoList/index.vue')['default']
     ArticleList: typeof import('./src/components/ArticleList.vue')['default']
     ASelect: typeof import('ant-design-vue/es')['Select']
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
@@ -71,6 +71,7 @@ declare module 'vue' {
     Navbar: typeof import('./src/components/Navbar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SoList: typeof import('./src/components/SoList/index.vue')['default']
     TagInput: typeof import('./src/components/TagInput/index.vue')['default']
     TreeMenu: typeof import('./src/components/TreeMenu.vue')['default']
   }
