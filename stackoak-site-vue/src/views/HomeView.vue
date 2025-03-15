@@ -28,7 +28,9 @@
           <a-popover trigger="click" placement="bottom">
             <template #content>
               <div class="centered-search " style="z-index: 10;height: 200px;width: 600px">
-                <div style="cursor: pointer" class="no-wrap" v-for="item in searchHistory" @click="onHisSearch(item)">{{item}}</div>
+                <div style="cursor: pointer" class="no-wrap" v-for="item in searchHistory" @click="onHisSearch(item)">
+                  {{ item }}
+                </div>
               </div>
             </template>
             <a-input-search
@@ -216,6 +218,16 @@
   <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak畅享更多权益">
     <Login/>
   </a-modal>
+
+  <a-row>
+    <a-drawer style="box-shadow: none;border: none" width="40%" :mask="true" :closable="true" placement="right"
+              :open="openCategoryDrawer" @close="openCategoryDrawer=false">
+
+      <p>Some contents...</p>
+      <p>Some contents...</p>
+      <p>Some contents...</p>
+    </a-drawer>
+  </a-row>
 </template>
 <script lang="ts" setup>
 import {computed, onMounted} from 'vue';
@@ -225,7 +237,7 @@ import type {ItemType, MenuProps} from "ant-design-vue";
 import {categoryList} from "@/api/category.ts";
 import {articleList} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
-import {useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 
 const userStore = useUserStore()
 import router from "@/router";
@@ -238,7 +250,7 @@ const openLoginModal = ref(false)/*是否打开登陆框*/
 const selectedKeys = ref([0]);
 const openKeys = ref([0]);
 const items: ItemType[] = reactive([]);
-
+const openCategoryDrawer = ref(false)
 //进入创作中心登陆判断处理
 const onOpenLoginModel = (to: string) => {
   if (!userStore.isLogin()) {
@@ -307,8 +319,8 @@ const onSearchFocus = async () => {
   }
 }
 //通过历史记录进行搜索
-const onHisSearch=(keyword:string)=>{
-  search_key.value=keyword
+const onHisSearch = (keyword: string) => {
+  search_key.value = keyword
   onSearch()
 }
 onMounted(async () => {
@@ -320,9 +332,19 @@ onMounted(async () => {
 //左侧菜单点击事件
 const handleClick: MenuProps['onClick'] = e => {
   let categoryId = e.key;
-  queryParam.value.categoryId = categoryId
-  //筛选数据
-  loadHomeData()
+  //打开更多分类
+  if ('99' == e.key) {
+    if (openCategoryDrawer.value == true) {
+      openCategoryDrawer.value = false
+      alert("dd")
+      return
+    }
+    openCategoryDrawer.value = true
+  } else {
+    queryParam.value.categoryId = categoryId
+    //筛选数据
+    loadHomeData()
+  }
 };
 const onTabClick = (targetKey: string) => {
   queryParam.value.showType = targetKey
