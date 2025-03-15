@@ -44,6 +44,7 @@ declare module 'vue' {
     ARadioGroup: typeof import('ant-design-vue/es')['RadioGroup']
     ARangePicker: typeof import('ant-design-vue/es')['RangePicker']
     ARow: typeof import('ant-design-vue/es')['Row']
+    ArticleCenterList: typeof import('./src/components/ArticleCenterList/index.vue')['default']
     ArticleList: typeof import('./src/components/ArticleList.vue')['default']
     ASelect: typeof import('ant-design-vue/es')['Select']
     ATabPane: typeof import('ant-design-vue/es')['TabPane']

@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {articleListByUser} from "@/api/post.ts";
+import ArticleCenterList from '@/components/ArticleCenterList/index.vue'
+
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
 
 const activeTab = ref('1');
 const activeArticleStatusTab = ref('1');
 /*------------------------------------生命周期-------------------------------------------*/
-onMounted(  () => {
+onMounted(() => {
   loadArticle()
 })
 
@@ -19,7 +21,7 @@ onMounted(  () => {
 
 /*------------------------------------数据加载--------------------------------------------*/
 const loadArticle = async () => {
-  await articleListByUser({current: 1, size: 10,status:0}).then(res => {
+  await articleListByUser({current: 1, size: 100}).then(res => {
     articles.value = res.records
   })
 }
@@ -35,12 +37,13 @@ const loadArticle = async () => {
 </script>
 
 <template>
+
   <a-card :bordered="false">
     <a-tabs v-model:activeKey="activeTab">
       <a-tab-pane key="1" tab="文章">
         <a-tabs v-model:activeKey="activeArticleStatusTab">
           <a-tab-pane key="1" tab="全部">
-
+            <ArticleCenterList :article-list="articles"/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="已发布">
 
@@ -71,6 +74,7 @@ const loadArticle = async () => {
       </template>
     </a-tabs>
   </a-card>
+
 </template>
 
 <style scoped>
@@ -80,5 +84,13 @@ a-card {
   box-shadow: none;
 }
 
+.no-wrap {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  font-weight: 400;
+}
 
 </style>
