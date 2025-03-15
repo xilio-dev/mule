@@ -54,7 +54,9 @@
           </template>
           <a-list-item-meta class="title-container">
             <template #title>
-              <a :href="item.href" class="ellipsis-text">{{ item.title }}</a>
+              <router-link :to="`/post/${item.id}`" target="_blank">
+                <span class="ellipsis-text">{{ item.title }}</span>
+              </router-link>
             </template>
           </a-list-item-meta>
         </a-list-item>
@@ -84,7 +86,7 @@ const queryParam = ref({
   current: 1,
   size: 10,
   categoryId: 0,
-  showType: 3
+  showType: 3,
 })
 /*------------------------------------数据加载--------------------------------------------*/
 //加载近期文章-初始化

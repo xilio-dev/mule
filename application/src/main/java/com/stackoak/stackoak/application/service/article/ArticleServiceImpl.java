@@ -136,18 +136,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .collect(Collectors.toList());
                 articleDetail.setColumns(columns);
             }
+
+            //判断是否是登陆用户
+            if (StpKit.USER.isLogin()) {
+                UserInteractDTO userInteract = getUserInteract(dto.getId());
+                //设置交互信息为
+                articleDetail.setUserInteract(userInteract);
+            }
+            UserInfoDTO userInfo = articleDetail.getUserInfo();
+            String userId = userInfo.getUserId();
+            UserConfig userConfig = userConfigService.getById(userId);
+            articleDetail.setConfig(userConfig);
+            return articleDetail;
         }
-        //判断是否是登陆用户
-        if (StpKit.USER.isLogin()) {
-            UserInteractDTO userInteract = getUserInteract(dto.getId());
-            //设置交互信息为
-            articleDetail.setUserInteract(userInteract);
-        }
-        UserInfoDTO userInfo = articleDetail.getUserInfo();
-        String userId = userInfo.getUserId();
-        UserConfig userConfig = userConfigService.getById(userId);
-        articleDetail.setConfig(userConfig);
-        return articleDetail;
+
+       throw new BizException("文章不存在或已删除！");
     }
 
     private UserInteractDTO getUserInteract(String aid) {

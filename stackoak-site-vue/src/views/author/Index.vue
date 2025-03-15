@@ -10,14 +10,15 @@ import {columnLists} from "@/api/column.ts";
 import {authorArticleRank} from "@/api/post.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
+const collectActiveKey = ref('1')
 const route = useRoute()
 const userStore = useUserStore()
 const authorId = route.params.userId
 const authorInfo = ref({})
 const columns = ref([])
 const articleRank = ref([])
-const authorFansList=ref([])
-const authorFollowList=ref([])
+const authorFansList = ref([])
+const authorFollowList = ref([])
 const openDrawer = ref(false)
 //判断是否是自己本人
 const isSelf = computed(() => {
@@ -41,14 +42,14 @@ onMounted(async () => {
 /*------------------------------------数据加载--------------------------------------------*/
 //加载作者关注的人
 const loadFollows = async () => {
-  getFollows({current: 1, size: 10, authorId: authorId}).then(res=>{
-    authorFollowList.value=res.records
+  getFollows({current: 1, size: 10, authorId: authorId}).then(res => {
+    authorFollowList.value = res.records
   })
 }
 //加载作者的粉丝
 const loadFans = async () => {
-  getFans({current: 1, size: 10, authorId: authorId}).then(res=>{
-    authorFansList.value=res.records
+  getFans({current: 1, size: 10, authorId: authorId}).then(res => {
+    authorFansList.value = res.records
   })
 }
 //加载作者信息
@@ -86,7 +87,6 @@ const onFollowAuthor = () => {
 const onChat = () => {
 
 }
-
 
 
 /*-------------------------------------其他函数-------------------------------------------*/
@@ -166,7 +166,7 @@ const openLink = (url: string) => {
 
         <a-card :bordered=false title="阅读榜单" style=" box-shadow: none;margin-top: 15px;min-height: 200px">
           <div v-for="item in articleRank">
-            {{item.title}}
+            {{ item.title }}
           </div>
         </a-card>
       </a-affix>
@@ -185,14 +185,14 @@ const openLink = (url: string) => {
               <template #renderItem="{ item }">
                 <a-list-item>
                   <template #actions>
-                    <a>{{item.relation==1?'互相关注':'关注'}}</a>
+                    <a>{{ item.relation == 1 ? '互相关注' : '关注' }}</a>
                   </template>
                   <a-list-item-meta>
                     <template #title>
                       <a href="https://www.antdv.com/">{{ item.nickname }}</a>
                     </template>
                     <template #description>
-                      <span class="no-wrap">{{item.introduce}}</span>
+                      <span class="no-wrap">{{ item.introduce }}</span>
                     </template>
                     <template #avatar>
                       <a-avatar :src="item.avatar"/>
@@ -207,14 +207,14 @@ const openLink = (url: string) => {
               <template #renderItem="{ item }">
                 <a-list-item>
                   <template #actions>
-                    <a>{{item.relation==1?'互相关注':'关注'}}</a>
+                    <a>{{ item.relation == 1 ? '互相关注' : '关注' }}</a>
                   </template>
                   <a-list-item-meta>
                     <template #title>
                       <a href="https://www.antdv.com/">{{ item.nickname }}</a>
                     </template>
                     <template #description>
-                      <span class="no-wrap">{{item.introduce}}</span>
+                      <span class="no-wrap">{{ item.introduce }}</span>
                     </template>
                     <template #avatar>
                       <a-avatar :src="item.avatar"/>
@@ -226,7 +226,19 @@ const openLink = (url: string) => {
           </a-tab-pane>
 
           <a-tab-pane key="5" tab="收藏" force-render>
+            <a-tabs v-model:activeKey="collectActiveKey">
+              <a-tab-pane key="1" tab="我创建的">
+                我创建的
+              </a-tab-pane>
+              <a-tab-pane key="2" tab="我关注的">
 
+              </a-tab-pane>
+              <template #rightExtra  >
+               <div style="margin-right: 10px">
+                 <a-button type="primary" size="small">新建收藏夹</a-button>
+               </div>
+              </template>
+            </a-tabs>
           </a-tab-pane>
         </a-tabs>
       </div>
