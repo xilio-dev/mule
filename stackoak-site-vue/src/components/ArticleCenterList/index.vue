@@ -32,7 +32,7 @@ const onCallEdit = (item: any) => {
           </div>
         </a-flex>
         <div>
-          <span :style="{color: true?'green':'red'}">{{ true ? '已发布' : '未通过审核' }}</span>
+          <a-tag :style="{color: true?'green':'red'}">{{ true ? '已发布' : '未通过审核' }}</a-tag>
         </div>
         <a-flex justify="space-between">
           <a-flex :gap="8">
@@ -41,7 +41,7 @@ const onCallEdit = (item: any) => {
             <span>点赞 452</span>
             <span>评论 36545</span>
           </a-flex>
-          <a-flex :gap="8">
+          <a-flex :gap="8" style="cursor: pointer">
             <div @click="onCallData(item)">数据</div>
             <div @click="onCallComment(item)">评论</div>
             <div @click="onCallEdit(item)">修改</div>
@@ -83,6 +83,7 @@ const onCallEdit = (item: any) => {
 
 .so-title {
   flex-shrink: 1;
+  cursor: pointer;
 }
 
 .so-title a {
