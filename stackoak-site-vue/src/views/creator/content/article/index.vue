@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import {articleListByUser} from "@/api/post.ts";
-import ArticleCenterList from '@/components/SoList/index.vue'
-import router from "@/router";
+import SoList from '@/components/SoList/index.vue'
+
 import {CommonUtil} from "@/utils/common.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
@@ -73,9 +73,9 @@ const onRemoveArticle = () => {
       <a-tab-pane key="1" tab="文章">
         <a-tabs v-model:activeKey="activeArticleStatusTab" @tabClick="onTagClick">
           <a-tab-pane :key="tab.key" :tab="tab.label" v-for="tab in tabs">
-            <ArticleCenterList @on-call-edit="onCallEdit" :article-list="articles">
+            <SoList @on-call-edit="onCallEdit" :list="articles">
               <template #title="{item}">
-                {{ item.title }}
+                <span @click="CommonUtil.openNewPage(`/post/${item.id}`)">{{ item.title }}</span>
               </template>
               <template #tag="{item}">
                 <span>阅读 20</span>
@@ -83,7 +83,7 @@ const onRemoveArticle = () => {
                 <span>点赞 452</span>
                 <span>评论 36545</span>
               </template>
-              <template #status="{item}">
+              <template #content="{item}">
                 <a-tag :style="{color: true?'green':'red'}">{{ true ? '已发布' : '未通过审核' }}</a-tag>
               </template>
               <template #action="{item}">
@@ -110,15 +110,15 @@ const onRemoveArticle = () => {
                   </template>
                 </a-dropdown>
               </template>
-            </ArticleCenterList>
+            </SoList>
           </a-tab-pane>
         </a-tabs>
       </a-tab-pane>
       <a-tab-pane key="7" tab="草稿箱">
-        <ArticleCenterList :article-list="articles"/>
+        <ArticleCenterList :list="articles"/>
       </a-tab-pane>
       <a-tab-pane key="8" tab="回收站">
-        <ArticleCenterList :article-list="articles"/>
+        <ArticleCenterList :list="articles"/>
       </a-tab-pane>
       <template #rightExtra>
         <a-button @click="CommonUtil.openNewPage('/editor')" type="primary" size="small">写文章</a-button>

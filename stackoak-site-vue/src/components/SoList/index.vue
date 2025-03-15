@@ -1,26 +1,37 @@
 <script setup lang="ts">
 import {ImageUtils} from "@/utils/file.ts";
 
-defineProps<{ articleList: []; }>();
+defineProps<{
+  list: [],
+  loadMore:false
+}>();
 </script>
 
 <template>
-  <div v-for="item in articleList" class="title-container">
+  <div v-for="item in list" class="title-container">
     <a-flex :gap="8" style="width: 100%;">
       <div class="cover">
-        <a-image style="width: 120px;height: 68px" :src="ImageUtils.getImgUrl(item.cover)" :preview="false"/>
+        <slot name="cover" :item="item">
+          <a-image style="width: 120px;height: 68px" :src="ImageUtils.getImgUrl(item.cover)" :preview="false"/>
+        </slot>
       </div>
       <a-flex style="width: 100%;" vertical justify="space-between">
         <a-flex justify="space-between" :gutter="4">
           <h3 class="so-title so-ellipsis-text">
-            <slot name="title" :item="item"/>
+            <slot name="title" :item="item">
+              {{ item.title }}
+            </slot>
           </h3>
           <div class="so-date">
-            2022-05-03
+            <slot name="date" :item="item">
+              {{ item.createdAt }}
+            </slot>
           </div>
         </a-flex>
         <div>
-          <slot name="status" :item="item"/>
+          <slot name="content" :item="item">
+            {{ item.description }}
+          </slot>
         </div>
         <a-flex justify="space-between">
           <a-flex :gap="8">
@@ -33,6 +44,11 @@ defineProps<{ articleList: []; }>();
       </a-flex>
     </a-flex>
     <a-divider/>
+  </div>
+  <div style="text-align: center" v-if="loadMore">
+    <slot name="loadMore">
+      <a-button type="default">加载更多</a-button>
+    </slot>
   </div>
 </template>
 
