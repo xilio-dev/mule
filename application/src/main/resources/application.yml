@@ -18,7 +18,6 @@ stackoak:
       package: com.stackoak.stackoak.application.controller.portal
 server:
   port: 9856
-
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -37,6 +36,8 @@ spring:
       max-request-size: 10MB
   profiles:
     active: dev
+#  main:
+#    allow-bean-definition-overriding: true
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

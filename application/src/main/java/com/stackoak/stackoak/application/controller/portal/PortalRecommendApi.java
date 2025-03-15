@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "推荐系统")
+@Tag(name = "推荐接口")
 @RestController
 @RequestMapping("/recommend")
 public class PortalRecommendApi {
