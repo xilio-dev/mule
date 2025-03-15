@@ -16,11 +16,10 @@
     </div>
   </a-card>
   <a-card :bordered="false" title="近期文章" style="margin-top: 20px;box-shadow: none">
-    <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="recentArticle">
+    <a-list item-layout="vertical" size="large" :data-source="articles">
       <template #loadMore>
         <div
-            v-if="  !loading"
-            :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }">
+            :style="{ textAlign: 'center', marginTop: '12px',marginBottom:'30px', height: '32px', lineHeight: '32px' }">
           <a-button @click="onLoadMore">加载更多</a-button>
         </div>
       </template>
@@ -65,26 +64,54 @@
   </a-card>
 </template>
 <script lang="ts" setup>
-import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
-import {DownOutlined} from '@ant-design/icons-vue';
-
-const listData: Record<string, string>[] = [];
-
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章 ${i}`,
-  });
-}
-
-const pagination = {
-  onChange: (page: number) => {
-    console.log(page);
-  },
-  pageSize: 5,
-};
 import {nextTick, ref} from 'vue';
 import {message, Modal} from 'ant-design-vue';
+import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
+import {DownOutlined} from '@ant-design/icons-vue';
+import {onMounted} from 'vue';
+import {articleList, deleteArticle} from "@/api/post.ts";
+
+/*------------------------------------变量定义------------------------------------------*/
+const articles = ref([])
+const data = ref([]);
+/*------------------------------------生命周期-------------------------------------------*/
+onMounted(() => {
+  //加载近期文章
+  loadRecentArticle()
+});
+/*------------------------------------初始化---------------------------------------------*/
+const queryParam = ref({
+  current: 1,
+  size: 10,
+  categoryId: 0,
+  showType: 3
+})
+/*------------------------------------数据加载--------------------------------------------*/
+//加载近期文章-初始化
+const loadRecentArticle = async () => {
+  await articleList(queryParam.value).then(res => {
+    articles.value = res.records || []
+    data.value = res.records || []
+  })
+}
+//加载更多近期文章
+const onLoadMore = async () => {
+  try {
+    queryParam.value.current += 1;
+    articles.value = data.value.concat(); // 更新列表为当前数据
+    const res = await articleList(queryParam.value); // 异步请求文章列表
+    const newData = data.value.concat(res.records); // 合并新数据
+    data.value = newData; // 更新数据
+    articles.value = newData; // 更新列表
+    // 在 DOM 更新后触发 resize 事件
+    nextTick(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
+  } catch (error) {
+    console.error('加载更多数据失败:', error);
+  }
+};
+/*------------------------------------核心业务--------------------------------------------*/
 //删除近期文章
 const onRemoveRecentArticle = (id: string) => {
   Modal.confirm({
@@ -95,81 +122,14 @@ const onRemoveRecentArticle = (id: string) => {
     cancelText: '取消',
     onOk() {
       deleteArticle({aid: id}).then(res => {
-        removeArticleById(id)
+        //过滤掉已经删除的文章
+        articles.value = articles.value.filter(article => article.id !== aid);
         message.success("已删除")
       })
     },
-
   });
-
 }
-//加载近期文章
-
-const queryParam = ref({
-  current: 1,
-  size: 10,
-  categoryId: 0,
-  showType: 3
-})
-const removeArticleById = (aid: string) => {
-  recentArticle.value = recentArticle.value.filter(article => article.id !== aid);
-}
-const recentArticle = ref([])
-const loadRecentArticle = async () => {
-  await articleList(queryParam.value).then(res => {
-    if (res == null) {
-      recentArticle.value = []
-      return
-    }
-    recentArticle.value = res.records
-  })
-}
-
-//近期文章
-import {onMounted} from 'vue';
-import {articleList, deleteArticle} from "@/api/post.ts";
-
-const count = 3;
-const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
-const initLoading = ref(true);
-const data = ref([]);
-const list = ref([]);
-onMounted(() => {
-  //加载近期文章
-  loadRecentArticle()
-  fetch(fakeDataUrl)
-      .then(res => res.json())
-      .then(res => {
-        initLoading.value = false;
-        data.value = res.results;
-        list.value = res.results;
-      });
-});
-
-const loading = ref(false);
-
-const onLoadMore = () => {
-  loading.value = true;
-
-
-  queryParam.value.size+= 10
-  list.value = data.value.concat(
-      [...new Array(count)].map(() => ({loading: true, name: {}, picture: {}})),
-  );
-  fetch(fakeDataUrl)
-      .then(res => res.json())
-      .then(res => {
-        const newData = data.value.concat(res.results);
-        loading.value = false;
-        data.value = newData;
-        list.value = newData;
-        nextTick(() => {
-
-          window.dispatchEvent(new Event('resize'));
-        });
-      });
-};
-
+/*-------------------------------------其他函数-------------------------------------------*/
 </script>
 
 <style scoped>
