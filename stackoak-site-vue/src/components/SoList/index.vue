@@ -22,8 +22,8 @@ defineProps<{
               {{ item.title }}
             </slot>
           </h3>
-          <div class="so-date">
-            <slot name="date" :item="item">
+          <div class="so-right">
+            <slot name="right" :item="item">
               {{ item.createdAt }}
             </slot>
           </div>
@@ -71,7 +71,7 @@ defineProps<{
   max-width: 100%; /* 确保宽度不超过父容器 */
 }
 
-.so-date {
+.so-right {
   flex-shrink: 0;
 }
 

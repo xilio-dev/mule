@@ -76,7 +76,22 @@ const loadColumns = async () => {
 
           </a-tab-pane>
           <a-tab-pane key="2" tab="我的订阅">
-
+            <SoList :list="columns" :load-more="false">
+              <template #title="{item}">
+                <span>{{ item.name }}</span>
+              </template>
+              <template #content="{item}">
+                <span>{{ item.intro }}</span>
+              </template>
+              <template #tag="{item}">
+                <span>订阅时间 2023-03-15</span>
+                <span>文章数 20</span>
+                <span>订阅人数 20</span>
+              </template>
+              <template #right="{item}">
+                <a-button type="primary" size="small">已订阅</a-button>
+              </template>
+            </SoList>
           </a-tab-pane>
         </a-tabs>
       </a-tab-pane>
