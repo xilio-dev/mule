@@ -33,6 +33,13 @@ public class Category implements Serializable {
     @TableId(value = "id", type= IdType.ASSIGN_UUID)
     private String id;
 
+
+
+    /**
+     * 父级分类：空表示一级分类
+     */
+    @TableField("pid")
+    private String pid;
     /**
      * 分类名
      */

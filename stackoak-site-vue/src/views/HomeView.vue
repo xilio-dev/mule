@@ -1,6 +1,6 @@
 <template>
 
-  <a-row :gutter="15">
+  <a-row :gutter="15"  >
     <a-col :span="3" class="index-nav index-nav-top  ">
       <a-affix offset-bottom="bottom" :offset-top="59">
         <a-menu
@@ -224,11 +224,11 @@
               :open="openCategoryDrawer" @close="openCategoryDrawer=false">
 
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); align-items: start;">
-        <div v-for="category in categories" :key="category.category">
-          <h3 @click="onSelectCategory(category)">{{ category.category }}</h3>
+        <div v-for="category in categoryTree" :key="category.id">
+          <h3 @click="onSelectCategory(category)">{{ category.name }}</h3>
           <ul>
-            <li v-for="sub in category.subcategories" :key="sub.name">
-              <a @click="onSelectCategory(category)"  >{{ sub.name }}</a>
+            <li v-for="sub in category.children" :key="sub.name">
+              <a @click="onSelectCategory(sub)">{{ sub.name }}</a>
             </li>
           </ul>
         </div>
@@ -242,154 +242,29 @@ import {computed, onMounted} from 'vue';
 import {ref, reactive, watch} from 'vue';
 import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {type ItemType, type MenuProps, message} from "ant-design-vue";
-import {categoryList} from "@/api/category.ts";
+import {categoryList, twoLevelCategoryTree} from "@/api/category.ts";
 import {articleList} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
 import {useUserStore} from '@/store';
 /*------------------------------------变量定义------------------------------------------*/
 
-
+const categoryTree = ref([])
 
 /*------------------------------------生命周期-------------------------------------------*/
-
+onMounted(() => {
+  loadTwoLevelCategoryTree()
+})
 
 
 /*------------------------------------初始化---------------------------------------------*/
-const categories = ref([
-      {
-        "category": "后端开发",
-        "subcategories": [
-          {"name": ".NET", "url": "/cate/108698/"},
-          {"name": "Java", "url": "/cate/java/"},
-          {"name": "Python", "url": "/cate/python/"},
-          {"name": "Go", "url": "/cate/go/"},
-          {"name": "PHP", "url": "/cate/php/"},
-          {"name": "C++", "url": "/cate/cpp/"},
-          {"name": "Ruby", "url": "/cate/ruby/"},
-          {"name": "Swift", "url": "/cate/swift/"},
-          {"name": "C语言", "url": "/cate/c/"},
-          {"name": "Erlang", "url": "/cate/erlang/"},
-          {"name": "Pascal/Delphi", "url": "/cate/delphi/"},
-          {"name": "Scala", "url": "/cate/scala/"},
-          {"name": "R语言", "url": "/cate/r/"},
-          {"name": "Verilog", "url": "/cate/verilog/"},
-          {"name": "Dart", "url": "/cate/dart/"},
-          {"name": "Rust", "url": "/cate/rust/"},
-          {"name": "其他语言", "url": "/cate/otherlang/"}
-        ]
-      },
-      {
-        "category": "软件设计",
-        "subcategories": [
-          {"name": "架构设计", "url": "/cate/design/"},
-          {"name": "面向对象", "url": "/cate/oo/"},
-          {"name": "设计模式", "url": "/cate/dp/"},
-          {"name": "领域驱动设计", "url": "/cate/ddd/"}
-        ]
-      },
-      {
-        "category": "前端开发",
-        "subcategories": [
-          {"name": "Html/Css", "url": "/cate/web/"},
-          {"name": "JavaScript", "url": "/cate/javascript/"},
-          {"name": "jQuery", "url": "/cate/jquery/"},
-          {"name": "HTML5", "url": "/cate/html5/"},
-          {"name": "Angular", "url": "/cate/angular/"},
-          {"name": "React", "url": "/cate/react/"},
-          {"name": "Vue", "url": "/cate/vue/"}
-        ]
-      },
-      {
-        "category": "AI",
-        "subcategories": [
-          {"name": "AI综合", "url": "/cate/ai-misc/"},
-          {"name": "机器学习", "url": "/cate/ml/"},
-          {"name": "大模型", "url": "/cate/llm/"},
-          {"name": "Semantic Kernel", "url": "/cate/sk/"}
-        ]
-      },
-      {
-        "category": "企业信息化",
-        "subcategories": [
-          {"name": "BPM", "url": "/cate/bpm/"},
-          {"name": "SharePoint", "url": "/cate/sharepoint/"},
-          {"name": "GIS技术", "url": "/cate/gis/"},
-          {"name": "SAP", "url": "/cate/sap/"},
-          {"name": "Oracle ERP", "url": "/cate/OracleERP/"},
-          {"name": "Dynamics", "url": "/cate/dynamics/"},
-          {"name": "信息安全", "url": "/cate/infosec/"},
-          {"name": "企业信息化其他", "url": "/cate/3/"}
-        ]
-      },
-      {
-        "category": "移动端开发",
-        "subcategories": [
-          {"name": "Android开发", "url": "/cate/android/"},
-          {"name": "iOS开发", "url": "/cate/ios/"},
-          {"name": "Flutter", "url": "/cate/flutter/"},
-          {"name": "鸿蒙", "url": "/cate/harmonyos/"},
-          {"name": "其他手机开发", "url": "/cate/mobile/"}
-        ]
-      },
-      {
-        "category": "软件工程",
-        "subcategories": [
-          {"name": "敏捷开发", "url": "/cate/agile/"},
-          {"name": "项目与团队管理", "url": "/cate/pm/"},
-          {"name": "软件工程其他", "url": "/cate/Engineering/"}
-        ]
-      },
-      {
-        "category": "数据库",
-        "subcategories": [
-          {"name": "SQL Server", "url": "/cate/sqlserver/"},
-          {"name": "Oracle", "url": "/cate/oracle/"},
-          {"name": "MySQL", "url": "/cate/mysql/"},
-          {"name": "PostgreSQL", "url": "/cate/postgresql/"},
-          {"name": "NoSQL", "url": "/cate/nosql/"},
-          {"name": "大数据", "url": "/cate/bigdata/"},
-          {"name": "其他数据库", "url": "/cate/database/"}
-        ]
-      },
-      {
-        "category": "操作系统",
-        "subcategories": [
-          {"name": "Windows", "url": "/cate/win7/"},
-          {"name": "Windows Server", "url": "/cate/winserver/"},
-          {"name": "Linux", "url": "/cate/linux/"},
-          {"name": "macOS", "url": "/cate/osx/"},
-          {"name": "嵌入式", "url": "/cate/eos/"}
-        ]
-      },
-      {
-        "category": "其他",
-        "subcategories": [
-          {"name": "非技术区", "url": "/cate/life/"},
-          {"name": "Kubernetes", "url": "/cate/k8s/"},
-          {"name": "软件测试", "url": "/cate/testing/"},
-          {"name": "代码与软件发布", "url": "/cate/software/"},
-          {"name": "计算机图形学", "url": "/cate/cg/"},
-          {"name": "游戏开发", "url": "/cate/gamedev/"},
-          {"name": "程序人生", "url": "/cate/codelife/"},
-          {"name": "求职面试", "url": "/cate/job/"},
-          {"name": "读书区", "url": "/cate/book/"},
-          {"name": "转载区", "url": "/cate/quoted/"},
-          {"name": "翻译区", "url": "/cate/translate/"},
-          {"name": "开源研究", "url": "/cate/opensource/"},
-          {"name": "云计算", "url": "/cate/cloud/"},
-          {"name": "算法与数据结构", "url": "/cate/algorithm/"},
-          {"name": "区块链", "url": "/cate/blockchain/"},
-          {"name": "网络安全", "url": "/cate/networksecurity/"},
-          {"name": "实时音视频", "url": "/cate/rtc/"},
-          {"name": "其他技术区", "url": "/cate/misc/"}
-        ]
-      }
-    ]
-)
 
 
 /*------------------------------------数据加载--------------------------------------------*/
-
+const loadTwoLevelCategoryTree = () => {
+  twoLevelCategoryTree().then(res => {
+    categoryTree.value = res
+  })
+}
 
 
 /*------------------------------------核心业务--------------------------------------------*/
@@ -427,7 +302,7 @@ const queryParam = ref({
   categoryId: 0,
   showType: activeKey.value
 })
-const onSelectCategory=(cat:any)=>{
+const onSelectCategory = (cat: any) => {
   message.info(JSON.stringify(cat))
 }
 const onChange = (current: string) => {
@@ -447,6 +322,11 @@ const loadHomeData = async () => {
 //加载左侧菜单
 const loadLeftMenu = async () => {
   try {
+    items.push({
+      key: '0',
+      label: '综合',
+      title: '综合',
+    });
     await categoryList().then(res => {
       res.forEach((item) => {
         items.push({
