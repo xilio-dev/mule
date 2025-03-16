@@ -71,4 +71,10 @@ public class Comment implements Serializable {
      */
     @TableField("like_count")
     private Integer likeCount;
+
+    /**
+     * 评论状态
+     */
+    @TableField("status")
+    private Integer status;
 }

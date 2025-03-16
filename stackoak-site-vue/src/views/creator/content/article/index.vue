@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import {articleListByUser} from "@/api/post.ts";
+import {articleListByUser, deleteArticle} from "@/api/post.ts";
 import SoList from '@/components/SoList/index.vue'
 
 import {CommonUtil} from "@/utils/common.ts";
 import {ARTICLE} from "@/constants/article.ts";
+import {message, Modal} from "ant-design-vue";
 
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
@@ -63,7 +64,21 @@ const onCallComment = (e: any) => {
 const onCallData = (e: any) => {
 }
 //删除文章
-const onRemoveArticle = () => {
+const onRemoveArticle = (aid: string) => {
+  Modal.confirm({
+    title: '您确定删除该篇文章?',
+    content: '删除后会放到回收站',
+    okText: '确认',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk() {
+      deleteArticle({aid: aid}).then(res => {
+        //过滤掉已经删除的文章
+        articles.value = articles.value.filter(article => article.id !== aid);
+        message.success("已删除")
+      })
+    },
+  });
 
 }
 /*-------------------------------------其他函数-------------------------------------------*/
@@ -89,9 +104,11 @@ const onRemoveArticle = () => {
               </template>
               <template #content="{item}">
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.PUBLISHED" :bordered="false" color="success">已发布</a-tag>
-                <a-tag v-if="item.status==ARTICLE.StatusEnum.UNDER_REVIEW" :bordered="false" color="processing">审核中</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.UNDER_REVIEW" :bordered="false" color="processing">审核中
+                </a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.PASSWORD_PROTECTED" :bordered="false">密码可见</a-tag>
-                <a-tag v-if="item.status==ARTICLE.StatusEnum.PRIVATE" :bordered="false" color="geekblue">仅我可见</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.PRIVATE" :bordered="false" color="geekblue">仅我可见
+                </a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.FANS_ONLY" :bordered="false" color="cyan">粉丝可见</a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.REJECTED" :bordered="false" color="error">未通过</a-tag>
               </template>
@@ -107,7 +124,7 @@ const onRemoveArticle = () => {
                   <template #overlay>
                     <a-menu>
                       <a-menu-item>
-                        <a href="javascript:;">删除</a>
+                        <a href="javascript:;" @click="onRemoveArticle(item.id)">删除</a>
                       </a-menu-item>
                       <a-menu-item>
                         <a href="javascript:;">分享</a>

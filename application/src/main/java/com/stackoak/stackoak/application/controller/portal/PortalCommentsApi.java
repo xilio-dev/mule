@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.application.controller.portal;
 
+import com.stackoak.stackoak.application.actors.repeat.RepeatSubmit;
 import com.stackoak.stackoak.application.service.comment.ICommentsService;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleId;
@@ -45,6 +46,7 @@ public class PortalCommentsApi {
     }
 
     @PostMapping(value = "add", name = "添加评论")
+    @RepeatSubmit(expireTime = 5)
     public Result add(@RequestBody @Valid CommentRequest commentRequest) {
         commentsService.addComment(commentRequest);
         return Result.success();

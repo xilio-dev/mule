@@ -93,6 +93,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addComment(CommentRequest commentRequest) {
+        String userId = StpKit.USER.getLoginIdAsString();
         String commentPid = commentRequest.getCommentPid();
         String aid = commentRequest.getAid();
         //检查文章是否存在
@@ -101,9 +102,10 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
             throw new BizException("该文章不存在！");
         }
         Comment comments = new Comment();
-        comments.setUserId("1");//todo 临时用户
+        comments.setUserId(userId);
         comments.setContent(commentRequest.getContent());
         comments.setArticleId(aid);
+        comments.setStatus(0);/*审核状态*/
         //如果父评论是0直接添加，否则检查父评论是否存在
         if ("0".equalsIgnoreCase(commentPid)) {
             comments.setPid("0");
