@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.controller.portal;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.actors.cut.FieldFilters;
+import com.stackoak.stackoak.application.actors.limit.RateLimit;
 import com.stackoak.stackoak.application.actors.recommand.BehaviorLog;
 import com.stackoak.stackoak.application.actors.recommand.BehaviorType;
 import com.stackoak.stackoak.common.data.article.*;
@@ -44,6 +45,7 @@ public class PortalArticleApi {
     }
 
     @PostMapping("detail")
+    @RateLimit(limit = 1)
     @BehaviorLog(businessId = "#dto.id", type = BehaviorType.ViEW)
     @FieldFilters(value = {@FieldFilter(type = ArticleDetailVO.class, exclude = {"columnNames", "columnIds"})})
     public Result detail(@RequestBody @Valid ArticleDetailDTO dto) {
