@@ -4,6 +4,7 @@ import {articleListByUser} from "@/api/post.ts";
 import SoList from '@/components/SoList/index.vue'
 
 import {CommonUtil} from "@/utils/common.ts";
+import {ARTICLE} from "@/constants/article.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
@@ -21,13 +22,16 @@ onMounted(() => {
 const queryParam = ref({
   current: 1,
   size: 10,
+  status: -1
 })
 const tabs = [
   {key: '-1', label: '全部'},
-  {key: '2', label: '已发布'},
-  {key: '3', label: '仅我可见'},
-  {key: '4', label: '密码可见'},
-  {key: '5', label: '审核中'},
+  {key: '1', label: '已发布'},
+  {key: '0', label: '审核中'},
+  {key: '2', label: '仅我可见'},
+  {key: '4', label: '粉丝可见'},
+  {key: '3', label: '密码可见'},
+  {key: '7', label: '未通过'},
 ];
 /*------------------------------------事件监听------------------------------------------*/
 
@@ -47,8 +51,8 @@ const loadArticleComment = () => {
 
 /*------------------------------------核心业务--------------------------------------------*/
 //根据标签切换文章列表
-const onTagClick = () => {
-  // queryParam.value.status = activeArticleStatusTab.value
+const onTagClick = (key: any) => {
+  queryParam.value.status = key
   loadArticle()
 }
 const onCallEdit = (e: any) => {
@@ -71,20 +75,25 @@ const onRemoveArticle = () => {
   <a-card :bordered="false">
     <a-tabs v-model:activeKey="activeTab" @tabClick="onTagClick">
       <a-tab-pane key="1" tab="文章">
-        <a-tabs v-model:activeKey="activeArticleStatusTab" @tabClick="onTagClick">
+        <a-tabs v-model:activeKey="activeArticleStatusTab" @change="onTagClick">
           <a-tab-pane :key="tab.key" :tab="tab.label" v-for="tab in tabs">
             <SoList @on-call-edit="onCallEdit" :list="articles">
               <template #title="{item}">
                 <span @click="CommonUtil.openNewPage(`/post/${item.id}`)">{{ item.title }}</span>
               </template>
               <template #tag="{item}">
-                <span>阅读 20</span>
-                <span>收藏 20</span>
-                <span>点赞 452</span>
-                <span>评论 36545</span>
+                <span>阅读 {{ item.viewCount }}</span>
+                <span>收藏 {{ item.collectCount }}</span>
+                <span>点赞 {{ item.likeCount }}</span>
+                <span>评论 {{ item.commentCount }}</span>
               </template>
               <template #content="{item}">
-                <a-tag :style="{color: true?'green':'red'}">{{ true ? '已发布' : '未通过审核' }}</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.PUBLISHED" :bordered="false" color="success">已发布</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.UNDER_REVIEW" :bordered="false" color="processing">审核中</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.PASSWORD_PROTECTED" :bordered="false">密码可见</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.PRIVATE" :bordered="false" color="purple">仅我可见</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.FANS_ONLY" :bordered="false" color="cyan">粉丝可见</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.REJECTED" :bordered="false" color="error">未通过</a-tag>
               </template>
               <template #action="{item}">
                 <div @click="onCallData(item)">数据</div>
@@ -114,11 +123,11 @@ const onRemoveArticle = () => {
           </a-tab-pane>
         </a-tabs>
       </a-tab-pane>
-      <a-tab-pane key="7" tab="草稿箱">
-        <ArticleCenterList :list="articles"/>
+      <a-tab-pane key="5" tab="草稿箱">
+        <SoList :list="articles"/>
       </a-tab-pane>
-      <a-tab-pane key="8" tab="回收站">
-        <ArticleCenterList :list="articles"/>
+      <a-tab-pane key="6" tab="回收站">
+        <SoList :list="articles"/>
       </a-tab-pane>
       <template #rightExtra>
         <a-button @click="CommonUtil.openNewPage('/editor')" type="primary" size="small">写文章</a-button>

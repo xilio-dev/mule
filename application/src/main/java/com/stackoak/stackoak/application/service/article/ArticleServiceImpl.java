@@ -478,9 +478,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String key = request.getKey();
         Integer status = request.getStatus();
         LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(!ObjectUtils.isEmpty(status),Article::getStatus, status);
+        // 如果 status == -1，排除草稿箱（5）和回收站（6）
+        if (status == -1) {
+            wrapper.notIn(Article::getStatus, 5, 6);
+        } else {
+            // 否则，根据传入的 status 进行查询
+            wrapper.eq(Article::getStatus, status);
+        }
         wrapper.eq(Article::getUserId, StpKit.USER.getLoginIdAsString());
         wrapper.like(StringUtils.hasText(key), Article::getTitle, key);
+        wrapper.orderByDesc(Article::getCreateTime);
         return page(Page.of(request.getCurrent(), request.getSize()), wrapper);
     }
 }

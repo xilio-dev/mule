@@ -281,8 +281,8 @@ import {getSearchHistory} from "@/api/search.ts";
 import {getSysConfigInfo} from "@/api/config.ts";
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
-const selectedKeys = ref([0]);
-const openKeys = ref([0]);
+const selectedKeys = ref(['0']);
+const openKeys = ref(['0']);
 const items: ItemType[] = reactive([]);
 const openCategoryDrawer = ref(false)
 //进入创作中心登陆判断处理
@@ -336,6 +336,11 @@ const loadLeftMenu = async () => {
         });
       });
     })
+    items.push({
+      key: '99',
+      label: '更多分类',
+      title: '更多分类',
+    });
   } catch (err) {
   }
 }
@@ -377,7 +382,6 @@ const handleClick: MenuProps['onClick'] = e => {
   if ('99' == e.key) {
     if (openCategoryDrawer.value == true) {
       openCategoryDrawer.value = false
-      alert("dd")
       return
     }
     openCategoryDrawer.value = true

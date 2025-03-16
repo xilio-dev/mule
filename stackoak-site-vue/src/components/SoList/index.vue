@@ -10,7 +10,7 @@ defineProps<{
 <template>
   <div v-for="item in list" class="title-container">
     <a-flex :gap="8" style="width: 100%;">
-      <div class="cover">
+      <div class="cover" v-if="item.cover">
         <slot name="cover" :item="item">
           <a-image style="width: 120px;height: 68px" :src="ImageUtils.getImgUrl(item.cover)" :preview="false"/>
         </slot>
@@ -30,7 +30,7 @@ defineProps<{
         </a-flex>
         <div>
           <slot name="content" :item="item">
-            {{ item.description }}
+
           </slot>
         </div>
         <a-flex justify="space-between">

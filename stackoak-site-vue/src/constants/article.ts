@@ -1,5 +1,17 @@
 //文章模块相关常量
 export const ARTICLE = {
+    StatusEnum: {
+        UNDER_REVIEW: 0, // 审核中
+        PUBLISHED: 1,    // 已发布
+        PRIVATE: 2,      // 仅我可见
+        PASSWORD_PROTECTED: 3, // 密码可见
+        FANS_ONLY: 4,    // 粉丝可见
+        DRAFT: 5,        // 草稿箱
+        RECYCLE_BIN: 6 ,  // 回收站
+        REJECTED: 7   // 未通过审核
+
+
+    } as const,
     // 可见范围枚举
     VisibilityStatusEnum: {
         ALL: 1,
