@@ -6,13 +6,13 @@ import SoList from '@/components/SoList/index.vue'
 /*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
 const activeColumnStatusTab = ref('-1');
-const openArticleManageModel=ref(false)
+const openArticleManageModel = ref(false)
 const columns = ref([])
 const queryParam = ref({
   current: 1,
   size: 5,
   key: '',
-  status: 1
+  status: -1
 })
 
 /*------------------------------------生命周期-------------------------------------------*/
@@ -24,9 +24,9 @@ onMounted(() => {
 /*------------------------------------初始化---------------------------------------------*/
 const tabs = [
   {key: '-1', label: '全部'},
-  {key: '2', label: '已发布'},
-  {key: '3', label: '审核中'},
-  {key: '4', label: '未通过'},
+  {key: '1', label: '已发布'},
+  {key: '0', label: '审核中'},
+  {key: '2', label: '未通过'},
 
 ];
 
@@ -37,7 +37,10 @@ const loadColumns = async () => {
     columns.value = res.records
   })
 }
-
+const onChangeTab = (key: any) => {
+  queryParam.value.status = key
+  loadColumns()
+}
 
 /*------------------------------------核心业务--------------------------------------------*/
 
@@ -51,23 +54,28 @@ const loadColumns = async () => {
   <a-card :bordered="false">
     <a-tabs v-model:activeKey="activeTab">
       <a-tab-pane key="1" tab="专栏管理">
-        <a-tabs v-model:activeKey="activeColumnStatusTab">
-          <a-tab-pane :key="tab.key" :tab="tab.label" v-for="tab in tabs">
-            <SoList :list="columns">
-              <template #title="{item}">
-                <span>{{ item.name }}</span>
-              </template>
-              <template #tag="{item}">
-                <span>文章数 20</span>
-                <span>订阅人数 20</span>
-              </template>
-              <template #action="{item}">
-                <div>编辑</div>
-                <div>删除</div>
-                <div @click="openArticleManageModel=true">管理</div>
-              </template>
-            </SoList>
-          </a-tab-pane>
+        <a-tabs v-model:activeKey="activeColumnStatusTab" @change="onChangeTab">
+            <a-tab-pane :key="tab.key" :tab="tab.label" v-for="tab in tabs">
+              <SoList :list="columns">
+                <template #title="{item}">
+                  <span>{{ item.name }}</span>
+                </template>
+                <template #content="{item}">
+                  <a-tag v-if="item.status==0" :bordered="false" color="processing">审核中</a-tag>
+                  <a-tag v-if="item.status==1" :bordered="false" color="success">已发布</a-tag>
+                  <a-tag v-if="item.status==2" :bordered="false" color="error">未通过</a-tag>
+                </template>
+                <template #tag="{item}">
+                  <span>文章数 20</span>
+                  <span>订阅人数 20</span>
+                </template>
+                <template #action="{item}">
+                  <div>编辑</div>
+                  <div>删除</div>
+                  <div @click="openArticleManageModel=true">管理</div>
+                </template>
+              </SoList>
+            </a-tab-pane>
         </a-tabs>
       </a-tab-pane>
       <a-tab-pane key="2" tab="专栏订阅">
@@ -101,7 +109,7 @@ const loadColumns = async () => {
     </a-tabs>
 
   </a-card>
-  <a-modal :bordered="false" :footer="null" v-model:open="openArticleManageModel" title="管理文章" width="60%" >
+  <a-modal :bordered="false" :footer="null" v-model:open="openArticleManageModel" title="管理文章" width="60%">
     <SoList :load-more="true" :list="columns">
       <template #loadMore>
 

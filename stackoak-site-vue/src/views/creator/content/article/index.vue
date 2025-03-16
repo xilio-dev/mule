@@ -91,7 +91,7 @@ const onRemoveArticle = () => {
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.PUBLISHED" :bordered="false" color="success">已发布</a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.UNDER_REVIEW" :bordered="false" color="processing">审核中</a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.PASSWORD_PROTECTED" :bordered="false">密码可见</a-tag>
-                <a-tag v-if="item.status==ARTICLE.StatusEnum.PRIVATE" :bordered="false" color="purple">仅我可见</a-tag>
+                <a-tag v-if="item.status==ARTICLE.StatusEnum.PRIVATE" :bordered="false" color="geekblue">仅我可见</a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.FANS_ONLY" :bordered="false" color="cyan">粉丝可见</a-tag>
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.REJECTED" :bordered="false" color="error">未通过</a-tag>
               </template>
