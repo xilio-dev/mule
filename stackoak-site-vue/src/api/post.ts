@@ -13,6 +13,7 @@ const Api = {
     FROM_FAVOR_DEL: '/article/fromFavorDel',
     RANK_IST: '/article/rank-list',
     LIST_BY_USER: '/article/list_by_user',
+    GET_COLLECT_ARTICLE: '/article/get-collect-article',
 
 };
 
@@ -61,4 +62,7 @@ export function fromFavorDel(data: any) {
 
 export function authorArticleRank(query: any) {
     return request.post(Api.RANK_IST, query)
+}
+export function getCollectArticle(query: any) {
+    return request.post(Api.GET_COLLECT_ARTICLE, query)
 }

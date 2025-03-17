@@ -24,6 +24,36 @@
         GROUP BY a.id
         ORDER BY a.publish_time DESC
     </select>
+    <resultMap id="ArticleResultMap" type="com.stackoak.stackoak.common.data.article.Article">
+        <!-- 主键字段 -->
+        <id column="id" property="id" />
+
+        <!-- 普通字段 -->
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="cover" property="cover" />
+        <result column="description" property="description" />
+        <result column="like_count" property="likeCount" />
+        <result column="view_count" property="viewCount" />
+        <result column="comment_count" property="commentCount" />
+        <result column="publish_time" property="publishTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+        <result column="zone" property="zone" />
+        <result column="collect_count" property="collectCount" />
+        <result column="content_count" property="contentCount" />
+        <result column="user_id" property="userId" />
+        <result column="category_id" property="categoryId" />
+        <result column="visible_status" property="visibleStatus" />
+        <result column="publish_status" property="publishStatus" />
+        <result column="is_deleted" property="deleted" />
+        <result column="column_id" property="columnId" />
+        <result column="creative_type" property="creativeType" />
+        <result column="visit_password" property="visitPassword" />
+        <result column="original_url" property="originalUrl" />
+        <result column="status" property="status" />
+        <result column="authorize_status" property="authorizeStatus" />
+    </resultMap>
     <resultMap id="ArticleDetailResultMap" type="com.stackoak.stackoak.common.data.article.ArticleDetailVO">
         <result property="articleInfo.id" column="articleId"/>
         <result property="articleInfo.title" column="title"/>
@@ -87,5 +117,19 @@
             LEFT JOIN columns col ON ac.column_id = col.id
         WHERE a.id = #{id}
         GROUP BY a.id;
+    </select>
+    <select id="selectByCategory" resultMap="ArticleResultMap">
+        SELECT a.id, a.title, a.publish_time, a.status, a.create_time
+        FROM article a
+                 INNER JOIN article_collect ac ON a.id = ac.article_id
+        WHERE ac.collect_id = #{cid}
+        order by a.create_time desc
+    </select>
+    <select id="selectByColumn" resultMap="ArticleResultMap">
+        SELECT a.id, a.title, a.publish_time, a.status, a.create_time
+        FROM article a
+                 INNER JOIN article_column ac ON a.id = ac.article_id
+        WHERE ac.column_id = #{cid}
+        order by a.create_time desc
     </select>
 </mapper>

@@ -5,9 +5,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-@Data
-public class ArticleId implements Serializable {
-    @NotEmpty
-    private String aid;
+/**
+ * @param aid 文章编号
+ */
+public record ArticleId(@NotEmpty String aid) implements Serializable {
 
 }

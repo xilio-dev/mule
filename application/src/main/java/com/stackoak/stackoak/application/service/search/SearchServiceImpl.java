@@ -145,7 +145,7 @@ private ISearchHistoryService searchHistoryService;
             IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
             indexWriter = new IndexWriter(directory, writerConfig);
             //根据id字段进行删除
-            indexWriter.deleteDocuments(new Term("id", articleId.getAid()));
+            indexWriter.deleteDocuments(new Term("id", articleId.aid()));
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("删除索引库出错：" + e.getMessage());

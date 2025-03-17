@@ -9,15 +9,12 @@ import {message, Modal} from "ant-design-vue";
 
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
-
 const activeTab = ref('1');
 const activeArticleStatusTab = ref('-1');
-const comments = ref([])/*文章评论列表*/
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
   loadArticle()
 })
-
 
 /*------------------------------------初始化---------------------------------------------*/
 const queryParam = ref({
@@ -37,19 +34,12 @@ const tabs = [
 /*------------------------------------事件监听------------------------------------------*/
 
 
-
-
 /*------------------------------------数据加载--------------------------------------------*/
 const loadArticle = async () => {
   await articleListByUser(queryParam.value).then(res => {
     articles.value = res.records
   })
 }
-//加载某一篇文章的评论信息
-const loadArticleComment = () => {
-
-}
-
 /*------------------------------------核心业务--------------------------------------------*/
 //根据标签切换文章列表
 const onTagClick = (key: any) => {
@@ -57,11 +47,7 @@ const onTagClick = (key: any) => {
   loadArticle()
 }
 const onCallEdit = (e: any) => {
-  window.open(`/editor?id=${e.item.id}`, '_blank')
-}
-const onCallComment = (e: any) => {
-}
-const onCallData = (e: any) => {
+  window.open(`/editor?id=${e.id}`, '_blank')
 }
 //删除文章
 const onRemoveArticle = (aid: string) => {
@@ -113,8 +99,6 @@ const onRemoveArticle = (aid: string) => {
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.REJECTED" :bordered="false" color="error">未通过</a-tag>
               </template>
               <template #action="{item}">
-                <div @click="onCallData(item)">数据</div>
-                <div @click="onCallComment(item)">评论</div>
                 <div @click="onCallEdit(item)">修改</div>
                 <a-dropdown>
                   <a class="ant-dropdown-link" @click.prevent>
@@ -125,12 +109,6 @@ const onRemoveArticle = (aid: string) => {
                     <a-menu>
                       <a-menu-item>
                         <a href="javascript:;" @click="onRemoveArticle(item.id)">删除</a>
-                      </a-menu-item>
-                      <a-menu-item>
-                        <a href="javascript:;">分享</a>
-                      </a-menu-item>
-                      <a-menu-item>
-                        <a href="javascript:;">置顶</a>
                       </a-menu-item>
                     </a-menu>
                   </template>

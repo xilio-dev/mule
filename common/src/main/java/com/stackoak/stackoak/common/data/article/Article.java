@@ -118,7 +118,7 @@ public class Article implements Serializable {
     private String userId;
 
     /**
-     * 作者ID
+     * 分类领域ID
      */
     @TableField("category_id")
     private String categoryId;

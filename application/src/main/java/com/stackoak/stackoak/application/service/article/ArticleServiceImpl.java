@@ -2,8 +2,10 @@ package com.stackoak.stackoak.application.service.article;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserConfigService;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.category.ICategoryService;
 import com.stackoak.stackoak.application.service.collect.ICollectService;
@@ -73,13 +75,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public Page<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
-        Page<ArticleBriefVO> page = Page.of(articleListDTO.getCurrent(), articleListDTO.getSize());
+        Page<ArticleBriefVO> page = Page.of(articleListDTO.current(), articleListDTO.size());
         Page<ArticleBriefVO> articleBriefVOPage = null;
-        if (articleListDTO.getShowType() == 1) {
+        if (articleListDTO.showType() == 1) {
             return articleBriefVOPage;
-        } else if (articleListDTO.getShowType() == 2) {
+        } else if (articleListDTO.showType() == 2) {
             return articleBriefVOPage;
-        } else if (articleListDTO.getShowType() == 3) {
+        } else if (articleListDTO.showType() == 3) {
             articleBriefVOPage = selectByCategoryAndRecent(page, articleListDTO);
             // 处理标签数据
             for (ArticleBriefVO article : articleBriefVOPage.getRecords()) {
@@ -151,7 +153,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return articleDetail;
         }
 
-       throw new BizException("文章不存在或已删除！");
+        throw new BizException("文章不存在或已删除！");
     }
 
     private UserInteractDTO getUserInteract(String aid) {
@@ -360,7 +362,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param op        操作类型：1是点赞、0是取消点赞
      */
     private void diggAndUndigg(ArticleId articleId, Integer op) {
-        Article article = getById(articleId.getAid());
+        Article article = getById(articleId.aid());
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
@@ -395,17 +397,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Transactional(rollbackFor = Exception.class)
     public void addToFavor(FavorRequest favorRequest) {
         //检查文章是否存在
-        Article article = getById(favorRequest.getAid());
+        Article article = getById(favorRequest.aid());
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
         //检查收藏夹是否存在
-        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), StpKit.USER.getLoginIdAsString());
+        Collect collect = collectService.getCollectByUser(favorRequest.collectId(), StpKit.USER.getLoginIdAsString());
         if (ObjectUtils.isEmpty(collect)) {
             throw new BizException("收藏夹不存在！");
         }
         //保存文章到收藏夹、添加文章与收藏夹的关联
-        ArticleCollect articleCollect = new ArticleCollect(favorRequest.getAid(), favorRequest.getCollectId());
+        ArticleCollect articleCollect = new ArticleCollect(favorRequest.aid(), favorRequest.collectId());
         articleCollectMapper.insert(articleCollect);
     }
 
@@ -418,17 +420,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public void fromFavorDel(FavorRequest favorRequest) {
         //检查文章是否存在
-        Article article = getById(favorRequest.getAid());
+        Article article = getById(favorRequest.aid());
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
-        Collect collect = collectService.getCollectByUser(favorRequest.getCollectId(), StpKit.USER.getLoginIdAsString());
+        Collect collect = collectService.getCollectByUser(favorRequest.collectId(), StpKit.USER.getLoginIdAsString());
         if (ObjectUtils.isEmpty(collect)) {
             throw new BizException("收藏夹不存在！");
         }
         //删除文章与收藏夹的关联
         LambdaQueryWrapper<ArticleCollect> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ArticleCollect::getArticleId, favorRequest.getAid()).eq(ArticleCollect::getCollectId, favorRequest.getCollectId());
+        wrapper.eq(ArticleCollect::getArticleId, favorRequest.aid()).eq(ArticleCollect::getCollectId, favorRequest.collectId());
         articleCollectMapper.delete(wrapper);
     }
 
@@ -449,7 +451,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String userId = StpKit.USER.getLoginIdAsString();
         LambdaQueryWrapper<Article> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Article::getUserId, userId);
-        wrapper.eq(Article::getId, dto.getAid());
+        wrapper.eq(Article::getId, dto.aid());
         Article article = getOne(wrapper);
         article.setStatus(ArticleStatus.RECYCLE.getCode());
         updateById(article);
@@ -490,5 +492,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         wrapper.like(StringUtils.hasText(key), Article::getTitle, key);
         wrapper.orderByDesc(Article::getCreateTime);
         return page(Page.of(request.getCurrent(), request.getSize()), wrapper);
+    }
+
+    @Override
+    public Page<Article> listByUserAndCategory(ListByUserAndCategoryQuery request) {
+        String cid = request.cid();
+        PageQuery pageQuery = request.pageQuery();
+        Page<Article> articles = baseMapper.selectByCategory(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), cid);
+        return articles;
+    }
+
+    @Override
+    public Page<Article> listByUserAndColumn(ListByUserAndCategoryQuery query) {
+        PageQuery pageQuery = query.pageQuery();
+        return baseMapper.selectByCategory(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), query.cid());
     }
 }

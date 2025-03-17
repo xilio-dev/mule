@@ -124,9 +124,14 @@ public class PortalArticleApi {
         Page<Article> pages = articleService.listByUser(request);
         return Result.success(pages);
     }
-    @GetMapping(value = "get-collect-article", name = "获取收藏夹中的文章")
-    public Result getCollectArticle(@RequestParam String collectId){
-        return null;
+
+    @PostMapping(value = "get-collect-article", name = "获取收藏夹中的文章")
+    public Result getCollectArticle(@RequestBody ListByUserAndCategoryQuery query) {
+        return Result.success(articleService.listByUserAndCategory(query));
+    }
+    @PostMapping(value = "get-column-article", name = "获取专栏中的文章")
+    public Result getColumnArticle(@RequestBody ListByUserAndCategoryQuery query) {
+        return Result.success(articleService.listByUserAndColumn(query));
     }
 
 }

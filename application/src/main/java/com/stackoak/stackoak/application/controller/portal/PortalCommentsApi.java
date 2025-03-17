@@ -30,7 +30,7 @@ public class PortalCommentsApi {
 
     @PostMapping("list")
     public Result list(@RequestBody ArticleId articleId) {
-        return Result.success(commentsService.getCommentByAid(articleId.getAid()));
+        return Result.success(commentsService.getCommentByAid(articleId.aid()));
     }
 
     @PostMapping(value = "digg", name = "评论点赞")
