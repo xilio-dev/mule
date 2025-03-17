@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref, type UnwrapRef} from "vue";
 import {columnListByUser} from "@/api/column.ts";
 import SoList from '@/components/SoList/index.vue'
 import {getColumnArticle} from "@/api/post.ts";
+import type {Rule} from "ant-design-vue/es/form";
+import {ImageUtils} from "@/utils/file.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
 const activeColumnStatusTab = ref('-1');
 const openArticleManageModel = ref(false)
+const openColumnFormModel = ref(false)/*打开新建专栏对话框*/
 const columns = ref([])
 const articles = ref([])
+const columnFormRef = ref();
 const queryParam = ref({
   current: 1,
   size: 5,
@@ -33,6 +37,35 @@ const tabs = [
 ];
 
 
+interface ColumnForm {
+  id: string;
+  name: string;
+  cover: string;
+  intro: string | undefined;
+}
+
+const columnForm: UnwrapRef<ColumnForm> = reactive({
+  id: '',
+  name: '',
+  cover: '',
+  intro: '',
+});
+const clearColumnForm = () => {
+  columnForm.id = '';
+  columnForm.name = '';
+  columnForm.cover = '';
+  columnForm.intro = '';
+}
+const rules: Record<string, Rule[]> = {
+  name: [
+    {required: true, message: '名称不能为空', trigger: 'change'},
+    {min: 1, max: 10, message: '字数范围1-10个字', trigger: 'change'},
+  ],
+  intro: [
+    {min: 1, max: 100, message: '字数范围1-100个字', trigger: 'change'},
+  ],
+};
+
 /*------------------------------------数据加载--------------------------------------------*/
 const loadColumns = async () => {
   await columnListByUser(queryParam.value).then(res => {
@@ -43,20 +76,39 @@ const onChangeTab = (key: any) => {
   queryParam.value.status = key
   loadColumns()
 }
-const loadArticleByCategory=()=>{
-  getColumnArticle({pageQuery:{current:1,size:10},cid:''}).then(res=>{
+const loadArticleByCategory = () => {
+  getColumnArticle({pageQuery: {current: 1, size: 10}, cid: ''}).then(res => {
 
   })
 }
 /*------------------------------------核心业务--------------------------------------------*/
-const onManageArticle=(id:string)=>{
-  getColumnArticle({pageQuery:{current:1,size:10},cid:id}).then(res=>{
-    articles.value=res.records
+const onManageArticle = (id: string) => {
+  getColumnArticle({pageQuery: {current: 1, size: 10}, cid: id}).then(res => {
+    articles.value = res.records
   })
-  openArticleManageModel.value=true
+  openArticleManageModel.value = true
 }
+const onEditColumn = (item: string) => {
+  //columnForm.value=item
+  Object.assign(columnForm, item)
+  openColumnFormModel.value = true
+}
+//保存专栏
+const onSaveColumn = () => {
+  columnFormRef.value
+      .validate()
+      .then(() => {
 
+      })
+
+};
+const onNewColumn = () => {
+  clearColumnForm()
+  openColumnFormModel.value = true
+}
 /*-------------------------------------其他函数-------------------------------------------*/
+
+
 </script>
 
 <template>
@@ -64,27 +116,27 @@ const onManageArticle=(id:string)=>{
     <a-tabs v-model:activeKey="activeTab">
       <a-tab-pane key="1" tab="专栏管理">
         <a-tabs v-model:activeKey="activeColumnStatusTab" @change="onChangeTab">
-            <a-tab-pane :key="tab.key" :tab="tab.label" v-for="tab in tabs">
-              <SoList :list="columns">
-                <template #title="{item}">
-                  <span>{{ item.name }}</span>
-                </template>
-                <template #content="{item}">
-                  <a-tag v-if="item.status==0" :bordered="false" color="processing">审核中</a-tag>
-                  <a-tag v-if="item.status==1" :bordered="false" color="success">已发布</a-tag>
-                  <a-tag v-if="item.status==2" :bordered="false" color="error">未通过</a-tag>
-                </template>
-                <template #tag="{item}">
-                  <span>文章数 20</span>
-                  <span>订阅人数 20</span>
-                </template>
-                <template #action="{item}">
-                  <div>编辑</div>
-                  <div>删除</div>
-                  <div @click="onManageArticle(item.id)">管理</div>
-                </template>
-              </SoList>
-            </a-tab-pane>
+          <a-tab-pane :key="tab.key" :tab="tab.label" v-for="tab in tabs">
+            <SoList :list="columns">
+              <template #title="{item}">
+                <span>{{ item.name }}</span>
+              </template>
+              <template #content="{item}">
+                <a-tag v-if="item.status==0" :bordered="false" color="processing">审核中</a-tag>
+                <a-tag v-if="item.status==1" :bordered="false" color="success">已发布</a-tag>
+                <a-tag v-if="item.status==2" :bordered="false" color="error">未通过</a-tag>
+              </template>
+              <template #tag="{item}">
+                <span>文章数 20</span>
+                <span>订阅人数 20</span>
+              </template>
+              <template #action="{item}">
+                <div @click="onEditColumn(item)">编辑</div>
+                <div>删除</div>
+                <div @click="onManageArticle(item.id)">管理</div>
+              </template>
+            </SoList>
+          </a-tab-pane>
         </a-tabs>
       </a-tab-pane>
       <a-tab-pane key="2" tab="专栏订阅">
@@ -113,7 +165,7 @@ const onManageArticle=(id:string)=>{
         </a-tabs>
       </a-tab-pane>
       <template #rightExtra>
-        <a-button type="primary" size="small">新建专栏</a-button>
+        <a-button @click="onNewColumn" type="primary" size="small">新建专栏</a-button>
       </template>
     </a-tabs>
 
@@ -138,6 +190,34 @@ const onManageArticle=(id:string)=>{
       </template>
     </SoList>
     <a-empty v-else description="暂无数据"/>
+  </a-modal>
+
+  <a-modal v-model:open="openColumnFormModel" :title="columnForm.id==''?'新建专栏':'编辑专栏'">
+    <a-form
+        ref="columnFormRef"
+        :model="columnForm"
+        :rules="rules">
+      <a-form-item ref="name" label="名称" name="name">
+        <a-input v-model:value="columnForm.name"/>
+      </a-form-item>
+      <a-form-item label="封面" name="cover">
+        <a-upload
+            v-model:file-list="fileList"
+            name="avatar"
+            list-type="picture-card"
+
+            :show-upload-list="false"
+            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+            :before-upload="beforeUpload"
+            @change="handleChange"
+        >
+          <a-image style="width: 120px;height: 68px" :preview="false" v-if="columnForm.cover" :src="ImageUtils.getImgUrl(columnForm.cover)" alt="avatar"/>
+        </a-upload>
+      </a-form-item>
+      <a-form-item label="描述" name="intro">
+        <a-textarea v-model:value="columnForm.intro"/>
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 
