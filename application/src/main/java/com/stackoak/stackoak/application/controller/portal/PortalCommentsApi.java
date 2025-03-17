@@ -46,7 +46,7 @@ public class PortalCommentsApi {
     }
 
     @PostMapping(value = "add", name = "添加评论")
-    @RepeatSubmit(expireTime = 5)
+    @RepeatSubmit(expireTime = 3)
     public Result add(@RequestBody @Valid CommentRequest commentRequest) {
         commentsService.addComment(commentRequest);
         return Result.success();

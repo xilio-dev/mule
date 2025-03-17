@@ -11,7 +11,7 @@
     <a-col :span="14" style="white-space: nowrap">
       <div style="float: right;margin-top: 6px">
         <a-input-search
-            v-if="false"
+            v-if="true"
             style="width: 400px;margin-right: 15px"
             v-model:value="search_key"
             placeholder="发现更多精彩"

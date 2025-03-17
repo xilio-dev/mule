@@ -1,18 +1,12 @@
 package com.stackoak.stackoak.common.data.article;
 
-import lombok.Data;
-
 import java.io.Serializable;
 
-@Data
-public class FavorRequest implements Serializable {
-    private static final long serialVersionUID = 1L;
-    /**
-     * 文章编号
-     */
-    private String aid;
-    /**
-     * 收藏夹编号
-     */
-    private String collectId;
+/**
+ * 点赞请求
+ *
+ * @param aid       文章编号
+ * @param collectId 收藏编号
+ */
+public record FavorRequest(String aid, String collectId) implements Serializable {
 }
