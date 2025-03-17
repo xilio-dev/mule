@@ -10,7 +10,8 @@ import {NumberUtils} from "@/utils/number-util.ts";
 import {message} from "ant-design-vue";
 import Login from "@/components/Login.vue";
 import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
-
+import CommentInput from '@/components/CommentInput/index.vue'
+import {all} from "axios";
 const useUser = useUserStore()
 
 
@@ -222,16 +223,7 @@ const toApply = (commentId: string) => {
             <a-avatar v-if="useUser.isLogin()" :src="useUser.userinfo.avatar" alt="Han Solo"/>
           </template>
           <template #content>
-            <a-form-item>
-              <a-textarea
-                  v-model:value="comment_value"
-                  placeholder="友善交流"
-                  :auto-size="{ minRows: 5, maxRows: 10 }"
-              />
-            </a-form-item>
-            <a-form-item>
-              <a-button @click="onAddComment" type="primary">评论</a-button>
-            </a-form-item>
+            <CommentInput placeholder="hello"  v-model:value="comment_value" @onClick="onAddComment"/>
           </template>
         </a-comment>
 
@@ -299,7 +291,8 @@ const toApply = (commentId: string) => {
           </a-comment>
         </a-comment>
       </a-card>
-      <a-card style="border: none;margin-top: 15px">推荐
+      <a-card style="border: none;margin-top: 15px">
+
       </a-card>
     </a-col>
   </a-row>

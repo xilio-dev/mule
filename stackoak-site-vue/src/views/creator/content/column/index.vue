@@ -103,7 +103,6 @@ const onSaveColumn = () => {
           loadColumns()
         })
       })
-
 };
 const onNewColumn = () => {
   clearColumnForm()
@@ -124,8 +123,6 @@ const removeColumn=(cid:string)=>{
       })
     },
   });
-
-
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 

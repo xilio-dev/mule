@@ -58,6 +58,7 @@ declare module 'vue' {
     AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
     CherryMarkdownv2: typeof import('./src/components/icons/CherryMarkdownv2.vue')['default']
     ColumnList: typeof import('./src/components/ColumnList.vue')['default']
+    CommentInput: typeof import('./src/components/CommentInput/index.vue')['default']
     DocTree: typeof import('./src/components/DocTree/index.vue')['default']
     DocTree2: typeof import('./src/components/DocTree2/index.vue')['default']
     GoogleAd: typeof import('./src/components/GoogleAd.vue')['default']
@@ -75,6 +76,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SoList: typeof import('./src/components/SoList/index.vue')['default']
     TagInput: typeof import('./src/components/TagInput/index.vue')['default']
+    Test: typeof import('./src/components/CommentInput/test.vue')['default']
     TreeMenu: typeof import('./src/components/TreeMenu.vue')['default']
   }
 }
