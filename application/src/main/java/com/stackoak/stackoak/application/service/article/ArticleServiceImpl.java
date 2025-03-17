@@ -505,6 +505,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Page<Article> listByUserAndColumn(ListByUserAndCategoryQuery query) {
         PageQuery pageQuery = query.pageQuery();
-        return baseMapper.selectByCategory(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), query.cid());
+        return baseMapper.selectByColumn(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), query.cid());
     }
 }

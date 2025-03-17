@@ -2,12 +2,14 @@
 import {onMounted, ref} from "vue";
 import {columnListByUser} from "@/api/column.ts";
 import SoList from '@/components/SoList/index.vue'
+import {getColumnArticle} from "@/api/post.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
 const activeColumnStatusTab = ref('-1');
 const openArticleManageModel = ref(false)
 const columns = ref([])
+const articles = ref([])
 const queryParam = ref({
   current: 1,
   size: 5,
@@ -41,11 +43,18 @@ const onChangeTab = (key: any) => {
   queryParam.value.status = key
   loadColumns()
 }
+const loadArticleByCategory=()=>{
+  getColumnArticle({pageQuery:{current:1,size:10},cid:''}).then(res=>{
 
+  })
+}
 /*------------------------------------核心业务--------------------------------------------*/
-
-
-
+const onManageArticle=(id:string)=>{
+  getColumnArticle({pageQuery:{current:1,size:10},cid:id}).then(res=>{
+    articles.value=res.records
+  })
+  openArticleManageModel.value=true
+}
 
 /*-------------------------------------其他函数-------------------------------------------*/
 </script>
@@ -72,7 +81,7 @@ const onChangeTab = (key: any) => {
                 <template #action="{item}">
                   <div>编辑</div>
                   <div>删除</div>
-                  <div @click="openArticleManageModel=true">管理</div>
+                  <div @click="onManageArticle(item.id)">管理</div>
                 </template>
               </SoList>
             </a-tab-pane>
@@ -110,22 +119,25 @@ const onChangeTab = (key: any) => {
 
   </a-card>
   <a-modal :bordered="false" :footer="null" v-model:open="openArticleManageModel" title="管理文章" width="60%">
-    <SoList :load-more="true" :list="columns">
+    <SoList :load-more="true" :list="articles" v-if="articles.length>0">
       <template #loadMore>
 
       </template>
       <template #title="{item}">
-        <span>{{ item.name }}</span>
+        <span>{{ item.title }}</span>
       </template>
       <template #tag="{item}">
-        <span>文章数 20</span>
-        <span>订阅人数 20</span>
+        <span>阅读 {{ item.viewCount }}</span>
+        <span>收藏 {{ item.collectCount }}</span>
+        <span>点赞 {{ item.likeCount }}</span>
+        <span>评论 {{ item.commentCount }}</span>
       </template>
       <template #action="{item}">
         <div>编辑</div>
         <div>删除</div>
       </template>
     </SoList>
+    <a-empty v-else description="暂无数据"/>
   </a-modal>
 </template>
 

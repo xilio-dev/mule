@@ -126,7 +126,8 @@
         order by a.create_time desc
     </select>
     <select id="selectByColumn" resultMap="ArticleResultMap">
-        SELECT a.id, a.title, a.publish_time, a.status, a.create_time
+        SELECT a.id, a.title, a.publish_time, a.status, a.create_time,
+               a.cover,a.view_count, a.like_count, a.comment_count, a.collect_count
         FROM article a
                  INNER JOIN article_column ac ON a.id = ac.article_id
         WHERE ac.column_id = #{cid}

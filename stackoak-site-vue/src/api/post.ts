@@ -14,6 +14,7 @@ const Api = {
     RANK_IST: '/article/rank-list',
     LIST_BY_USER: '/article/list_by_user',
     GET_COLLECT_ARTICLE: '/article/get-collect-article',
+    GET_COLUMN_ARTICLE: '/article/get-column-article',
 
 };
 
@@ -65,4 +66,6 @@ export function authorArticleRank(query: any) {
 }
 export function getCollectArticle(query: any) {
     return request.post(Api.GET_COLLECT_ARTICLE, query)
+}export function getColumnArticle(query: any) {
+    return request.post(Api.GET_COLUMN_ARTICLE, query)
 }
