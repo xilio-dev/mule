@@ -4,14 +4,14 @@ import {ref, onMounted, reactive} from 'vue';
 import Markdown from "@/components/Markdown/index.vue";
 import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
-import {useUserStore } from '@/store';
+import {useUserStore} from '@/store';
 import router from "@/router";
 import {NumberUtils} from "@/utils/number-util.ts";
 import {message} from "ant-design-vue";
 import Login from "@/components/Login.vue";
 import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
 import CommentInput from '@/components/CommentInput/index.vue'
-import {all} from "axios";
+
 const useUser = useUserStore()
 
 
@@ -23,6 +23,7 @@ const tags = ref({})
 const category = ref({})
 const userInteract = ref({})
 const config = ref({})
+const commentInputRef = ref()
 
 async function fetchPostData() {
   try {
@@ -32,7 +33,7 @@ async function fetchPostData() {
     tags.value = res.tags || []
     category.value = res.category || {}
     userInteract.value = res.userInteract || {}
-    config.value=res.config||{}
+    config.value = res.config || {}
     isLoading.value = false
   } catch (err) {
     isLoading.value = false
@@ -100,25 +101,35 @@ const onDiggComment = (comment: any) => {
     diggComment({commentId: comment.id})
   }
 }
-const comment_value = ref('')
-const commentPid = ref("0")/*依赖的评论，0表示根评论*/
+const commentValue = ref('')
+const pid = ref("0")/*依赖的评论，0表示根评论*/
 //添加评论
 const onAddComment = () => {
-  if (commentPid.value && comment_value.value.length > 0) {
-    addComment({aid: articleInfo.value.id, content: comment_value.value, commentPid: commentPid.value})
+  if (pid.value && commentValue.value.length > 0) {
+    addComment({
+      aid: articleInfo.value.id,
+      content: commentValue.value,
+      commentPid: pid.value
+    }).then(res => {
+      commentValue.value = ''
+      commentInputRef.value.blur()
+      loadComments()
+    })
   }
-
 }
 
 //删除评论
 const onDeleteComment = (commentId: string) => {
   deleteComment({commentId: commentId}).then(res => {
     message.success("删除成功！")
+    loadComments()
   })
 }
 //去回复时，设置依赖的评论
-const toApply = (commentId: string) => {
-  commentPid.value = commentId
+const toApply = (comment: string) => {
+  pid.value = comment.id
+  commentValue.value = ''
+  commentInputRef.value.focus()
 }
 
 </script>
@@ -180,14 +191,14 @@ const toApply = (commentId: string) => {
         </a-row>
 
       </a-card>
-      <a-affix offset-bottom="bottom"  :offset-top="45">
-      <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
+      <a-affix offset-bottom="bottom" :offset-top="45">
+        <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
 
-      </a-card>
-      <a-card title="精选内容" style="height: 260px; margin-top: 8px">
+        </a-card>
+        <a-card title="精选内容" style="height: 260px; margin-top: 8px">
 
-      </a-card>
-      <a-card style="height: 120px; margin-top: 8px;background-color: #3eaabd">广告位置</a-card>
+        </a-card>
+        <a-card style="height: 120px; margin-top: 8px;background-color: #3eaabd">广告位置</a-card>
       </a-affix>
     </a-col>
     <a-col :span="18" style=" float: left">
@@ -205,7 +216,8 @@ const toApply = (commentId: string) => {
                     v-if="useUser.isLogin()&&userInfo.userId==useUser.userinfo.userId">编辑
           </a-button>
         </a-flex>
-        <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="config.codeTheme" :main-theme="config.mainTheme" :anchor-style="config.anchorStyle" :preview="false" :value="articleInfo.content"/>
+        <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="config.codeTheme" :main-theme="config.mainTheme"
+                  :anchor-style="config.anchorStyle" :preview="false" :value="articleInfo.content"/>
         <a-flex justify="start" align="center" style="margin-top: 20px">
           <span>标签：</span>
           <a-flex justify="start" align="center" gap="small">
@@ -223,7 +235,9 @@ const toApply = (commentId: string) => {
             <a-avatar v-if="useUser.isLogin()" :src="useUser.userinfo.avatar" alt="Han Solo"/>
           </template>
           <template #content>
-            <CommentInput placeholder="hello"  v-model:value="comment_value" @onClick="onAddComment"/>
+            <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+                          :disabled="commentValue==''" v-model:value="commentValue"
+                          @onClick="onAddComment"/>
           </template>
         </a-comment>
 
@@ -235,7 +249,7 @@ const toApply = (commentId: string) => {
             class="comment-item"
         >
           <template #actions>
-            <span @click="toApply(comment.id)">回复</span>
+            <span @click="toApply(comment)">回复</span>
             <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(comment)">点赞</span>
             <a-popconfirm
                 title="您确定删除该条评论?"
@@ -254,6 +268,9 @@ const toApply = (commentId: string) => {
           </template>
           <template #content>
             <p>{{ comment.content }}</p>
+            <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+                          :disabled="commentValue==''" v-model:value="commentValue"
+                          @onClick="onAddComment"/>
           </template>
           <template #datetime>
             <span>{{ comment.createdAt }}</span>
@@ -267,7 +284,7 @@ const toApply = (commentId: string) => {
           >
             <template #actions>
               <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
-              <span @click="toApply(reply.id)">回复</span>
+              <span @click="toApply(reply)">回复</span>
               <a-popconfirm
                   title="您确定删除该条评论?"
                   ok-text="确定"
@@ -284,6 +301,9 @@ const toApply = (commentId: string) => {
             </template>
             <template #content>
               <p>{{ reply.content }}</p>
+              <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+                            :disabled="commentValue==''" v-model:value="commentValue"
+                            @onClick="onAddComment"/>
             </template>
             <template #datetime>
               <span>{{ comment.createdAt }}</span>
@@ -389,8 +409,13 @@ const toApply = (commentId: string) => {
   display: flex;
   padding: 5px 0;
 }
+
 :deep(.cherry-previewer) {
   border-left: none;
   padding: 0 15px 0 15px;
+}
+
+.comment-container {
+  margin-top: 15px;
 }
 </style>

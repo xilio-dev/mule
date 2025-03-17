@@ -1,14 +1,30 @@
 <script setup lang="ts">
+//@ts-ignore
+import {ref} from "vue";
 
 const value = defineModel<string>('value', {required: true})
 const emit = defineEmits(['onClick'])
+defineProps(['disabled','placeholder'])
+const commentInputRef = ref();
+const blur = () => {
+  if (commentInputRef.value) {
+    commentInputRef.value.blur()
+  }
+}
+const focus = () => {
+  if (commentInputRef.value) {
+    commentInputRef.value.focus()
+  }
+}
+// 暴露 textareaRef 给父组件
+defineExpose({blur,focus});
 </script>
 
 <template>
   <div class="main-input">
     <div class="comment-wrapper">
       <a-flex vertical>
-        <textarea  v-model.trim="value" class="comment-input" placeholder="说点什么吧"/>
+        <textarea ref="commentInputRef" v-model.trim="value" class="comment-input" :placeholder="placeholder"/>
         <a-flex justify="space-between" align="center">
           <a-flex :gap="12">
             <svg t="1742233266151" class="icon emoji-icon" viewBox="0 0 1024 1024" version="1.1"
@@ -32,9 +48,7 @@ const emit = defineEmits(['onClick'])
                   fill="#272636" p-id="8688"></path>
             </svg>
           </a-flex>
-          <div>
-            <button @click="emit('onClick')" type="button" class="comment-btn">评论</button>
-          </div>
+          <button :disabled="disabled" @click="emit('onClick')" type="button" class="comment-btn">评论</button>
         </a-flex>
       </a-flex>
     </div>
@@ -90,9 +104,10 @@ const emit = defineEmits(['onClick'])
   cursor: pointer;
 }
 
-.comment-btn.disable {
-  opacity: .3;
+button:disabled {
+  opacity: 0.3 !important;
   cursor: default;
+  pointer-events: none; /* 禁用鼠标交互 */
 }
 
 .comment-btn:hover {
