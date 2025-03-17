@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +144,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
 
             delayedMessage.setStreamKey("STACKOAK:MESSAGES:NOTIFICATION");
             delayedMessage.setContent(message);
-            delayedMessage.setExecuteInstant(Instant.now().plusSeconds(60)); // 1分钟后执行
+            delayedMessage.setExecuteDateTime(20); // 1分钟后执行
             delayedMessageService.addMessage(delayedMessage);
         }
     }
