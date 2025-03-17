@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref, type UnwrapRef} from "vue";
-import {columnListByUser} from "@/api/column.ts";
+import {columnListByUser, deleteColumn, saveColumn} from "@/api/column.ts";
 import SoList from '@/components/SoList/index.vue'
-import {getColumnArticle} from "@/api/post.ts";
+import {deleteArticle, getColumnArticle} from "@/api/post.ts";
 import type {Rule} from "ant-design-vue/es/form";
 import {ImageUtils} from "@/utils/file.ts";
+import {message, Modal} from "ant-design-vue";
 
 /*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
@@ -16,9 +17,14 @@ const articles = ref([])
 const columnFormRef = ref();
 const queryParam = ref({
   current: 1,
-  size: 5,
+  size: 10,
   key: '',
   status: -1
+})
+
+const articleQueryParam = ref({
+  current: 1,
+  size: 10,
 })
 
 /*------------------------------------生命周期-------------------------------------------*/
@@ -35,8 +41,6 @@ const tabs = [
   {key: '2', label: '未通过'},
 
 ];
-
-
 interface ColumnForm {
   id: string;
   name: string;
@@ -76,20 +80,14 @@ const onChangeTab = (key: any) => {
   queryParam.value.status = key
   loadColumns()
 }
-const loadArticleByCategory = () => {
-  getColumnArticle({pageQuery: {current: 1, size: 10}, cid: ''}).then(res => {
-
-  })
-}
 /*------------------------------------核心业务--------------------------------------------*/
 const onManageArticle = (id: string) => {
-  getColumnArticle({pageQuery: {current: 1, size: 10}, cid: id}).then(res => {
+  getColumnArticle({pageQuery: articleQueryParam.value, cid: id}).then(res => {
     articles.value = res.records
   })
   openArticleManageModel.value = true
 }
 const onEditColumn = (item: string) => {
-  //columnForm.value=item
   Object.assign(columnForm, item)
   openColumnFormModel.value = true
 }
@@ -98,13 +96,36 @@ const onSaveColumn = () => {
   columnFormRef.value
       .validate()
       .then(() => {
-
+        saveColumn(columnForm).then(res => {
+          message.info("保存成功")
+          openColumnFormModel.value=false
+          clearColumnForm()
+          loadColumns()
+        })
       })
 
 };
 const onNewColumn = () => {
   clearColumnForm()
   openColumnFormModel.value = true
+}
+const removeColumn=(cid:string)=>{
+  Modal.confirm({
+    title: '您确定删除该专栏?',
+    content: '删除后不可恢复！',
+    okText: '确认',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk() {
+      deleteColumn(cid).then(res=>{
+        //过滤掉已经删除的文章
+        columns.value = columns.value.filter(column => column.id !== cid);
+        message.success("已删除")
+      })
+    },
+  });
+
+
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 
@@ -132,7 +153,7 @@ const onNewColumn = () => {
               </template>
               <template #action="{item}">
                 <div @click="onEditColumn(item)">编辑</div>
-                <div>删除</div>
+                <div @click="removeColumn(item.id)">删除</div>
                 <div @click="onManageArticle(item.id)">管理</div>
               </template>
             </SoList>
@@ -192,7 +213,7 @@ const onNewColumn = () => {
     <a-empty v-else description="暂无数据"/>
   </a-modal>
 
-  <a-modal v-model:open="openColumnFormModel" :title="columnForm.id==''?'新建专栏':'编辑专栏'">
+  <a-modal v-model:open="openColumnFormModel" :title="columnForm.id==''?'新建专栏':'编辑专栏'" ok-text="保存" cancel-text="取消" @ok="onSaveColumn">
     <a-form
         ref="columnFormRef"
         :model="columnForm"

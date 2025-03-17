@@ -84,36 +84,49 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteColumn(String columnId) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        LambdaQueryWrapper<Column> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Column::getId, columnId);
+        wrapper.eq(Column::getUserId, userId);
+        remove(wrapper);/*删除专栏*/
         //删除专栏，需要解除专栏与文章的关联
-        removeById(columnId);
-        LambdaQueryWrapper<ArticleColumn> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ArticleColumn::getColumnId, columnId);
-        articleColumnMapper.delete(wrapper);
+        LambdaQueryWrapper<ArticleColumn> wrapper2 = new LambdaQueryWrapper<>();
+        wrapper2.eq(ArticleColumn::getColumnId, columnId);
+        articleColumnMapper.delete(wrapper2);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addOrUpdate(ColumnSaveRequest body) {
         String cid = body.getId();
-        Column oldColumn = getColumnByName(body.getName(), StpKit.USER.getLoginIdAsString());
-        Column column = new Column();
-        column.setName(body.getName());
-        column.setCover(body.getCover());
-        column.setIntro(body.getIntro());
-        column.setUserId(StpKit.USER.getLoginIdAsString());
         //没有ID，新增专栏,新增专栏的时候需要判断是否已经存在相同名称的专栏
         if (!StringUtils.hasText(cid)) {
-            if (!ObjectUtils.isEmpty(oldColumn)) {
+            Column column = new Column();
+            column.setName(body.getName());
+            column.setCover(body.getCover());
+            column.setIntro(body.getIntro());
+            column.setUserId(StpKit.USER.getLoginIdAsString());
+            //检查是否已经存在专栏名字了
+            Column columnByName = getColumnByName(body.getName(), StpKit.USER.getLoginIdAsString());
+            if (!ObjectUtils.isEmpty(columnByName)) {
                 throw new BizException("专栏名字已存在，请换一个！");
             }
             save(column);
         } else {
-            //有ID，更新专栏
-            if (ObjectUtils.isEmpty(oldColumn) || !oldColumn.getId().equals(cid)) {
-                throw new BizException("专栏不存在，请检查专栏ID是否正确！");
+            //编辑专栏
+            Column oldColumn = getById(cid);
+            if (ObjectUtils.isEmpty(oldColumn)) {
+                throw new BizException("专栏不存在！");
             }
-            column.setId(oldColumn.getId());
-            updateById(column);
+            Column columnByName = getColumnByName(body.getName(), StpKit.USER.getLoginIdAsString());
+            if (!ObjectUtils.isEmpty(columnByName) && !columnByName.getId().equals(cid)) {
+                throw new BizException("专栏名字已存在，请换一个！");
+            }
+            oldColumn.setId(oldColumn.getId());
+            oldColumn.setName(body.getName());
+            oldColumn.setCover(body.getCover());
+            oldColumn.setIntro(body.getIntro());
+            updateById(oldColumn);
         }
     }
 }
