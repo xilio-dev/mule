@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 /*------------------------------------变量定义------------------------------------------*/
+import CommentInput from "@/components/CommentInput/index.vue";
+
 const activeTab = ref('1');
 const activeCommentStatusTab = ref('1');
 const curCommentItem = ref()/*当前打开的评论项*/
@@ -127,16 +129,10 @@ const dislike = () => {
                 <p>
                   不太懂啊，老哥，可以帮忙一下吗
                 </p>
-                <div v-if="item.isOpen">
-                  <a-form-item>
-                    <a-textarea v-model:value="value" :rows="4"/>
-                  </a-form-item>
-                  <a-form-item>
-                    <a-button html-type="submit" type="primary">
-                      回复
-                    </a-button>
-                  </a-form-item>
-                </div>
+
+                <CommentInput   v-if="item.isOpen" class="comment-container" placeholder="说点什么吧"
+                              ref="commentInputRef"
+                              :disabled="commentBody.content==''" v-model:value="commentBody.content"/>
               </template>
               <template #datetime>
                 <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
@@ -179,5 +175,7 @@ a-card {
   box-shadow: none;
 }
 
-
+.comment-container{
+  margin-top: 10px;
+}
 </style>
