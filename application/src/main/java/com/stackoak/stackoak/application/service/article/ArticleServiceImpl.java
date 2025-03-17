@@ -146,7 +146,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 articleDetail.setUserInteract(userInteract);
             }
             UserInfoDTO userInfo = articleDetail.getUserInfo();
-            String userId = userInfo.userId();
+            String userId = userInfo.getUserId();
 
             UserConfig userConfig = userConfigService.getById(userId);
             articleDetail.setConfig(userConfig);
