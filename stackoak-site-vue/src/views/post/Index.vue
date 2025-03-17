@@ -268,7 +268,7 @@ const toApply = (comment: string) => {
           </template>
           <template #content>
             <p>{{ comment.content }}</p>
-            <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+            <CommentInput v-if="false" class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
                           :disabled="commentValue==''" v-model:value="commentValue"
                           @onClick="onAddComment"/>
           </template>
@@ -301,7 +301,7 @@ const toApply = (comment: string) => {
             </template>
             <template #content>
               <p>{{ reply.content }}</p>
-              <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+              <CommentInput v-if="false" class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
                             :disabled="commentValue==''" v-model:value="commentValue"
                             @onClick="onAddComment"/>
             </template>

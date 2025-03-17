@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * 消息推送监听器
+ * 消息消费监听器
  */
 @Component
 public class NotificationMessageListener implements StreamListener<String, MapRecord<String, String, String>> {

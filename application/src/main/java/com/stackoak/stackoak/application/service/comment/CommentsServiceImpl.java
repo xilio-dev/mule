@@ -4,6 +4,8 @@ package com.stackoak.stackoak.application.service.comment;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
+import com.stackoak.stackoak.application.actors.mq.DelayedMessage;
+import com.stackoak.stackoak.application.actors.mq.DelayedMessageService;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.actors.mq.RedisStreamUtil;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +57,11 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
     @Autowired
     private RedisTemplate redisTemplate;
     @Autowired
-    private RedisStreamUtil redisStreamUtil;
-    @Autowired
     private INotificationSettingService notificationSettingService;
     @Autowired
     private INotificationsService notificationsService;
+    @Autowired
+    private DelayedMessageService delayedMessageService;
 
     @Override
     public void digg(CommentId commentDiggRequest) {
@@ -129,15 +132,19 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         notification.setContent(content);
         //记录消息到数据库，可以考虑异步
         notificationsService.save(notification);
-        //如果文章作者用户开启了消息通知才推送
+        //如果文章作者用户开启了消息通知才推送 添加到延时消息队列，定时消费
         if (notify.getAppEnabled() && notify.getCommentEnabled()) {
+            DelayedMessage delayedMessage = new DelayedMessage();
             Map<String, Object> message = new HashMap<>(10);
             message.put("title", "评论消息");
             message.put("type", String.valueOf(NotificationType.COMMENT.getType()));
             message.put("userId", article.getUserId());
             message.put("content", new Gson().toJson(content));
-            String streamKey = "STACKOAK:MESSAGES:NOTIFICATION";
-            redisStreamUtil.addMap(streamKey, message);
+
+            delayedMessage.setStreamKey("STACKOAK:MESSAGES:NOTIFICATION");
+            delayedMessage.setContent(message);
+            delayedMessage.setExecuteInstant(Instant.now().plusSeconds(60)); // 1分钟后执行
+            delayedMessageService.addMessage(delayedMessage);
         }
     }
 
