@@ -43,7 +43,7 @@ public class Notification implements Serializable {
     private String userId;
 
     /**
-     * 通知类型
+     * 通知类型:1-comment、2-like、3-follow、4-collect、5-system
      */
     @TableField("type")
     private Integer type;

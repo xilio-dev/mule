@@ -19,22 +19,57 @@
             enter-button/>
 
         <span>苏州</span>
+
         <a-image src="/w1.png" style="width: 24px;height: 24px" :preview="false" aria-hidden="true"/>
+
         <span style="margin-right: 15px">晴 21度 良</span>
 
 
         <a-popover placement="bottomRight">
           <template #content>
-            <a-flex vertical :gap="8">
-              <a-button @click="openMsgManage('/msg/comment')" type="text">评论</a-button>
-              <a-button @click="openMsgManage('/msg/like')" type="text">赞和收藏</a-button>
-              <a-button @click="openMsgManage('/msg/chat')" type="text">私信</a-button>
-              <a-button @click="openMsgManage('/msg/attention')" type="text">新增粉丝</a-button>
-              <a-button @click="openMsgManage('/msg/system')" type="text">系统通知</a-button>
-              <a-button @click="openMsgManage('/setting/notification')" type="text">消息设置</a-button>
+            <a-flex vertical :gap="8" justify="flex-start">
+              <a-button @click="openMsgManage('/msg/comment')" type="text">
+                <a-flex align="center" justify="space-between" :gap="8">
+                  <span> 评论</span>
+                  <a-badge :count="unread.count['1']"/>
+                </a-flex>
+              </a-button>
+              <a-button @click="openMsgManage('/msg/like')" type="text">
+
+                <a-flex align="center" justify="space-between" :gap="8" style="width: 100%">
+                  <span style="flex: 1; text-align: left">赞和收藏</span>
+                  <a-badge :count="unread.count['4']+unread.count['2']"/>
+                </a-flex>
+              </a-button>
+              <a-button @click="openMsgManage('/msg/chat')" type="text">
+
+                <a-flex align="center" justify="space-between" :gap="8" style="width: 100%">
+                  <span style="flex: 1; text-align: left">私信</span>
+                  <a-badge :count="unread.count['6']"/>
+                </a-flex>
+              </a-button>
+              <a-button @click="openMsgManage('/msg/attention')" type="text">
+
+                <a-flex align="center" justify="space-between" :gap="8" style="width: 100%">
+                  <span style="flex: 1; text-align: left">新增粉丝</span>
+                  <a-badge :count="unread.count['3']"/>
+                </a-flex>
+              </a-button>
+              <a-button @click="openMsgManage('/msg/system')" type="text">
+
+                <a-flex align="center" justify="space-between" :gap="8" style="width: 100%">
+                  <span style="flex: 1; text-align: left">系统通知</span>
+                  <a-badge :count="unread.count['5']"/>
+                </a-flex>
+              </a-button>
+              <a-button @click="openMsgManage('/setting/notification')" type="text">
+                <a-flex align="center" justify="space-between" :gap="8" style="width: 100%">
+                  <span style="flex: 1; text-align: left">消息设置</span>
+                </a-flex>
+              </a-button>
             </a-flex>
           </template>
-          <a-badge :count="messages.length" :dot="false">
+          <a-badge :dot="unread.total>0">
             <a-image style="cursor: pointer" @click="onOpenMsg" :preview="false" src="/xiaoxi.svg"/>
           </a-badge>
         </a-popover>
@@ -67,7 +102,35 @@
 import {onMounted, nextTick, onBeforeUnmount} from 'vue';
 import {reactive} from 'vue';
 import {useUserStore} from '@/store';
+/*------------------------------------变量定义------------------------------------------*/
 
+
+
+/*------------------------------------生命周期-------------------------------------------*/
+
+
+
+/*------------------------------------初始化---------------------------------------------*/
+
+
+
+
+/*------------------------------------数据加载--------------------------------------------*/
+const loadUnReadMessageCount = async () => {
+  const res = await getUnreadCount();
+  if (res) {
+    unread.value = res || {}
+  }
+
+}
+
+
+/*------------------------------------核心业务--------------------------------------------*/
+
+
+
+
+/*-------------------------------------其他函数-------------------------------------------*/
 const isLogin = ref(false)
 const userStore = useUserStore()
 
@@ -78,7 +141,7 @@ const no_read_msg = reactive({
   attention: [],
   systemMsg: []
 })
-
+const unread = ref({})
 
 const messages = ref([]);
 const eventSource = ref();
@@ -110,6 +173,7 @@ onMounted(() => {
   if (userStore.isLogin()) {
     isLogin.value = true
   }
+  loadUnReadMessageCount()
 })
 const openMsgManage = (path: string) => {
   router.push({path: path})
@@ -211,6 +275,7 @@ import {emailCodeLogin, emailLogin} from "@/api/auth.ts";
 import {getUserInfo} from "@/api/user.ts";
 import {sendEmail} from "@/api/email.ts";
 import Login from "@/components/Login.vue";
+import {getUnreadCount} from "@/api/notify.ts";
 
 
 const listData: Record<string, string>[] = [];

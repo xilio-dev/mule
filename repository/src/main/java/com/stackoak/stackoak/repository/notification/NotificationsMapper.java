@@ -3,6 +3,13 @@ package com.stackoak.stackoak.repository.notification;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.stackoak.stackoak.common.data.notification.Notification;
+import com.stackoak.stackoak.common.data.notification.TypeCount;
+import org.apache.ibatis.annotations.MapKey;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -15,5 +22,7 @@ import com.stackoak.stackoak.common.data.notification.Notification;
  */
 public interface NotificationsMapper extends BaseMapper<Notification> {
 
+
+    List<TypeCount> selectUserUnReadCount(@Param("userId") String userId);
 }
 

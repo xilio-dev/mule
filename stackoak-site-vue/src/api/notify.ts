@@ -3,6 +3,7 @@ import {request} from '@/utils/request/Axios.ts';
 const Api = {
     NOTIFY_SETTING_SET: '/notify-setting/set',
     GET_SETTING: '/notify-setting/get-setting',
+    UNREAD_COUNT: '/notification/unread_count',
 
 };
 
@@ -12,6 +13,9 @@ export function setNotifySetting(data: any) {
 
 export function getNotifySetting() {
     return request.get(Api.GET_SETTING)
+}
+export function getUnreadCount() {
+    return request.get(Api.UNREAD_COUNT)
 }
 
 
