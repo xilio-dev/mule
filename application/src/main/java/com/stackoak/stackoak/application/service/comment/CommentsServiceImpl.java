@@ -108,7 +108,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         comments.setUserId(userId);
         comments.setContent(commentRequest.getContent());
         comments.setArticleId(aid);
-        comments.setStatus(0);/*审核状态*/
+        comments.setStatus(1);/*审核状态todo 暂时设置为已审核状态*/
         //如果父评论是0直接添加，否则检查父评论是否存在
         if ("0".equalsIgnoreCase(commentPid)) {
             comments.setPid("0");
