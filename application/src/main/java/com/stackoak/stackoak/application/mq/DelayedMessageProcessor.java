@@ -21,7 +21,7 @@ public class DelayedMessageProcessor {
     @Autowired
     private RedisStreamUtil redisStreamUtil;
     private static final String DELAYED_QUEUE = "delayed_queue";
-    @Scheduled(fixedRate = 2000) // 每秒执行一次
+    @Scheduled(fixedRate = 10000) // 每10秒执行一次
     public void processDelayedMessages() {
         System.out.println("Processing delayed messages...");
         Calendar calendar = Calendar.getInstance();

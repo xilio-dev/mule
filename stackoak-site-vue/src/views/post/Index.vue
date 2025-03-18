@@ -11,10 +11,9 @@ import {message} from "ant-design-vue";
 import Login from "@/components/Login.vue";
 import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
 import CommentInput from '@/components/CommentInput/index.vue'
-
+/*------------------------------------变量定义------------------------------------------*/
+const openCommentDrawer = ref(false)
 const useUser = useUserStore()
-
-
 const route = useRoute()
 const isLoading = ref(true);
 const articleInfo = ref({})
@@ -24,7 +23,26 @@ const category = ref({})
 const userInteract = ref({})
 const config = ref({})
 const commentInputRef = ref()
+const needVisitPass = ref(false)
+//打开登陆
+const openLoginModal = ref(false)
+//加载评论
+const comments = ref([])
+const commentValue = ref('')
+const pid = ref("0")/*依赖的评论，0表示根评论*/
+/*------------------------------------生命周期-------------------------------------------*/
+onMounted(async () => {
+  await fetchPostData();
+  await loadComments()
+});
 
+
+/*------------------------------------初始化---------------------------------------------*/
+
+
+
+
+/*------------------------------------数据加载--------------------------------------------*/
 async function fetchPostData() {
   try {
     const res = await postDetail({id: route.params.id})
@@ -40,17 +58,14 @@ async function fetchPostData() {
   }
 }
 
-//如果用户已经登陆，而且是自己的文章，那么可以去编辑
-const onToEditEditor = (id: string) => {
-  router.push({path: '/editor', query: {id: id}});
+const loadComments = async () => {
+  if (articleInfo.value) {
+    const res = await commentList({aid: articleInfo.value.id})
+    comments.value = res || []
+  }
 }
-onMounted(async () => {
-  await fetchPostData();
-  await loadComments()
-});
 
-const needVisitPass = ref(false)
-
+/*------------------------------------核心业务--------------------------------------------*/
 //文章点赞或取消点赞
 const onDiggOrunDigg = () => {
   if (!useUser.isLogin()) {
@@ -71,25 +86,12 @@ const onSaveArticleToCollect = () => {
   addToFavor({aid: articleInfo.value.id, collectId: '1'})
   userInteract.value.isCollect = !userInteract.value.isCollect
 }
-//关注和取消关注
-const toggleFollow = () => {
-  userInteract.value.isFollow = !userInteract.value.isFollow
-}
-//私信作者
-const ontoChat = () => {
-
-}
-//打开登陆
-const openLoginModal = ref(false)
-
-
-//加载评论
-const comments = ref([])
-const loadComments = async () => {
-  if (articleInfo.value) {
-    const res = await commentList({aid: articleInfo.value.id})
-    comments.value = res || []
-  }
+//删除评论
+const onDeleteComment = (commentId: string) => {
+  deleteComment({commentId: commentId}).then(res => {
+    message.success("删除成功！")
+    loadComments()
+  })
 }
 //评论点赞/取消点赞
 const onDiggComment = (comment: any) => {
@@ -101,8 +103,7 @@ const onDiggComment = (comment: any) => {
     diggComment({commentId: comment.id})
   }
 }
-const commentValue = ref('')
-const pid = ref("0")/*依赖的评论，0表示根评论*/
+
 //添加评论
 const onAddComment = () => {
   if (pid.value && commentValue.value.length > 0) {
@@ -117,20 +118,28 @@ const onAddComment = () => {
     })
   }
 }
-
-//删除评论
-const onDeleteComment = (commentId: string) => {
-  deleteComment({commentId: commentId}).then(res => {
-    message.success("删除成功！")
-    loadComments()
-  })
-}
 //去回复时，设置依赖的评论
 const toApply = (comment: string) => {
   pid.value = comment.id
   commentValue.value = ''
   commentInputRef.value.focus()
 }
+
+
+/*-------------------------------------其他函数-------------------------------------------*/
+//如果用户已经登陆，而且是自己的文章，那么可以去编辑
+const onToEditEditor = (id: string) => {
+  router.push({path: '/editor', query: {id: id}});
+}
+//关注和取消关注
+const toggleFollow = () => {
+  userInteract.value.isFollow = !userInteract.value.isFollow
+}
+//私信作者
+const ontoChat = () => {
+
+}
+
 
 </script>
 
@@ -338,7 +347,7 @@ const toApply = (comment: string) => {
         </svg>
       </template>
     </a-float-button>
-    <a-float-button :style="{marginTop: '25px'}" :badge="{ count: '5w', color: 'rgb(194, 200, 209)' }">
+    <a-float-button @click="openCommentDrawer=true" :style="{marginTop: '25px'}" :badge="{ count: '5w', color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg viewBox="64 64 896 896" focusable="false" data-icon="message" width="1em"
              height="1em" fill="#8a919f" aria-hidden="true">
@@ -388,6 +397,18 @@ const toApply = (comment: string) => {
   <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak畅享更多权益">
     <Login/>
   </a-modal>
+  <a-drawer :width="500" title="评论9999" placement="right" :open="openCommentDrawer" @close="openCommentDrawer=false">
+    <a-comment>
+      <template #avatar>
+        <a-avatar v-if="useUser.isLogin()" :src="useUser.userinfo.avatar" alt="Han Solo"/>
+      </template>
+      <template #content>
+        <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+                      :disabled="commentValue==''" v-model:value="commentValue"
+                      @onClick="onAddComment"/>
+      </template>
+    </a-comment>
+  </a-drawer>
 </template>
 
 <style scoped>
