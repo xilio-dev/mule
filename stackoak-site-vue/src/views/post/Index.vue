@@ -177,16 +177,23 @@ const ontoChat = () => {
           </a-col>
         </a-row>
         <a-flex :gap="6" justify="space-around" style="margin-top: 15px;" align="center">
-          <span>63</span>
-          <span>2k</span>
-          <span>2w</span>
-          <span>300</span>
-        </a-flex>
-        <a-flex :gap="6" justify="space-around" align="center">
-          <span>文章</span>
-          <span>获赞</span>
-          <span>粉丝</span>
-          <span>收藏</span>
+          <a-flex vertical align="center">
+            <span>63</span>
+            <span>文章</span>
+          </a-flex>
+          <a-flex vertical align="center">
+            <span>63</span>
+            <span>获赞</span>
+          </a-flex>
+          <a-flex vertical align="center">
+            <span>63</span>
+            <span>粉丝</span>
+          </a-flex>
+          <a-flex vertical align="center">
+            <span>63</span>
+            <span>收藏</span>
+          </a-flex>
+
         </a-flex>
         <a-row :gutter="10" style="margin-top: 15px;text-align: center">
           <a-col :span="12">
@@ -347,7 +354,8 @@ const ontoChat = () => {
         </svg>
       </template>
     </a-float-button>
-    <a-float-button @click="openCommentDrawer=true" :style="{marginTop: '25px'}" :badge="{ count: '5w', color: 'rgb(194, 200, 209)' }">
+    <a-float-button @click="openCommentDrawer=true" :style="{marginTop: '25px'}"
+                    :badge="{ count: '5w', color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg viewBox="64 64 896 896" focusable="false" data-icon="message" width="1em"
              height="1em" fill="#8a919f" aria-hidden="true">
