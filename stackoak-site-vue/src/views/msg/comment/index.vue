@@ -2,10 +2,12 @@
 
 import {DislikeFilled, DislikeOutlined, LikeFilled, LikeOutlined} from "@ant-design/icons-vue";
 import CommentInput from "@/components/CommentInput/index.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import {getMessage, getUnreadCount, setAllRead} from "@/api/notify.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
 const curCommentItem = ref()/*当前打开的评论项*/
+const messages = ref([])
 const commentBody = ref({
   commentId: '',
   content: ''
@@ -17,17 +19,34 @@ const commentBody = ref({
 
 
 /*------------------------------------初始化---------------------------------------------*/
+onMounted(() => {
+  //先加载评论消息
+  loadCommentMessages()
 
-
+})
 
 
 /*------------------------------------数据加载--------------------------------------------*/
-
-
+//加载评论消息
+const loadCommentMessages = () => {
+  getMessage({pageQuery: {current: 1, size: 10}, type: 1}).then((res) => {
+    messages.value = res.records || []
+    //设置所有消息为已读
+    onSetAllRead()
+  })
+}
 
 /*------------------------------------核心业务--------------------------------------------*/
+//设置所有评论消息为已读状态
+const onSetAllRead = () => {
+  const first = messages.value[0]
+  if (!first) {
+    return;
+  }
+  setAllRead({latestId: first.id, type: 1}).then((res) => {
 
-
+  })
+}
 
 
 /*-------------------------------------其他函数-------------------------------------------*/
@@ -110,13 +129,13 @@ const toggleReply = (item: any) => {
         不太懂啊，老哥，可以帮忙一下吗
       </p>
 
-      <CommentInput   v-if="item.isOpen" class="comment-container" placeholder="说点什么吧"
-                      ref="commentInputRef"
-                      :disabled="commentBody.content==''" v-model:value="commentBody.content"/>
+      <CommentInput v-if="item.isOpen" class="comment-container" placeholder="说点什么吧"
+                    ref="commentInputRef"
+                    :disabled="commentBody.content==''" v-model:value="commentBody.content"/>
     </template>
     <template #datetime>
 
-        <span> </span>
+      <span> </span>
 
     </template>
   </a-comment>

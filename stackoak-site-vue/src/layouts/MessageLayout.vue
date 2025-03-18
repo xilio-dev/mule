@@ -1,8 +1,39 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import router from "@/router";
 import {useRoute} from "vue-router";
+import {getUnreadCount} from "@/api/notify.ts";
+/*------------------------------------变量定义------------------------------------------*/
+const unread = ref({})
 
+
+/*------------------------------------生命周期-------------------------------------------*/
+
+onMounted(()=>{
+ // loadUnReadMessageCount()
+})
+
+/*------------------------------------初始化---------------------------------------------*/
+
+
+
+
+/*------------------------------------数据加载--------------------------------------------*/
+const loadUnReadMessageCount = async () => {
+  const res = await getUnreadCount();
+  if (res) {
+    unread.value = res || {}
+  }
+}
+
+
+
+/*------------------------------------核心业务--------------------------------------------*/
+
+
+
+
+/*-------------------------------------其他函数-------------------------------------------*/
 const route = useRoute();
 
 const tabClick = (key: string) => {
