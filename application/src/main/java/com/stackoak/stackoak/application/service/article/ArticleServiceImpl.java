@@ -2,7 +2,6 @@ package com.stackoak.stackoak.application.service.article;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserConfigService;
 import com.stackoak.stackoak.common.data.PageQuery;
@@ -19,13 +18,12 @@ import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.column.ArticleColumn;
 import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
-import com.stackoak.stackoak.common.data.likes.Likes;
+import com.stackoak.stackoak.common.data.likes.Like;
 import com.stackoak.stackoak.common.data.tag.Tag;
 import com.stackoak.stackoak.common.data.user.UserConfig;
 import com.stackoak.stackoak.common.message.ResultEnum;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.repository.article.ArticleMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.repository.collect.ArticleCollectMapper;
@@ -366,13 +364,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
-        Likes likes = new Likes();
+        Like likes = new Like();
         likes.setTargetId(article.getId());
         likes.setUserId(StpKit.USER.getLoginIdAsString());
         likes.setType(LikeTypeEnum.ARTICLE.getType());
         if (op == 1) {
             //判断是否已经点过赞了，不能重复点赞
-            Likes like = likesService.getLike(StpKit.USER.getLoginIdAsString(), article.getId(), LikeTypeEnum.ARTICLE);
+            Like like = likesService.getLike(StpKit.USER.getLoginIdAsString(), article.getId(), LikeTypeEnum.ARTICLE);
             if (!ObjectUtils.isEmpty(like)) {
                 throw new BizException("不能重复点赞！");
             }

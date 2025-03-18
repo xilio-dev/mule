@@ -1,7 +1,12 @@
 package com.stackoak.stackoak.repository.comment;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.common.data.comment.Comment;
+import com.stackoak.stackoak.common.data.comment.CommentDTO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 
 /**
@@ -14,5 +19,6 @@ import com.stackoak.stackoak.common.data.comment.Comment;
  */
 public interface CommentMapper extends BaseMapper<Comment> {
 
+    List<CommentDTO> selectCommentByAid(@Param("page") Page<CommentDTO>page, @Param("aid") String aid, @Param("userId") String userId);
 }
 

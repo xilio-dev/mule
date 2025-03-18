@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.application.controller.portal;
 
+import com.stackoak.stackoak.application.actors.limit.RateLimit;
 import com.stackoak.stackoak.application.actors.repeat.RepeatSubmit;
 import com.stackoak.stackoak.application.service.comment.ICommentsService;
 import com.stackoak.stackoak.common.data.article.Article;
@@ -40,12 +41,15 @@ public class PortalCommentsApi {
     }
 
     @PutMapping(value = "undigg", name = "取消评论点赞")
-    public Result unDigg(CommentId commentId) {
+    @RepeatSubmit(expireTime = 3)
+    @RateLimit
+    public Result unDigg(@RequestBody CommentId commentId) {
         commentsService.cancelDigg(commentId);
         return Result.success();
     }
 
     @PostMapping(value = "add", name = "添加评论")
+    @RateLimit
     @RepeatSubmit(expireTime = 3)
     public Result add(@RequestBody @Valid CommentRequest commentRequest) {
         commentsService.addComment(commentRequest);

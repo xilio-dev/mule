@@ -2,4 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.stackoak.stackoak.repository.comment.CommentMapper">
 
+    <select id="selectCommentByAid" resultType="com.stackoak.stackoak.common.data.comment.CommentDTO">
+        SELECT
+            c.id,
+            c.article_id AS articleId,
+            c.user_id AS userId,
+            c.pid,
+            c.content,
+            c.created_at AS createdAt,
+            c.updated_at AS updatedAt,
+            c.like_count AS likeCount,
+            c.status,
+            CASE
+                WHEN #{userId} IS NULL THEN NULL
+                ELSE IF(l.target_id IS NOT NULL, 1, 0)
+                END AS liked
+        FROM comment c
+                 LEFT JOIN likes l
+                           ON l.target_id = c.id
+                               AND l.user_id = #{userId}
+                               AND l.type = 2
+        WHERE
+            c.article_id = #{aid}
+          AND c.status = 1
+    </select>
 </mapper>

@@ -2,13 +2,13 @@ package com.stackoak.stackoak.application.service.comment;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.gson.Gson;
 import com.stackoak.stackoak.application.actors.mq.DelayedMessage;
 import com.stackoak.stackoak.application.actors.mq.DelayedMessageService;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
-import com.stackoak.stackoak.application.actors.mq.RedisStreamUtil;
 import com.stackoak.stackoak.application.service.article.IArticleService;
 import com.stackoak.stackoak.application.service.like.ILikesService;
 import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
@@ -17,7 +17,7 @@ import com.stackoak.stackoak.application.service.user.IUserService;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.comment.*;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
-import com.stackoak.stackoak.common.data.likes.Likes;
+import com.stackoak.stackoak.common.data.likes.Like;
 import com.stackoak.stackoak.common.data.notification.Notification;
 import com.stackoak.stackoak.common.data.notification.NotificationSetting;
 import com.stackoak.stackoak.common.data.notification.NotificationType;
@@ -31,8 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,9 +80,10 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
      */
     @Override
     public List<CommentDTO> getCommentByAid(String aid) {
-        LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Comment::getArticleId, aid);
-        List<Comment> comments = list(wrapper);
+        String userId = StpKit.USER.getLoginIdAsString();
+        Page<CommentDTO> page = Page.of(1, 100);
+        List<CommentDTO> comments = baseMapper.selectCommentByAid(page, aid, userId);
+
         //转化为二级评论树 三级回复二级转化为 “三级以及以后评论用户” 回复 “二级评论用户”
         return tran2LevelTree(comments);
     }
@@ -198,7 +197,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
      *
      * @param commentId。父评论编号
      */
-    private void removeByCommentPid(String  commentId) {
+    private void removeByCommentPid(String commentId) {
         LambdaQueryWrapper<Comment> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Comment::getPid, commentId);
         remove(wrapper);
@@ -219,27 +218,21 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         return getOne(wrapper);
     }
 
-    private List<CommentDTO> tran2LevelTree(List<Comment> comments) {
+    private List<CommentDTO> tran2LevelTree(List<CommentDTO> comments) {
         Map<String, CommentDTO> commentMap = new HashMap<>();
         List<CommentDTO> result = new ArrayList<>();
 
         // 第一次遍历：将所有评论存入 Map，并记录 pid
-        for (Comment comment : comments) {
-            CommentDTO dto = new CommentDTO();
-            dto.setId(comment.getId());
-            dto.setContent(comment.getContent());
-            dto.setLikeCount(comment.getLikeCount());
-            dto.setLiked(0); // 默认未点赞
-            dto.setCreatedAt(comment.getCreatedAt()); // 格式化时间
-            dto.setUser(getUserDTO(comment.getUserId())); // 设置评论用户
-            dto.setUserId(comment.getUserId());
+        for (CommentDTO dto : comments) {
+            dto.setUser(getUserDTO(dto.getUserId())); // 设置评论用户
+            dto.setUserId(dto.getUserId());
             dto.setToUser(null); // 默认没有回复对象
             dto.setReplies(new ArrayList<>()); // 初始化子评论列表
-            commentMap.put(comment.getId(), dto);
+            commentMap.put(dto.getId(), dto);
         }
 
         // 第二次遍历：构建树形结构
-        for (Comment comment : comments) {
+        for (CommentDTO comment : comments) {
             if ("0".equalsIgnoreCase(comment.getPid())) {
                 // 一级评论，直接添加到结果列表
                 result.add(commentMap.get(comment.getId()));
@@ -260,9 +253,9 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
     }
 
     // 查找一级父评论
-    private CommentDTO findTopLevelParent(Map<String, CommentDTO> commentMap, List<Comment> comments, String pid) {
+    private CommentDTO findTopLevelParent(Map<String, CommentDTO> commentMap, List<CommentDTO> comments, String pid) {
         // 根据 pid 找到对应的 Comment
-        Comment parentComment = comments.stream()
+        CommentDTO parentComment = comments.stream()
                 .filter(c -> c.getId().equals(pid))
                 .findFirst()
                 .orElse(null);
@@ -300,24 +293,32 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
      * @param op      操作类型：1是点赞、0是取消点赞
      */
     private void diggAndUndigg(CommentId request, Integer op) {
+        String userId = StpKit.USER.getLoginIdAsString();
         //检查评论是否存在
         Comment comment = getById(request.getCommentId());
         if (ObjectUtils.isEmpty(comment)) {
             throw new BizException("评论不存在！");
         }
-        Likes likes = new Likes();
-        likes.setTargetId(comment.getId());
-        likes.setUserId("1");//todo 临时用户
-        likes.setType(LikeTypeEnum.COMMENT.getType());
+
         if (op == 1) {
             //检查是否已经点过赞了 避免重复点赞
-            Likes like = likesService.getLike("1", request.getCommentId(), LikeTypeEnum.COMMENT);
+            Like like = likesService.getLike(userId, request.getCommentId(), LikeTypeEnum.COMMENT);
             if (!ObjectUtils.isEmpty(like)) {
                 throw new BizException("已经点过赞了");
             }
-            likesService.save(likes);
+            Like newLike = new Like();
+            newLike.setTargetId(comment.getId());
+            newLike.setUserId(userId);
+            newLike.setType(LikeTypeEnum.COMMENT.getType());
+            likesService.save(newLike);
+            //todo 评论的点赞数量+1
         } else {
-            likesService.removeById(likes);
+            LambdaQueryWrapper<Like> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Like::getTargetId, comment.getId())
+                    .eq(Like::getUserId, userId)
+                    .eq(Like::getType, LikeTypeEnum.COMMENT.getType());
+            likesService.remove(wrapper);
+            //todo 评论的点赞数量-1
         }
     }
 }

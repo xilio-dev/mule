@@ -26,8 +26,8 @@ const commentInputRef = ref()
 const needVisitPass = ref(false)
 //打开登陆
 const openLoginModal = ref(false)
-//加载评论
-const comments = ref([])
+
+const comments = reactive([]);
 const commentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
 /*------------------------------------生命周期-------------------------------------------*/
@@ -61,7 +61,8 @@ async function fetchPostData() {
 const loadComments = async () => {
   if (articleInfo.value) {
     const res = await commentList({aid: articleInfo.value.id})
-    comments.value = res || []
+   // res ? Object.assign(comments, res) : comments
+    comments.splice(0, comments.length, ...(res ?? []));
   }
 }
 
@@ -96,11 +97,15 @@ const onDeleteComment = (commentId: string) => {
 //评论点赞/取消点赞
 const onDiggComment = (comment: any) => {
   if (comment.liked === 1) {
-    comment.liked = 1
-    unDiggComment({commentId: comment.id})
+    unDiggComment({commentId: comment.id}).then(res => {
+      comment['liked'] = 0
+      message.info("取消点赞")
+    })
   } else {
-    comment.liked = 0
-    diggComment({commentId: comment.id})
+    diggComment({commentId: comment.id}).then(res => {
+      comment['liked'] = 1
+      message.success("点赞")
+    })
   }
 }
 
@@ -296,10 +301,9 @@ const ontoChat = () => {
           <a-comment
               v-for="reply in comment.replies"
               :key="reply.id"
-              class="reply-item"
-          >
+              class="reply-item">
             <template #actions>
-              <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
+              <span :style="{color:reply.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
               <span @click="toApply(reply)">回复</span>
               <a-popconfirm
                   title="您确定删除该条评论?"

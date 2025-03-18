@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.common.data.comment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.stackoak.stackoak.common.data.article.UserInteractDTO;
 import com.stackoak.stackoak.common.data.user.UserDTO;
 import lombok.Data;
 
@@ -14,6 +15,10 @@ public class CommentDTO implements Serializable {
      * 评论ID，主键
      */
     private String id;
+    /**
+     * 评论父ID
+     */
+    private String pid;
     /**
      * 文章ID，逻辑关联posts表
      */
@@ -44,7 +49,7 @@ public class CommentDTO implements Serializable {
      */
     private Integer likeCount;
     /**
-     * 是否点赞（0：未点赞，1：已点赞）
+     * 当前用户是否点赞（0：未点赞，1：已点赞）
      */
     private Integer liked;
     /**
@@ -55,5 +60,9 @@ public class CommentDTO implements Serializable {
      * 被回复的用户
      */
     private UserDTO toUser;
+    /**
+     * 当前评论是否是作者发的
+     */
+    private Boolean isAuthor;
 
 }
