@@ -301,10 +301,6 @@ const items1 = ref<MenuProps['items']>([
     key: '/',
     label: '首页',
   },
-  {
-    key: '/rank',
-    label: '排行榜',
-  },
 ]);
 
 const openKeys = ref<string[]>(['sub1']);

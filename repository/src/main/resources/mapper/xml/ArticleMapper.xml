@@ -133,4 +133,13 @@
         WHERE ac.column_id = #{cid}
         order by a.create_time desc
     </select>
+    <select id="selectFollowList" resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
+        select a.*
+        from article a
+                 inner join follows f on f.target_user_id = a.user_id
+        where f.user_id = #{userId}
+          and publish_status = 1
+          and visible_status!=2
+        order by create_time desc
+    </select>
 </mapper>

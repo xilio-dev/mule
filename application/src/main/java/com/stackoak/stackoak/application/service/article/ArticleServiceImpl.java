@@ -505,4 +505,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         PageQuery pageQuery = query.pageQuery();
         return baseMapper.selectByColumn(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), query.cid());
     }
+
+    @Override
+    public Page<ArticleBriefVO> followList( PageQuery query) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        return  baseMapper.selectFollowList(Page.of(query.getCurrent(), query.getSize()),userId);
+    }
 }

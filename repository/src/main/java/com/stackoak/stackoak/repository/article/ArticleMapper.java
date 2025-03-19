@@ -32,5 +32,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
     Page<Article> selectByCategory(@Param("page") Page<Article> page, @Param("cid") String cid);
 
     Page<Article> selectByColumn(@Param("page") Page<Article> page, @Param("cid") String cid);
+
+
+    Page<ArticleBriefVO> selectFollowList(@Param("page") Page<ArticleBriefVO> page,@Param("userId") String userId);
 }
 

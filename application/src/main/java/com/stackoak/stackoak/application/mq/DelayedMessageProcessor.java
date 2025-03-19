@@ -14,7 +14,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
-@Service
+//@Service
 public class DelayedMessageProcessor {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

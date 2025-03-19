@@ -22,7 +22,7 @@
       </div>
       <div class="analyze-item">
         <a-flex vertical gap="4" align="center">
-          <span>收藏数量</span>
+          <span>被收藏数</span>
           <span>{{userinfo.gotCollectCount}}</span>
         </a-flex>
       </div>
@@ -34,7 +34,7 @@
       </div>
       <div class="analyze-item">
         <a-flex vertical gap="4" align="center">
-          <span>点赞数量</span>
+          <span>获得点赞</span>
           <span>{{userinfo.likeArticleCount}}</span>
         </a-flex>
       </div>
