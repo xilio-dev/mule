@@ -33,7 +33,7 @@ public class User implements Serializable {
     /**
      * 用户ID
      */
-    @TableId(value = "id",type = IdType.ASSIGN_UUID)
+    @TableId(value = "id", type = IdType.ASSIGN_UUID)
     private String id;
 
     /**
@@ -138,6 +138,16 @@ public class User implements Serializable {
     @TableField("got_like_count")
     private Integer gotLikeCount;
 
+    /**
+     * 被收藏数
+     */
+    @TableField("got_collect_count")
+    private Integer gotCollectCount;
+    /**
+     * 被评论数量
+     */
+    @TableField("got_comment_count")
+    private Integer gotCommentCount;
     /**
      * 获得查看数
      */

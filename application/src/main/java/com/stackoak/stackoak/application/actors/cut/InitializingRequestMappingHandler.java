@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//@Configuration
+@Configuration
 public class InitializingRequestMappingHandler implements InitializingBean {
 
     @Autowired

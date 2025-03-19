@@ -6,13 +6,44 @@
         <a-button type="primary">去创作</a-button>
       </RouterLink>
     </template>
+
     <div class="analyze-container">
-      <div class="analyze-item">点赞数量</div>
-      <div class="analyze-item">今日访问量</div>
-      <div class="analyze-item">粉丝新增</div>
-      <div class="analyze-item">收藏数量</div>
-      <div class="analyze-item">评论数量</div>
-      <div class="analyze-item">点赞量</div>
+      <div class="analyze-item">
+        <a-flex vertical gap="4" align="center">
+          <span>阅读数量</span>
+          <span>{{userinfo.gotViewCount}}</span>
+        </a-flex>
+      </div>
+      <div class="analyze-item">
+        <a-flex vertical gap="4" align="center">
+          <span>粉丝总数</span>
+          <span>{{userinfo.fansCount}}</span>
+        </a-flex>
+      </div>
+      <div class="analyze-item">
+        <a-flex vertical gap="4" align="center">
+          <span>收藏数量</span>
+          <span>{{userinfo.gotCollectCount}}</span>
+        </a-flex>
+      </div>
+      <div class="analyze-item">
+        <a-flex vertical gap="4" align="center">
+          <span>文章数量</span>
+          <span>{{userinfo.articleCount}}</span>
+        </a-flex>
+      </div>
+      <div class="analyze-item">
+        <a-flex vertical gap="4" align="center">
+          <span>点赞数量</span>
+          <span>{{userinfo.likeArticleCount}}</span>
+        </a-flex>
+      </div>
+      <div class="analyze-item">
+        <a-flex vertical gap="4" align="center">
+          <span>关注数量</span>
+          <span>{{userinfo.followCount}}</span>
+        </a-flex>
+      </div>
     </div>
   </a-card>
   <a-card :bordered="false" title="近期文章" style="margin-top: 20px;box-shadow: none">
@@ -72,12 +103,15 @@ import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue
 import {DownOutlined} from '@ant-design/icons-vue';
 import {onMounted} from 'vue';
 import {articleList, deleteArticle} from "@/api/post.ts";
+import {getUserInfo} from "@/api/user.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
 const data = ref([]);
+const userinfo = ref({})
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
+  loadUserInfo()
   //加载近期文章
   loadRecentArticle()
 });
@@ -113,6 +147,10 @@ const onLoadMore = async () => {
     console.error('加载更多数据失败:', error);
   }
 };
+const loadUserInfo = async () => {
+  const res = await getUserInfo()
+  res ? userinfo.value = res : {}
+}
 /*------------------------------------核心业务--------------------------------------------*/
 //删除近期文章
 const onRemoveRecentArticle = (id: string) => {
