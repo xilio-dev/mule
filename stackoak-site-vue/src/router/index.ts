@@ -9,7 +9,7 @@ const router = createRouter({
             name: 'Home',
             component: () => import('@/views/HomeView.vue'),
         },
-   
+
         {
             path: '/login',
             name: 'Login',
@@ -63,11 +63,6 @@ const router = createRouter({
                     path: 'content/article',
                     name: 'ContentArticle',
                     component: () => import('@/views/creator/content/article/index.vue'),
-                },
-                {
-                    path: 'content/opensource',
-                    name: 'ContentOpensource',
-                    component: () => import('@/views/creator/content/opensource/index.vue'),
                 },
                 {
                     path: 'content/column',

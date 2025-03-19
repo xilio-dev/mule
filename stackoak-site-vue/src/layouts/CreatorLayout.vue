@@ -78,7 +78,6 @@ const items: ItemType[] = reactive([
   },
   getItem('内容管理', 'content', () => h(MailOutlined), [
     getItem('文章管理', 'article', null),
-    getItem('我的开源', 'opensource', null),
     getItem('合集管理', 'column', null),
     getItem('评论管理', 'comment', null),
   ]),
@@ -89,7 +88,6 @@ const items: ItemType[] = reactive([
   ]),
   getItem('创作工具', 'tool', () => h(AppstoreOutlined), [
     getItem('图片素材', 'images'),
-    getItem('数据导出', 'export'),
   ]),
   getItem('个性设置', 'setting', () => h(SettingOutlined), [
     getItem('博客设置', 'config-blog'),
