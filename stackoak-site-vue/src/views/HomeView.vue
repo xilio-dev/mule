@@ -1,6 +1,6 @@
 <template>
 
-  <a-row :gutter="15"  >
+  <a-row :gutter="15">
     <a-col :span="3" class="index-nav index-nav-top  ">
       <a-affix offset-bottom="bottom" :offset-top="59">
         <a-menu
@@ -61,7 +61,11 @@
       <a-card style="margin-top: 8px;box-shadow: none " class="index-article-card" :bordered="false">
         <a-tabs v-model:activeKey="activeKey" @tabClick="onTabClick">
           <a-tab-pane key="1" tab="关注">
-
+            <a-button v-if="!userStore.isLogin()">
+              登陆后可看
+            </a-button>
+            <ArticleList v-else-if="userStore.isLogin()&&authorArticles.length>0" :article-list="authorArticles"/>
+            <a-empty v-else/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="推荐" force-render>
             <ArticleList :article-list="articles"/>
@@ -243,16 +247,17 @@ import {ref, reactive, watch} from 'vue';
 import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {type ItemType, type MenuProps, message} from "ant-design-vue";
 import {categoryList, twoLevelCategoryTree} from "@/api/category.ts";
-import {articleList} from "@/api/post.ts";
+import {articleList, getFollowAuthorArticles} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
 import {useUserStore} from '@/store';
 /*------------------------------------变量定义------------------------------------------*/
 
 const categoryTree = ref([])
-
+const authorArticles = reactive([])
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
   loadTwoLevelCategoryTree()
+  loadFollowAuthorArticles()
 })
 
 
@@ -262,8 +267,17 @@ onMounted(() => {
 /*------------------------------------数据加载--------------------------------------------*/
 const loadTwoLevelCategoryTree = () => {
   twoLevelCategoryTree().then(res => {
+    //@ts-ignore
     categoryTree.value = res
   })
+}
+//加载用户关注作者的文章
+const loadFollowAuthorArticles = async () => {
+  if (userStore.isLogin()) {
+    const res = await getFollowAuthorArticles(queryParam.value)
+    //@ts-ignore
+    res ? authorArticles.splice(0, authorArticles.length, ...(res.records ?? [])) : []
+  }
 }
 
 

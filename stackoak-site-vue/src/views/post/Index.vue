@@ -21,7 +21,9 @@ const userInfo = ref({})
 const tags = ref({})
 const category = ref({})
 const userInteract = ref({})
-const config = ref({})
+const config = ref({
+
+})
 const commentInputRef = ref()
 const needVisitPass = ref(false)
 //打开登陆
@@ -61,7 +63,7 @@ async function fetchPostData() {
 const loadComments = async () => {
   if (articleInfo.value) {
     const res = await commentList({aid: articleInfo.value.id})
-   // res ? Object.assign(comments, res) : comments
+    // res ? Object.assign(comments, res) : comments
     comments.splice(0, comments.length, ...(res ?? []));
   }
 }
@@ -237,6 +239,7 @@ const ontoChat = () => {
                     v-if="useUser.isLogin()&&userInfo.userId==useUser.userinfo.userId">编辑
           </a-button>
         </a-flex>
+        <!--    文章Markdown内容    -->
         <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="config.codeTheme" :main-theme="config.mainTheme"
                   :anchor-style="config.anchorStyle" :preview="false" :value="articleInfo.content"/>
         <a-flex justify="start" align="center" style="margin-top: 20px">

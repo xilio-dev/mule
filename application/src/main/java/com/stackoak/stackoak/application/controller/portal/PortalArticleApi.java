@@ -7,6 +7,7 @@ import com.stackoak.stackoak.application.actors.cut.FieldFilters;
 import com.stackoak.stackoak.application.actors.limit.RateLimit;
 import com.stackoak.stackoak.application.actors.recommand.BehaviorLog;
 import com.stackoak.stackoak.application.actors.recommand.BehaviorType;
+import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.article.IArticleService;
@@ -42,6 +43,7 @@ public class PortalArticleApi {
 
     @PostMapping(value = "follow_list",name = "关注作者的文章")
     @FieldFilter(type = ArticleBriefVO.class)
+    @SaUserCheckLogin
     public Result followList(@RequestBody PageQuery pageQuery) {
         return Result.success(articleService.followList(pageQuery));
     }
@@ -135,6 +137,7 @@ public class PortalArticleApi {
     public Result getCollectArticle(@RequestBody ListByUserAndCategoryQuery query) {
         return Result.success(articleService.listByUserAndCategory(query));
     }
+
     @PostMapping(value = "get-column-article", name = "获取专栏中的文章")
     public Result getColumnArticle(@RequestBody ListByUserAndCategoryQuery query) {
         return Result.success(articleService.listByUserAndColumn(query));

@@ -33,7 +33,7 @@ public class PortalUserApi {
     @GetMapping("get")
     @FieldFilter(
             type = User.class,
-            exclude = {"id", "nickname", "email", "avatar", "description"})
+            include = {"id", "nickname", "email", "avatar", "description"})
     public Result get() {
         return Result.success(userService.getCurrentUser());
     }

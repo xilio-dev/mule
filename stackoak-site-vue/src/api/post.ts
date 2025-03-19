@@ -15,6 +15,7 @@ const Api = {
     LIST_BY_USER: '/article/list_by_user',
     GET_COLLECT_ARTICLE: '/article/get-collect-article',
     GET_COLUMN_ARTICLE: '/article/get-column-article',
+    FOLLOW_LIST: '/article/follow_list',
 
 };
 
@@ -29,6 +30,7 @@ export function addArticle(article: any) {
 export function updateArticle(article: any) {
     return request.put(Api.UPDATE, article)
 }
+
 export function deleteArticle(aid: string) {
     return request.post(Api.DELETE, aid)
 }
@@ -37,6 +39,7 @@ export function deleteArticle(aid: string) {
 export function postDetail(data: any) {
     return request.post(Api.postDetail, data)
 }
+
 export function articleListByUser(query: any) {
     return request.post(Api.LIST_BY_USER, query)
 }
@@ -64,8 +67,16 @@ export function fromFavorDel(data: any) {
 export function authorArticleRank(query: any) {
     return request.post(Api.RANK_IST, query)
 }
+
 export function getCollectArticle(query: any) {
     return request.post(Api.GET_COLLECT_ARTICLE, query)
-}export function getColumnArticle(query: any) {
+}
+
+export function getColumnArticle(query: any) {
     return request.post(Api.GET_COLUMN_ARTICLE, query)
 }
+
+export function getFollowAuthorArticles(query: any) {
+    return request.post(Api.FOLLOW_LIST, query)
+}
+
