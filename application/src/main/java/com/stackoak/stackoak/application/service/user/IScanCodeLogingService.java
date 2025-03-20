@@ -22,7 +22,7 @@ public interface IScanCodeLogingService {
 
     Object confirmLogin(Map<String, Object> params);
 
-    Object setStatus(Map<String, Object> params);
+    Object setStatus(String qrInfo);
 
     Object qrCode(Map<String, Object> params);
 }

@@ -31,9 +31,9 @@ public class ScanLoginApi {
     }
 
     @PostMapping(value = "setStatus", name = "设置状态")
-    public Result setStatus(@RequestBody Map<String, Object> params) {
-        scanCodeService.setStatus(params);
-        return Result.success();
+    public Result setStatus(@RequestParam String qrInfo) {
+
+        return Result.success(scanCodeService.setStatus(qrInfo));
     }
 
     @PostMapping(value = "confirm_login", name = "APP确认登陆")

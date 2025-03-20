@@ -15,7 +15,7 @@ export function emailLogin(emailLoginDTO: any) {
 }
 // 导出一个函数，用于邮箱验证码登录
 export function emailCodeLogin(emailCodeLogin: any) {
-    // 发送post请求，请求地址为Api.emailCodeLogin，请求参数为emailCodeLogin
+
     return request.post(Api.emailCodeLogin, emailCodeLogin)
 }
 export function sendLogout() {
@@ -23,19 +23,19 @@ export function sendLogout() {
 }
 // 导出一个函数，用于修改邮箱绑定
 export function changeEmailBind(data: any) {
-    // 发送put请求，修改邮箱绑定
+
     return request.put(Api.CHANGE_EMAIL_BIND, data)
 }
 export function getQrCode() {
-    // 发送put请求，修改邮箱绑定
+
     return request.get(Api.GET_QR_CODE)
 }
 export function checkScanStatus(param:any) {
-    // 发送put请求，修改邮箱绑定
+
     return request.post(Api.CHECK_STATUS,param)
 }
 export function qrLogin(param:any) {
-    // 发送put请求，修改邮箱绑定
+
     return request.post(Api.QR_LOGIN,param)
 }
 

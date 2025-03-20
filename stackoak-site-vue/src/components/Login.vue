@@ -79,17 +79,20 @@ const checkLoginStatus = () => {
   if (!props.openStatus)return
   scanStatusJob.value = setInterval(() => {
     checkScanStatus({sign: qrCode.value.sign}).then(res => {
-      if (res == "PENDING") {
+      if (res.status == "PENDING") {
 
       }
-      if (res == "SCANNED") {
+      if (res.status == "SCANNED") {
         message.info('已经扫描二维码')
       }
 
-      if (res == "CONFIRMED") {
+      if (res.status == "CONFIRMED") {
+        const secrit=res.secrit
         //调用接口登陆
-        qrLogin({}).then(res => {
+        qrLogin({secrit:secrit}).then(rsp => {
+
           message.info('登陆成功')
+          message.info(JSON.stringify(rsp))
           window.location.href = '/';
         }).catch(e => {
           message.error('登陆失败')
@@ -258,9 +261,14 @@ defineExpose({clear})
     <a-col :span="10" class="row-with-line">
       <h3 style="margin-bottom: 15px;">APP扫码登陆</h3>
       <a-qrcode
+
           error-level="H"
-          :value="'http://'+qrCode.imgUrl"
-      />
+          :value="qrCode.imgUrl"
+          status="active"
+          icon="https://www.antdv.com/assets/logo.1ef800a8.svg"
+      >
+
+      </a-qrcode>
     </a-col>
   </a-row>
 </template>
