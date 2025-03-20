@@ -6,6 +6,9 @@ const Api = {
     emailCodeLogin: '/auth/emailCodeLogin',
     LOGOUT: '/auth/logout',
     CHANGE_EMAIL_BIND: '/auth/change-email-bind',
+    GET_QR_CODE: '/scan/get_qr_code',
+    CHECK_STATUS: '/scan/check_status',
+    QR_LOGIN: '/scan/qr_login',
 };
 export function emailLogin(emailLoginDTO: any) {
     return request.post(Api.emailLogin, emailLoginDTO)
@@ -23,5 +26,20 @@ export function changeEmailBind(data: any) {
     // 发送put请求，修改邮箱绑定
     return request.put(Api.CHANGE_EMAIL_BIND, data)
 }
+export function getQrCode() {
+    // 发送put请求，修改邮箱绑定
+    return request.get(Api.GET_QR_CODE)
+}
+export function checkScanStatus(param:any) {
+    // 发送put请求，修改邮箱绑定
+    return request.post(Api.CHECK_STATUS,param)
+}
+export function qrLogin(param:any) {
+    // 发送put请求，修改邮箱绑定
+    return request.post(Api.QR_LOGIN,param)
+}
+
+
+
 
 

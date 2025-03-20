@@ -14,6 +14,13 @@
 
     </properties>
     <dependencies>
+
+            <dependency>
+                <groupId>net.glxn</groupId>
+                <artifactId>qrgen</artifactId>
+                <version>1.4</version>
+            </dependency>
+
         <dependency>
             <groupId>io.minio</groupId>
             <artifactId>minio</artifactId>

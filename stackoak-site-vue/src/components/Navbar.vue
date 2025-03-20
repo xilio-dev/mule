@@ -93,8 +93,8 @@
         </a-popover>
       </div>
     </a-col>
-    <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak开始您的创作">
-      <Login/>
+    <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak" @cancel="closeLoginModel">
+      <Login :openStatus="openLoginModal" ref="loginPageRef"/>
     </a-modal>
   </a-row>
 </template>
@@ -104,7 +104,7 @@ import {reactive} from 'vue';
 import {useUserStore} from '@/store';
 /*------------------------------------变量定义------------------------------------------*/
 
-
+const loginPageRef=ref()
 
 /*------------------------------------生命周期-------------------------------------------*/
 
@@ -131,16 +131,16 @@ const loadUnReadMessageCount = async () => {
 
 
 /*-------------------------------------其他函数-------------------------------------------*/
+const closeLoginModel=()=>{
+  openLoginModal.value=false
+  if (loginPageRef.value) {
+    loginPageRef.value.clear()
+  }
+}
 const isLogin = ref(false)
 const userStore = useUserStore()
 
-const no_read_msg = reactive({
-  likeMsg: [],
-  collectMsg: [],
-  commentMsg: [],
-  attention: [],
-  systemMsg: []
-})
+
 const unread = ref({})
 
 const messages = ref([]);
@@ -185,26 +185,7 @@ interface EmailLoginDTO {
   password: string;
 }
 
-const emailLoginDTO = reactive<EmailLoginDTO>({
-  email: 'StackOak@163.com',
-  password: '123456',
-});
-const onEmailLoginFinish = (values: EmailLoginDTO) => {
-  console.log(values)
-  emailLogin(values)
-      .then(res => {
-        userStore.setToken(res.data.token);
-        // 获取用户信息
-        return getUserInfo();
-      })
-      .then(res => {
-        userStore.setUserInfo(res.data);
-        window.location.href = '/';
-      })
-      .catch(error => {
-        console.error('登录失败:', error);
-      });
-};
+
 
 //退出登陆
 const logout = () => {
@@ -223,15 +204,7 @@ const emailRegisterDTO = reactive<EmailRegisterDTO>({
   email: 'StackOak@163.com',
   code: 123456,
 });
-const onEmailRegisterFinish = (values: EmailLoginDTO) => {
-  emailCodeLogin(values).then(res => {
-    if (res.data) {
 
-    }
-    message.success("登陆成功");
-    window.location.href = '/'
-  })
-}
 //获取邮箱验证码
 const sendEmailCode = () => {
   if (emailRegisterDTO.email === '') {
@@ -271,8 +244,6 @@ onMounted(() => {
 import {ref, watch} from 'vue';
 import router from "@/router";
 import {type MenuProps, message, notification} from "ant-design-vue";
-import {emailCodeLogin, emailLogin} from "@/api/auth.ts";
-import {getUserInfo} from "@/api/user.ts";
 import {sendEmail} from "@/api/email.ts";
 import Login from "@/components/Login.vue";
 import {getUnreadCount} from "@/api/notify.ts";
@@ -291,11 +262,7 @@ for (let i = 0; i < 23; i++) {
         'We s ypes beautifully and efficiently.',
   });
 }
-
-
 const current = ref<string[]>(['mail']);
-
-
 const items1 = ref<MenuProps['items']>([
   {
     key: '/',
@@ -311,46 +278,6 @@ watch(openKeys, val => {
 const handleClick: MenuProps['onClick'] = menuInfo => {
   router.push({path: menuInfo.key})
 };
-//三方登陆授权
-const onAuth = (type: string) => {
-  if (type === 'gitee') {
-    window.open('https://gitee.com/oauth/authorize?client_id=e6fa7f51960698ac3216d31543f73b1e83fae27296828d823525ff78f7c45c3c&redirect_uri=http://localhost:9856/login&response_type=code', '_blank')
-  }
-}
-
-//获取邮箱验证码
-
-//验证码样式
-// 动态样式
-const buttonStyle = ref({
-  color: '#1e80ff', // 初始颜色为蓝色
-  cursor: 'pointer',
-});
-
-const countdownStyle = ref({
-  color: '#000', // 倒计时状态为黑色
-  cursor: 'default',
-  textDecoration: 'none'
-});
-//倒计时实现
-const countdown = ref(0); // 倒计时秒数
-const countdownInterval = ref(); // 定时器引用
-// 开始倒计时
-function startCountdown() {
-  // 如果已经在倒计时，直接返回
-  if (countdown.value > 0) return;
-  //发送验证码
-  sendEmailCode();
-  countdown.value = 60; // 设置倒计时为60秒
-  countdownInterval.value = setInterval(() => {
-    countdown.value -= 1; // 每秒减1
-    if (countdown.value <= 0) {
-      clearInterval(countdownInterval.value); // 倒计时结束，清除定时器
-      countdown.value = 0; // 重置倒计时
-    }
-  }, 1000);
-}
-
 //如果用户已登陆则打开消息界面
 const onOpenMsg = () => {
   if (!userStore.isLogin()) {
@@ -372,23 +299,6 @@ const onOpenMsg = () => {
   border-bottom: none;
   box-shadow: none;
 }
-
-/*添加竖线*/
-.row-with-line {
-  position: relative; /* 确保伪元素相对于该元素定位 */
-}
-
-/*添加竖线*/
-.row-with-line::before {
-  content: ""; /* 伪元素必须有 content 属性 */
-  position: absolute; /* 绝对定位 */
-  top: 0; /* 竖线从顶部开始 */
-  bottom: 0; /* 竖线到底部结束 */
-  left: 0; /* 竖线在左边 */
-  width: 1px; /* 竖线的宽度 */
-  background-color: #ede8e8; /* 竖线的颜色，可以根据需要修改 */
-}
-
 /*输入框颜色*/
 :deep(.ant-input-group .ant-input-group-addon) {
   cursor: pointer;

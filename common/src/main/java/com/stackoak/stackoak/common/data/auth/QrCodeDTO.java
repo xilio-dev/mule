@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 @Data
-public class ScanCodeDTO implements Serializable {
+public class QrCodeDTO implements Serializable {
     private String imgUrl;
     private String sign;
 }

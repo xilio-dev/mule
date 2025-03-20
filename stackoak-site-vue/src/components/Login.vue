@@ -1,43 +1,38 @@
 <script setup lang="ts">
-import {onMounted, nextTick, ref} from 'vue';
+import {onMounted, nextTick, ref, onBeforeUnmount, onUnmounted} from 'vue';
 import {reactive} from 'vue';
-import {useUserStore } from '@/store';
-
+import {useUserStore} from '@/store';
+import {type MenuProps, message} from "ant-design-vue";
+import {checkScanStatus, emailCodeLogin, emailLogin, getQrCode, qrLogin} from "@/api/auth.ts";
+import {getUserInfo} from "@/api/user.ts";
+import {sendEmail} from "@/api/email.ts";
+/*------------------------------------变量定义------------------------------------------*/
+const props=defineProps(['openStatus'])
+const qrCode = ref({})
+const scanStatusJob = ref()
 const isLogin = ref(false)
 const userStore = useUserStore()
-
+//倒计时实现
+const countdown = ref(0); // 倒计时秒数
+const countdownInterval = ref(); // 定时器引用
+//三方登陆
+const activeKey = ref('1');
+/*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
+  loadLoginQrCode()
   if (userStore.isLogin()) {
     isLogin.value = true
   }
+  checkLoginStatus()
 })
-//邮箱账号-密码登陆
-interface EmailLoginDTO {
-  email: string;
-  password: string;
-}
+onBeforeUnmount(() => {
+  clearInterval(scanStatusJob.value)/*清除定时器*/
+})
+onUnmounted(() => {
+  clearInterval(scanStatusJob.value)
+})
 
-const emailLoginDTO = reactive<EmailLoginDTO>({
-  email: 'StackOak@163.com',
-  password: '123456',
-});
-const onEmailLoginFinish = (values: EmailLoginDTO) => {
-  console.log(values)
-  emailLogin(values)
-      .then(res => {
-        userStore.setToken(res.tokenValue);
-        // 获取用户信息
-        return getUserInfo();
-      })
-      .then(user => {
-        userStore.setUserInfo({...user,userId:user.id});
-        window.location.href = '/';
-      })
-      .catch(error => {
-        console.error('登录失败:', error);
-      });
-};
-//注册
+/*------------------------------------初始化---------------------------------------------*/
 //邮箱账号-密码登陆
 interface EmailRegisterDTO {
   email: string;
@@ -48,6 +43,81 @@ const emailRegisterDTO = reactive<EmailRegisterDTO>({
   email: '',
   code: '',
 });
+//验证码样式
+// 动态样式
+const buttonStyle = ref({
+  color: '#1e80ff', // 初始颜色为蓝色
+  cursor: 'pointer',
+});
+
+const countdownStyle = ref({
+  color: '#000', // 倒计时状态为黑色
+  cursor: 'default',
+  textDecoration: 'none'
+});
+
+//邮箱账号-密码登陆
+interface EmailLoginDTO {
+  email: string;
+  password: string;
+}
+
+const emailLoginDTO = reactive<EmailLoginDTO>({
+  email: 'StackOak@163.com',
+  password: '123456',
+});
+
+/*------------------------------------数据加载--------------------------------------------*/
+const loadLoginQrCode = async () => {
+  const res = await getQrCode()
+  res ? qrCode.value = res : {}
+}
+
+
+/*------------------------------------核心业务--------------------------------------------*/
+const checkLoginStatus = () => {
+  if (!props.openStatus)return
+  scanStatusJob.value = setInterval(() => {
+    checkScanStatus({sign: qrCode.value.sign}).then(res => {
+      if (res == "PENDING") {
+
+      }
+      if (res == "SCANNED") {
+        message.info('已经扫描二维码')
+      }
+
+      if (res == "CONFIRMED") {
+        //调用接口登陆
+        qrLogin({}).then(res => {
+          message.info('登陆成功')
+          window.location.href = '/';
+        }).catch(e => {
+          message.error('登陆失败')
+        })
+        clearInterval(scanStatusJob.value)
+      }
+    })
+
+  }, 2000);
+}
+const onEmailLoginFinish = (values: EmailLoginDTO) => {
+  console.log(values)
+  emailLogin(values)
+      .then(res => {
+        userStore.setToken(res.tokenValue);
+        // 获取用户信息
+        return getUserInfo();
+      })
+      .then(user => {
+        userStore.setUserInfo({...user, userId: user.id});
+        window.location.href = '/';
+      })
+      .catch(error => {
+        console.error('登录失败:', error);
+      });
+};
+//注册
+
 const onEmailRegisterFinish = (values: EmailLoginDTO) => {
   emailCodeLogin(values).then(res => {
     if (res) {
@@ -71,42 +141,8 @@ const sendEmailCode = () => {
   sendEmail(emailRegisterDTO.email)
   message.success('验证码已发送！');
 }
-//三方登陆
-const activeKey = ref('1');
-
-
-import {type MenuProps, message} from "ant-design-vue";
-import {emailCodeLogin, emailLogin} from "@/api/auth.ts";
-import {getUserInfo} from "@/api/user.ts";
-import {sendEmail} from "@/api/email.ts";
-
-
-//三方登陆授权
-const onAuth = (type: string) => {
-  if (type === 'gitee') {
-    window.open('https://gitee.com/oauth/authorize?client_id=e6fa7f51960698ac3216d31543f73b1e83fae27296828d823525ff78f7c45c3c&redirect_uri=http://localhost:9856/auth/login&response_type=code', '_blank')
-  }
-}
-
-//获取邮箱验证码
-
-//验证码样式
-// 动态样式
-const buttonStyle = ref({
-  color: '#1e80ff', // 初始颜色为蓝色
-  cursor: 'pointer',
-});
-
-const countdownStyle = ref({
-  color: '#000', // 倒计时状态为黑色
-  cursor: 'default',
-  textDecoration: 'none'
-});
-//倒计时实现
-const countdown = ref(0); // 倒计时秒数
-const countdownInterval = ref(null); // 定时器引用
 // 开始倒计时
-function startCountdown() {
+const startCountdown = () => {
   // 如果已经在倒计时，直接返回
   if (countdown.value > 0) return;
   //发送验证码
@@ -120,6 +156,18 @@ function startCountdown() {
     }
   }, 1000);
 }
+/*-------------------------------------其他函数-------------------------------------------*/
+//三方登陆授权
+const onAuth = (type: string) => {
+  if (type === 'gitee') {
+    window.open('https://gitee.com/oauth/authorize?client_id=e6fa7f51960698ac3216d31543f73b1e83fae27296828d823525ff78f7c45c3c&redirect_uri=http://localhost:9856/auth/login&response_type=code', '_blank')
+  }
+}
+//清空定时器 父组件调用
+const clear=()=>{
+  clearInterval(scanStatusJob.value)
+}
+defineExpose({clear})
 </script>
 
 <template>
@@ -211,8 +259,7 @@ function startCountdown() {
       <h3 style="margin-bottom: 15px;">APP扫码登陆</h3>
       <a-qrcode
           error-level="H"
-          value="https://www.antdv.com"
-          icon="https://www.antdv.com/assets/logo.1ef800a8.svg"
+          :value="'http://'+qrCode.imgUrl"
       />
     </a-col>
   </a-row>
