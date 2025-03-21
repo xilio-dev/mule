@@ -4,12 +4,11 @@ package com.stackoak.stackoak.repository.column;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.common.data.column.Column;
+import com.stackoak.stackoak.common.data.column.ColumnDetailVo;
 import com.stackoak.stackoak.common.data.user.User;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -43,5 +42,7 @@ public interface ColumnMapper extends BaseMapper<Column> {
      */
 
     Page<Column> findSubscribedColumnsByUserId(@Param("page") Page page, @Param("userId") String userId, @Param("name") String name);
+
+    ColumnDetailVo selectColumnDetailByUserId(@Param("uid")String uid, @Param("cid")String cid);
 }
 

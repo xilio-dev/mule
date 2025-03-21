@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.column.Column;
-import com.stackoak.stackoak.common.data.column.ColumnDetailVo;
-import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
-import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
+import com.stackoak.stackoak.common.data.column.*;
+
 import com.stackoak.stackoak.common.data.user.User;
 
 import java.util.List;
@@ -43,4 +41,6 @@ public interface IColumnService extends IService<Column> {
     void deleteColumn(String columnId);
 
     void addOrUpdate(ColumnSaveRequest body);
+
+    ColumnDetailVo detail(ColumnDetailRequest req);
 }

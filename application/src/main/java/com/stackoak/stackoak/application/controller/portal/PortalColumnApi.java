@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.stackoak.stackoak.application.service.column.IColumnService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.column.Column;
-import com.stackoak.stackoak.common.data.column.ColumnQuery;
-import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
-import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
+import com.stackoak.stackoak.common.data.column.*;
 import com.stackoak.stackoak.common.message.Result;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +58,15 @@ public class PortalColumnApi {
         columnService.deleteColumn(columnId);
         return Result.success();
     }
+
     @PostMapping(value = "save", name = "新增或更新专栏")
     public Result save(@RequestBody ColumnSaveRequest body) {
         columnService.addOrUpdate(body);
         return Result.success();
+    }
+
+    @PostMapping(value = "detail", name = "专栏详情")
+    public Result detail(@RequestBody ColumnDetailRequest req) {
+        return Result.success(columnService.detail(req));
     }
 }

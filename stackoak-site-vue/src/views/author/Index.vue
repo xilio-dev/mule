@@ -185,7 +185,7 @@ const openLink = (url: string) => {
             <ArticleList v-if="userStore.isLogin()&&authorArticles.length>0" :article-list="authorArticles"/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="合集" force-render>
-            <ColumnList v-model:column-list="columns"/>
+            <ColumnList v-model:column-list="columns" :user-id="authorId"/>
           </a-tab-pane>
           <a-tab-pane key="3" tab="粉丝">
             <a-list item-layout="horizontal" :data-source="authorFansList" :split="false">

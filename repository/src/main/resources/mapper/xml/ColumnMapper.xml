@@ -3,8 +3,11 @@
 <mapper namespace="com.stackoak.stackoak.repository.column.ColumnMapper">
 
     <select id="selectColumnsByArticleId" resultType="com.stackoak.stackoak.common.data.column.Column">
-         select c.id,c.name,c.user_id as userId, c.cover,c.intro from columns c
-         inner join article_column ac on ac.column_id=c.id where c.user_id=#{userId} and ac.article_id=#{articleId}
+        select c.id, c.name, c.user_id as userId, c.cover, c.intro
+        from columns c
+                 inner join article_column ac on ac.column_id = c.id
+        where c.user_id = #{userId}
+          and ac.article_id = #{articleId}
     </select>
     <!-- 查询订阅我的专栏的用户列表 -->
     <select id="findSubscribersByColumnId" resultType="com.stackoak.stackoak.common.data.user.User">
@@ -31,5 +34,47 @@
              columns c ON cs.column_id = c.id
         WHERE cs.user_id = #{userId}
           AND cs.status = 1
+    </select>
+    <resultMap id="ColumnDetailResultMap" type="com.stackoak.stackoak.common.data.column.ColumnDetailVo">
+        <result property="column.id" column="cid"/>
+        <result property="column.name" column="columnName"/>
+        <result property="column.cover" column="columnCover"/>
+        <result property="column.intro" column="columnIntro"/>
+
+        <result property="userInfo.id" column="userId"/>
+        <result property="userInfo.nickname" column="nickname"/>
+        <result property="userInfo.avatar" column="avatar"/>
+        <result property="userInfo.jobTitle" column="jobTitle"/>
+        <result property="userInfo.articleCount" column="articleCount"/>
+        <result property="userInfo.fansCount" column="fansCount"/>
+        <result property="userInfo.gotCollectCount" column="gotCollectCount"/>
+        <result property="userInfo.gotLikeCount" column="gotLikeCount"/>
+
+    </resultMap>
+    <select id="selectColumnDetailByUserId"
+            resultMap="ColumnDetailResultMap">
+        SELECT DISTINCT COUNT(DISTINCT ac.article_id) AS articleTotalCount,
+                        COUNT(DISTINCT cs.column_id)  AS subTotalCount,
+                        SUM(DISTINCT a.view_count)    AS viewTotalCount,
+                        c.id                          AS cid,
+                        c.name                        as columnName,
+                        c.cover                       as columnCover,
+                        c.intro                       as columnIntro,
+                        u.id                          as userId,
+                        u.nickname                    as nickname,
+                        u.avatar                      as avatar,
+                        u.job_title                   as jobTitle,
+                        u.article_count               as articleCount,
+                        u.fans_count                  as fansCount,
+                        u.got_collect_count           as gotCollectCount,
+                        u.got_like_count              as gotLikeCount
+        FROM USER u
+                 LEFT JOIN COLUMNS c ON u.id = c.user_id
+                 left join article_column ac on ac.column_id = c.id
+                 left join article a on ac.article_id = a.id
+                 left join column_subscription cs on c.id = cs.column_id
+        WHERE c.user_id = #{uid}
+          AND c.id = #{cid}
+
     </select>
 </mapper>

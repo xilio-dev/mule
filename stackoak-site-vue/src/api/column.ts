@@ -6,6 +6,7 @@ const Api = {
     LIST_BY_USER: '/column/list_by_user',
     SAVE_COLUMN: '/column/save',
     DELETE_COLUMN: '/column/del',
+    DETAIL: '/column/detail',
 
 };
 
@@ -31,4 +32,7 @@ export function deleteColumn(columnId: string) {
             columnId: columnId
         }
     })
+}
+export function getAuthorColumnDetail(data: any) {
+    return request.post(Api.DETAIL, data)
 }

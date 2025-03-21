@@ -6,11 +6,7 @@ import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.article.Article;
-import com.stackoak.stackoak.common.data.column.ArticleColumn;
-import com.stackoak.stackoak.common.data.column.Column;
-import com.stackoak.stackoak.common.data.column.ColumnSaveRequest;
-import com.stackoak.stackoak.common.data.column.ListColumnByUserQuery;
+import com.stackoak.stackoak.common.data.column.*;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.repository.column.ArticleColumnMapper;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
@@ -128,5 +124,10 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
             oldColumn.setIntro(body.getIntro());
             updateById(oldColumn);
         }
+    }
+
+    @Override
+    public ColumnDetailVo detail(ColumnDetailRequest req) {
+        return baseMapper.selectColumnDetailByUserId(req.uid(), req.cid());
     }
 }
