@@ -159,4 +159,31 @@
         WHERE a.user_id = #{userId}
         order by a.create_time desc
     </select>
+    <select id="selectArticleListByColumnId"
+            resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
+        SELECT
+            a.id,
+            a.title,
+            a.cover,
+            a.like_count AS likeCount,
+            a.view_count AS viewCount,
+            a.collect_count AS collectCount,
+            a.description,
+            a.visible_status AS visibleStatus,
+            a.publish_time AS publishTime,
+            GROUP_CONCAT(t.id) AS tagIds,
+            GROUP_CONCAT(t.name) AS tagNames
+        FROM article a
+                 INNER JOIN article_column ac
+                            ON ac.article_id = a.id
+                                AND ac.column_id = #{cid}
+                 LEFT JOIN article_tag at
+        ON a.id = at.article_id
+            LEFT JOIN tag t
+            ON at.tag_id = t.id
+        GROUP BY a.id, a.title, a.cover, a.like_count, a.view_count,
+            a.collect_count, a.description, a.visible_status,
+            a.publish_time -- 显式指定所有非聚合列
+        ORDER BY a.publish_time DESC
+    </select>
 </mapper>

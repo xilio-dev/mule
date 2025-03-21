@@ -82,4 +82,7 @@ public interface IArticleService extends IService<Article> {
     public Page<ArticleBriefVO>  followList( PageQuery pageQuery);
 
     Page<ArticleBriefVO> authorArticleList(@Valid CommonPageQuery dto);
+
+
+    public Page<ArticleBriefVO>  getArticleListByColumn(@Valid CommonPageQuery query);
 }

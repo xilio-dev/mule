@@ -1,19 +1,23 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import UserInfoCard from '@/components/UserInfoCard/index.vue'
 import {useUserStore} from "@/store";
 import router from "@/router";
 import {getAuthorColumnDetail} from "@/api/column.ts";
 import {useRoute} from "vue-router";
 import {ImageUtils} from "@/utils/file.ts";
+import {getColumnPublishArticle} from "@/api/post.ts";
+import ArticleList from "@/components/ArticleList.vue";
 /*------------------------------------类型定义---------------------------------------------*/
 interface IAnalyse {
   subTotalCount: string;
   articleTotalCount: string;
   viewTotalCount: string;
 }
+
 /*------------------------------------变量定义------------------------------------------*/
 const userStore = useUserStore()
+const articleList = reactive<any[]>([]); // 专栏文章
 const column = reactive({})
 const userInfo = reactive({})
 const analyse = reactive<IAnalyse>({
@@ -21,18 +25,36 @@ const analyse = reactive<IAnalyse>({
   articleTotalCount: '',
   viewTotalCount: '',
 });
-const articleList = reactive<any[]>([]); // 专栏文章
+
 const route = useRoute()
 const cid = route.query.cid as string;
 
+const columnArticleQuery = reactive({
+  total: 0, // 新增：总记录数，用于判断是否还有更多数据
+  current: 1,
+  size: 10,
+  id: ''
+})
+const loading = ref(false); // 加载状态
+// 修改 hasMore 逻辑，初次加载时允许请求
+const isInitialLoad = ref(true); // 新增：标记初次加载
+const hasMore = computed(() => {
+  if (isInitialLoad.value) return true; // 初次加载时始终允许
+  return articleList.length < columnArticleQuery.total;
+});
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
   loadColumnInfo()
+  loadColumnArticleList(false)
+  window.addEventListener('scroll', handleScroll); // 添加滚动监听
 })
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll); // 清理监听
+});
+
 /*------------------------------------数据加载--------------------------------------------*/
 //加载专栏信息
 const loadColumnInfo = () => {
-
   getAuthorColumnDetail(cid).then(res => {
     Object.assign(column, res.column)
     Object.assign(userInfo, res.userInfo)
@@ -44,10 +66,45 @@ const loadColumnInfo = () => {
   })
 }
 //加载专栏文章
-const loadColumnArticleList = () => {
-
+const loadColumnArticleList = async (append = true) => {
+  if (loading.value || (!hasMore.value && !isInitialLoad.value)) return; // 避免重复加载
+  loading.value = true;
+  const res = await getColumnPublishArticle({...columnArticleQuery, id: cid})
+  if (res && res.records) {
+    try {
+      // 增强文章数据
+      const enhancedArticles = res.records.map((article: any) => ({
+        ...article,
+        ...userInfo, // 深拷贝用户信息
+      }));
+      if (append) {
+        // 追加数据到 reactive 数组
+        articleList.push(...enhancedArticles);
+      } else {
+        // 清空并重新赋值
+        articleList.length = 0;
+        articleList.push(...enhancedArticles);
+      }
+      // 更新分页信息
+      columnArticleQuery.total = res.total || 0;
+      if (append) columnArticleQuery.current += 1;
+    } finally {
+      loading.value = false;
+      isInitialLoad.value = false; // 初次加载完成后置为 false
+    }
+  }
 }
+/*------------------------------------滚动加载--------------------------------------------*/
+const handleScroll = () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop;
+  const windowHeight = window.innerHeight;
+  const documentHeight = document.documentElement.scrollHeight;
 
+  // 当滚动到底部 100px 时触发加载
+  if (scrollTop + windowHeight >= documentHeight - 100 && !loading.value) {
+    loadColumnArticleList(true);
+  }
+};
 
 /*------------------------------------核心业务--------------------------------------------*/
 //订阅专栏
@@ -93,7 +150,13 @@ const onSubscribeToColumn = () => {
           </a-flex>
         </a-card>
         <a-card>
-          dd
+          <ArticleList :article-list="articleList"/>
+          <div v-if="loading" style="text-align: center; padding: 20px;">
+            加载中...
+          </div>
+          <div v-else-if="!hasMore" style="text-align: center; padding: 20px;">
+            没有更多文章了
+          </div>
         </a-card>
       </a-flex>
     </a-col>

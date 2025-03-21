@@ -42,6 +42,12 @@ public class PortalArticleApi {
         return Result.success(articleService.listByCategory(dto));
     }
 
+    @PostMapping("get_column_article_list")
+    @FieldFilter(type = ArticleBriefVO.class)
+    public Result getColumnArticleList(@RequestBody @Valid CommonPageQuery query  ) {
+        return Result.success(articleService.getArticleListByColumn(query));
+    }
+
     @PostMapping(value = "follow_list",name = "关注作者的文章")
     @FieldFilter(type = ArticleBriefVO.class)
     @SaUserCheckLogin

@@ -169,7 +169,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<String> tagNames = dto.getTagNames();
         List<String> columnNames = dto.getColumnNames();
         //检查标题是否合法 可以在接口层校验
-        if(StringTools.hasSpecialChars(dto.getTitle())){
+        if (StringTools.hasSpecialChars(dto.getTitle())) {
             throw new BizException("标题不能包含特殊字符！");
         }
         //检查分类领域是否存在
@@ -513,15 +513,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public Page<ArticleBriefVO> followList( PageQuery query) {
+    public Page<ArticleBriefVO> followList(PageQuery query) {
         String userId = StpKit.USER.getLoginIdAsString();
-        return  baseMapper.selectFollowList(Page.of(query.getCurrent(), query.getSize()),userId);
+        return baseMapper.selectFollowList(Page.of(query.getCurrent(), query.getSize()), userId);
     }
 
     @Override
     public Page<ArticleBriefVO> authorArticleList(CommonPageQuery dto) {
         String userId = StpKit.USER.getLoginIdAsString();
-        return baseMapper.selectAuthorArticleList(Page.of(dto.getCurrent(), dto.getSize()), userId,dto.getKeyword());
+        return baseMapper.selectAuthorArticleList(Page.of(dto.getCurrent(), dto.getSize()), userId, dto.getKeyword());
 
+    }
+
+    @Override
+    public Page<ArticleBriefVO> getArticleListByColumn(CommonPageQuery query) {
+        return baseMapper.selectArticleListByColumnId(Page.of(query.getCurrent(), query.getSize()), query.getId());
     }
 }
