@@ -8,4 +8,9 @@ public class UserInfoDTO {
     private String userId;
     private String nickname;
     private String avatar;
+    private String jobTitle;
+    private Integer articleCount;
+    private Integer gotLikeCount;
+    private Integer fansCount;
+    private Integer gotCollectCount;
 }

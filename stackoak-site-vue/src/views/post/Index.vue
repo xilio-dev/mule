@@ -11,6 +11,7 @@ import {message} from "ant-design-vue";
 import Login from "@/components/Login.vue";
 import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
 import CommentInput from '@/components/CommentInput/index.vue'
+import UserInfoCard from '@/components/UserInfoCard/index.vue'
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
@@ -21,9 +22,7 @@ const userInfo = ref({})
 const tags = ref({})
 const category = ref({})
 const userInteract = ref({})
-const config = ref({
-
-})
+const config = ref({})
 const commentInputRef = ref()
 const needVisitPass = ref(false)
 //打开登陆
@@ -166,53 +165,7 @@ const ontoChat = () => {
   <a-row :gutter="20" v-if="!needVisitPass">
     <a-col :span="6">
       <a-card style="height: 205px">
-        <a-row style="text-align: left;width: 100%">
-          <a-col :span="6">
-            <RouterLink :to="`/author/${userInfo.userId}`" target="_blank">
-              <a-avatar :size="50" :src="userInfo.avatar"/>
-            </RouterLink>
-          </a-col>
-          <a-col :span="18" style="padding-left: 7px">
-            <a-row>
-              <RouterLink :to="`/author/${userInfo.userId}`">
-                <span style="font-size: 17px;color: black">{{ userInfo.nickname }}</span>
-              </RouterLink>
-            </a-row>
-            <a-row>
-              <span style="font-size: 13px">后端开发工程师</span>
-            </a-row>
-          </a-col>
-        </a-row>
-        <a-flex :gap="6" justify="space-around" style="margin-top: 15px;" align="center">
-          <a-flex vertical align="center">
-            <span>63</span>
-            <span>文章</span>
-          </a-flex>
-          <a-flex vertical align="center">
-            <span>63</span>
-            <span>获赞</span>
-          </a-flex>
-          <a-flex vertical align="center">
-            <span>63</span>
-            <span>粉丝</span>
-          </a-flex>
-          <a-flex vertical align="center">
-            <span>63</span>
-            <span>收藏</span>
-          </a-flex>
-
-        </a-flex>
-        <a-row :gutter="10" style="margin-top: 15px;text-align: center">
-          <a-col :span="12">
-            <a-button @click="ontoChat" type="default" style="width: 100%;">私信</a-button>
-          </a-col>
-          <a-col :span="12">
-            <a-button @click="toggleFollow" :type="!userInteract.isFollow?'primary':'default'" style="width: 100%;">
-              {{ userInteract.isFollow ? '已关注' : '关注' }}
-            </a-button>
-          </a-col>
-        </a-row>
-
+        <UserInfoCard :user-info="userInfo"/>
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
         <a-card title="相关推荐" style="height: 260px; margin-top: 8px">

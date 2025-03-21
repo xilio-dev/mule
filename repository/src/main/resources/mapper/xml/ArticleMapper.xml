@@ -75,43 +75,54 @@
         <result property="articleInfo.visitPassword" column="visitPassword"/>
         <result property="userInfo.userId" column="userId"/>
         <result property="userInfo.nickname" column="nickname"/>
+        <result property="userInfo.jobTitle" column="job_title"/>
         <result property="userInfo.avatar" column="avatar"/>
+        <result property="userInfo.articleCount" column="article_count"/>
+        <result property="userInfo.fansCount" column="fans_count"/>
+        <result property="userInfo.gotCollectCount" column="got_collect_count"/>
+        <result property="userInfo.gotLikeCount" column="got_like_count"/>
         <result property="category.categoryId" column="categoryId"/>
         <result property="category.categoryName" column="categoryName"/>
     </resultMap>
     <select id="selectArticleDetail" resultMap="ArticleDetailResultMap">
-        SELECT
-            a.id AS articleId,
-            a.title,
-            a.content,
-            a.cover,
-            a.description,
-            a.like_count AS likeCount,
-            a.view_count AS viewCount,
-            a.comment_count AS commentCount,
-            a.publish_time AS publishTime,
-            a.collect_count AS collectCount,
-            a.content_count AS contentCount,
-            a.column_id AS columnId,
-            a.visible_status AS visibleStatus,
-            a.publish_status AS publishStatus,
-            a.creative_type AS creativeType,
-            a.original_url AS originalUrl,
-            a.authorize_status AS authorizeStatus,
-            a.visit_password AS visitPassword,
-            m.id AS userId,
-            m.nickname AS nickname,
-            m.avatar,
-            c.id AS categoryId,
-            c.name AS categoryName,
-            GROUP_CONCAT(DISTINCT t.id ORDER BY t.id) AS tagIds,
-            GROUP_CONCAT(DISTINCT t.name ORDER BY t.name) AS tagNames,
-            GROUP_CONCAT(DISTINCT col.id ORDER BY col.id) AS columnIds,
-            GROUP_CONCAT(DISTINCT col.name ORDER BY col.name) AS columnNames
+        SELECT a.id                                              AS articleId,
+               a.title,
+               a.content,
+               a.cover,
+               a.description,
+               a.like_count                                      AS likeCount,
+               a.view_count                                      AS viewCount,
+               a.comment_count                                   AS commentCount,
+               a.publish_time                                    AS publishTime,
+               a.collect_count                                   AS collectCount,
+               a.content_count                                   AS contentCount,
+               a.column_id                                       AS columnId,
+               a.visible_status                                  AS visibleStatus,
+               a.publish_status                                  AS publishStatus,
+               a.creative_type                                   AS creativeType,
+               a.original_url                                    AS originalUrl,
+               a.authorize_status                                AS authorizeStatus,
+               a.visit_password                                  AS visitPassword,
+               m.id                                              AS userId,
+               m.nickname                                        AS nickname,
+               m.avatar,
+               m.job_title,
+               m.article_count,
+               m.fans_count,
+               m.got_collect_count,
+               m.got_like_count,
+               c.id                                              AS categoryId,
+               c.name                                            AS categoryName,
+
+               GROUP_CONCAT(DISTINCT t.id ORDER BY t.id)         AS tagIds,
+               GROUP_CONCAT(DISTINCT t.name ORDER BY t.name)     AS tagNames,
+               GROUP_CONCAT(DISTINCT col.id ORDER BY col.id)     AS columnIds,
+               GROUP_CONCAT(DISTINCT col.name ORDER BY col.name) AS columnNames
         FROM article a
                  LEFT JOIN user m ON a.user_id = m.id
                  LEFT JOIN category c ON a.category_id = c.id
-                 LEFT JOIN article_tag at ON a.id = at.article_id
+                 LEFT JOIN article_tag at
+        ON a.id = at.article_id
             LEFT JOIN tag t ON at.tag_id = t.id
             LEFT JOIN article_column ac ON a.id = ac.article_id
             LEFT JOIN columns col ON ac.column_id = col.id
