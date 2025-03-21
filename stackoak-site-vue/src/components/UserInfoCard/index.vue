@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import {NumberUtils} from "../../utils/number-util.ts";
-
+import {computed} from "vue";
+import {useUserStore} from "@/store";
+const useStore=useUserStore()
 const emit = defineEmits(['toggle-follow','on-chat'])
 const props = defineProps<{
   userInfo: UserInfo
@@ -17,12 +19,13 @@ interface UserInfo {
   jobTitle: string
   avatar: string
 }
-
-
+//判断是否是当前作者用户
+const isSelf=computed(()=>{
+  return props.userInfo.userId==useStore.userinfo.userId
+})
 //关注和取消关注
 const onToggleFollow = () => {
   emit('toggle-follow', !props.userInfo.isFollow);
-
 }
 //私信作者
 const toChat = () => {
@@ -51,22 +54,22 @@ const toChat = () => {
   <a-flex :gap="6" justify="space-around" style="margin-top: 15px;" align="center">
     <a-flex vertical align="center">
       <span>{{ NumberUtils.formatNumber(userInfo.articleCount)||0 }}</span>
-      <span>文章</span>
+      <span class="title-label">文章</span>
     </a-flex>
     <a-flex vertical align="center">
       <span>{{ NumberUtils.formatNumber(userInfo.gotLikeCount) ||0}}</span>
-      <span>获赞</span>
+      <span class="title-label">获赞</span>
     </a-flex>
     <a-flex vertical align="center">
       <span>{{ NumberUtils.formatNumber(userInfo.fansCount)||0 }}</span>
-      <span>粉丝</span>
+      <span class="title-label">粉丝</span>
     </a-flex>
     <a-flex vertical align="center">
       <span>{{ NumberUtils.formatNumber(userInfo.gotCollectCount)||0 }}</span>
-      <span>收藏</span>
+      <span class="title-label">收藏</span>
     </a-flex>
   </a-flex>
-  <a-row :gutter="10" style="margin-top: 15px;text-align: center">
+  <a-row v-if="!isSelf" :gutter="10" style="margin-top: 15px;text-align: center">
     <a-col :span="12">
       <a-button @click="toChat" type="default" style="width: 100%;">私信</a-button>
     </a-col>
@@ -79,5 +82,7 @@ const toChat = () => {
 </template>
 
 <style scoped>
-
+.title-label{
+  color:rgb(138, 145, 159)
+}
 </style>

@@ -8,7 +8,7 @@ import {getAuthorColumnDetail} from '@/api/column';
 import {getColumnPublishArticle} from '@/api/post';
 import {ImageUtils} from '@/utils/file';
 import {message} from 'ant-design-vue';
-import {unFollowUser} from "@/api/user.ts";
+import {followUser, unFollowUser} from "@/api/user.ts";
 
 /*------------------------------------类型定义---------------------------------------------*/
 interface IAnalyse {
@@ -58,7 +58,7 @@ onUnmounted(() => {
 const loadColumnInfo = () => {
   getAuthorColumnDetail(cid).then((res) => {
     Object.assign(column, res.column);
-    Object.assign(userInfo, res.userInfo);
+    Object.assign(userInfo, {...res.userInfo, userId: res.userInfo.id});
     Object.assign(analyse, {
       subTotalCount: res.subTotalCount,
       articleTotalCount: res.articleTotalCount,
@@ -79,7 +79,7 @@ const loadColumnArticleList = async (append = true) => {
       const enhancedArticles = res.records.map((article: any) => ({
         ...article,
         ...userInfo,
-        userId: userInfo.id
+        userId: userInfo.id,
       }));
       if (append) {
         articleList.push(...enhancedArticles);
@@ -132,23 +132,24 @@ const onSubscribeToColumn = () => {
     router.push({path: '/login'});
   }
 };
-//关注和取消关注 todo emit没有生效
-const onToggleFollow=(isFollow:boolean)=>{
-  //如果没有关注，执行关注
-  //  followUser(authorId).then(res=>{
-  //    message.success("已关注")
-  //  })
-  unFollowUser(userInfo.userId).then(res => {
-    message.success("已取消关注")
-  })
-  //如果已经关注，执行取消关注
+//关注和取消关注
+const onToggleFollow = async (isFollow: boolean) => {
+  userInfo.isFollow = isFollow/*切换关注状态*/
+  userInfo.fansCount = isFollow ? userInfo.fansCount + 1 : userInfo.fansCount - 1/*粉丝数变更*/
+  //已经关注，取消关注
+  if (isFollow) {
+    await unFollowUser(userInfo.userId)
+  } else {
+    //如果未关注，执行关注
+    await followUser(userInfo.userId)
+  }
 }
 </script>
 
 <template>
   <a-row :gutter="20" style="width: 100%;">
     <a-col :span="6">
-      <a-card style="height: 205px">
+      <a-card >
         <UserInfoCard :user-info="userInfo" @toggleFollow="onToggleFollow"/>
       </a-card>
     </a-col>
@@ -180,7 +181,7 @@ const onToggleFollow=(isFollow:boolean)=>{
           </a-flex>
         </a-card>
         <a-card>
-          <ArticleList  :article-list="articleList"/>
+          <ArticleList :article-list="articleList"/>
           <div v-if="loading" style="text-align: center; padding: 20px;">加载中...</div>
           <div v-else-if="!hasMore" style="text-align: center; padding: 20px;">
             没有更多文章了
