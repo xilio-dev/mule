@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref, toRaw} from 'vue';
-import type {UnwrapRef} from 'vue';
-import type {Rule} from 'ant-design-vue/es/form';
-import dayjs, {Dayjs} from 'dayjs';
-import {getUserProfile, updateProfile} from "@/api/user.ts";
-import {message} from "ant-design-vue";
+import { onMounted, reactive, ref, toRaw } from 'vue';
+import type { UnwrapRef } from 'vue';
+import type { Rule } from 'ant-design-vue/es/form';
+import dayjs, { Dayjs } from 'dayjs';
+import { getUserProfile, updateProfile } from '@/api/user.ts';
+import { tagList } from '@/api/tag.ts';
+import { message } from 'ant-design-vue';
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
+import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
 
+// 类型定义
 interface Tag {
   id: number;
   name: string;
@@ -13,111 +17,38 @@ interface Tag {
 }
 
 type RangeValue = [Dayjs, Dayjs];
-const loadUserProfile = () => {
-  getUserProfile().then(res => {
-    Object.assign(userForm, res);
-    userForm.jobTime = dayjs(userForm.jobTime, dateFormat)
-    userForm.eduTime = ref<[Dayjs, Dayjs]>([
-      dayjs(userForm.eduStartTime, dateFormat),
-      dayjs(userForm.eduEndTime, dateFormat),
-    ]);
-    if (tags.value) {
-      initSelectedTags()
-    }
-  })
-}
-const initSelectedTags = () => {
-  // 创建一个映射表，将 id 映射到 name
-  const tagMap = new Map<string, string>();
-  tags.value.forEach(tag => tagMap.set(tag.id, tag.name));
-  // 初始化 selectedTags
-  let ids = userForm.tagIds || [];
-  if (ids) {
-    ids.forEach(tagId => {
-      const tagName = tagMap.get(tagId); // 直接从映射表中获取名称
-      if (tagName) {
-        selectedTags.value.push({id: tagId, name: tagName, checked: true}); // 存储选中的 ID
-        // 同时更新 tags 的状态
-        const tagIndex = tags.value.findIndex(tag => tag.id === tagId);
-        if (tagIndex !== -1) {
-          tags.value[tagIndex].checked = true;
-        }
-      }
-    });
-  }
-}
-const tags = ref()
-const loadTagList = () => {
-  tagList({current: 1, size: 100}).then(res => {
-    tags.value = res.records || []
-  })
-}
-
-// 定义已选择的标签列表
-const selectedTags = ref<Tag[]>([]);
-
-// 处理标签的选中状态变化
-const handleChanges = (tag: Tag) => {
-  if (tag.checked) {
-    // 如果选中，添加到已选择的标签列表
-    selectedTags.value.push(tag);
-  } else {
-    // 如果取消选中，从已选择的标签列表中移除
-    selectedTags.value = selectedTags.value.filter(t => t.id !== tag.id);
-  }
-};
-
-// 从已选择的标签列表中移除标签
-const removeTag = (tagId: number) => {
-  const index = selectedTags.value.findIndex(tag => tag.id === tagId);
-  if (index !== -1) {
-    selectedTags.value.splice(index, 1);
-    // 同时更新 tags 的状态
-    const tagIndex = tags.value.findIndex(tag => tag.id === tagId);
-    if (tagIndex !== -1) {
-      tags.value[tagIndex].checked = false;
-    }
-  }
-};
-onMounted(() => {
-  loadTagList()
-  loadUserProfile()
-
-})
 
 interface UserForm {
-  id: undefined,
-  avatar: string,
-  nickname: string,
-  gender: string,
-  introduce: string,
-  personBlogAddress: string,
-  github: string,
-  gitee: string,
-  csdn: string,
-  bokeyuan: string,
-  bilibli: string,
-  authorQr: string,
-  eduLevel: string,
-  universityName: string,
-  majorName: string,
-  eduStartTime: string,
-  eduEndTime: string,
-  eduTime: RangeValue,
-  careerField: string,
-  company: string,
-  jobTitle?: string,
-  jobTime?: Dayjs,
-  tagIds: undefined,
+  id?: string;
+  avatar: string;
+  nickname: string;
+  gender: number;
+  introduce: string;
+  personBlogAddress: string;
+  github: string;
+  gitee: string;
+  csdn: string;
+  bokeyuan: string;
+  bilibli: string;
+  authorQr: string;
+  eduLevel: string;
+  universityName: string;
+  majorName: string;
+  eduStartTime?: string;
+  eduEndTime?: string;
+  eduTime?: RangeValue | null;
+  careerField: string;
+  company: string;
+  jobTitle: string;
+  jobTime?: Dayjs | null;
+  tagIds?: number[];
 }
 
-const formRef = ref();
-const labelCol = {span: 4};
-const wrapperCol = {span: 20};
+// 响应式表单数据
 const userForm: UnwrapRef<UserForm> = reactive({
   id: undefined,
   avatar: '',
-  nickname: undefined,
+  nickname: '',
   gender: 2,
   introduce: '',
   personBlogAddress: '',
@@ -130,77 +61,165 @@ const userForm: UnwrapRef<UserForm> = reactive({
   eduLevel: '',
   universityName: '',
   majorName: '',
-  eduStartTime: '',
-  eduEndTime: '',
-  eduTime: '',
+  eduTime: null,
   careerField: '',
   company: '',
   jobTitle: '',
-  jobTime: '',
-  tagIds: []
+  jobTime: null,
+  tagIds: [],
 });
+
+// 表单相关
+const formRef = ref();
+const labelCol = { span: 4 };
+const wrapperCol = { span: 20 };
 const rules: Record<string, Rule[]> = {
   nickname: [
-    {required: true, message: '请填写您的账号昵称', trigger: 'change'},
-    {min: 2, max: 15, message: '字数限制 2-15', trigger: 'change'},
+    { required: true, message: '请填写您的账号昵称', trigger: 'change' },
+    { min: 2, max: 15, message: '字数限制 2-15', trigger: 'change' },
   ],
-  gender: [
-    {required: true, message: '请选择性别', trigger: 'change'}
-  ],
+  gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
 };
+
+// 日期格式
 const dateFormat = 'YYYY/MM/DD';
+
+// 加载用户数据
+const loadUserProfile = () => {
+  getUserProfile()
+      .then((res) => {
+        const data = res || {};
+        Object.assign(userForm, data);
+
+        // 处理工作时间
+        userForm.jobTime = data.jobTime ? dayjs(data.jobTime, dateFormat) : null;
+
+        // 处理教育时间
+        if (data.eduStartTime && data.eduEndTime) {
+          userForm.eduTime = [
+            dayjs(data.eduStartTime, dateFormat),
+            dayjs(data.eduEndTime, dateFormat),
+          ];
+        } else {
+          userForm.eduTime = null;
+        }
+
+        // 初始化标签
+        if (tags.value && data.tagIds) {
+          initSelectedTags();
+        }
+      })
+      .catch((err) => {
+        console.error('加载用户数据失败:', err);
+        message.error('加载用户信息失败');
+      });
+};
+
+// 标签相关
+const tags = ref<Tag[]>([]);
+const selectedTags = ref<Tag[]>([]);
+
+const loadTagList = () => {
+  tagList({ current: 1, size: 100 })
+      .then((res) => {
+        tags.value = (res.records || []).map((tag: any) => ({
+          id: tag.id,
+          name: tag.name,
+          checked: false,
+        }));
+        if (userForm.tagIds) {
+          initSelectedTags();
+        }
+      })
+      .catch((err) => {
+        console.error('加载标签失败:', err);
+        message.error('加载标签失败');
+      });
+};
+
+const initSelectedTags = () => {
+  if (!tags.value || !userForm.tagIds) return;
+  userForm.tagIds.forEach((tagId) => {
+    const tag = tags.value.find((t) => t.id === tagId);
+    if (tag) {
+      tag.checked = true;
+      selectedTags.value.push({ ...tag });
+    }
+  });
+};
+
+const handleChanges = (tag: Tag) => {
+  if (tag.checked) {
+    selectedTags.value.push({ ...tag });
+  } else {
+    const index = selectedTags.value.findIndex((t) => t.id === tag.id);
+    if (index !== -1) selectedTags.value.splice(index, 1);
+  }
+};
+
+const removeTag = (tagId: number) => {
+  const index = selectedTags.value.findIndex((t) => t.id === tagId);
+  if (index !== -1) {
+    selectedTags.value.splice(index, 1);
+    const tag = tags.value.find((t) => t.id === tagId);
+    if (tag) tag.checked = false;
+  }
+};
+
+// 提交表单
 const onSubmit = () => {
-  console.log(formRef.value.validate());
   formRef.value
       .validate()
       .then(() => {
-        console.log(userForm)
-        if (userForm.jobTime) {
-          userForm.jobTime = userForm.jobTime.format(dateFormat)
+        const formData = { ...toRaw(userForm) };
+        // 处理日期字段
+        formData.jobTime = formData.jobTime ? formData.jobTime.format(dateFormat) : '';
+        if (formData.eduTime && formData.eduTime.length === 2) {
+          formData.eduStartTime = formData.eduTime[0].format(dateFormat);
+          formData.eduEndTime = formData.eduTime[1].format(dateFormat);
+        } else {
+          formData.eduStartTime = '';
+          formData.eduEndTime = '';
         }
-        if (userForm.eduTime) {
-          userForm.eduStartTime = userForm.eduTime[0].format(dateFormat)
-          userForm.eduEndTime = userForm.eduTime[1].format(dateFormat)
-        }
-        if (selectedTags) {
-          userForm.tagIds = selectedTags.value.map(tag => tag.id) || []
-        }
-        updateProfile(userForm).then(res => {
-          message.info("更新成功")
-        })
+        delete formData.eduTime; // 移除临时字段
 
+        // 处理标签
+        formData.tagIds = selectedTags.value.map((tag) => tag.id);
+
+        updateProfile(formData)
+            .then(() => {
+              message.success('更新成功');
+            })
+            .catch((err) => {
+              console.error('更新失败:', err);
+              message.error('更新失败');
+            });
       })
+      .catch((err) => {
+        console.error('表单验证失败:', err);
+        message.error('请检查表单内容');
+      });
 };
+
+// 选项数据
 const eduLevelOptions = [
-  {value: 1, label: '大专'},
-  {value: 2, label: '本科'},
-  {value: 3, label: '硕士'},
-  {value: 4, label: '博士'},
-]
+  { value: '1', label: '大专' },
+  { value: '2', label: '本科' },
+  { value: '3', label: '硕士' },
+  { value: '4', label: '博士' },
+];
 const careerFieldOptions = [
-  {value: 1, label: '后端'},
-  {value: 2, label: '前端'},
-  {value: 3, label: '人工智能'},
-  {value: 4, label: '大数据'},
-  {value: 5, label: '网络安全'},
-  {value: 6, label: '测试'},
-]
+  { value: '1', label: '后端' },
+  { value: '2', label: '前端' },
+  { value: '3', label: '人工智能' },
+  { value: '4', label: '大数据' },
+  { value: '5', label: '网络安全' },
+  { value: '6', label: '测试' },
+];
 
-
-import {PlusOutlined, LoadingOutlined} from '@ant-design/icons-vue';
-import {message} from 'ant-design-vue';
-import type {UploadChangeParam, UploadProps} from 'ant-design-vue';
-import {tagList} from "@/api/tag.ts";
-
-function getBase64(img: Blob, callback: (base64Url: string) => void) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-}
-
+// 头像上传
 const fileList = ref([]);
 const loading = ref<boolean>(false);
-const imageUrl = ref<string>('');
 
 const handleChange = (info: UploadChangeParam) => {
   if (info.file.status === 'uploading') {
@@ -208,41 +227,49 @@ const handleChange = (info: UploadChangeParam) => {
     return;
   }
   if (info.file.status === 'done') {
-    // Get this url from response in real world.
-    getBase64(info.file.originFileObj, (base64Url: string) => {
-      imageUrl.value = base64Url;
+    getBase64(info.file.originFileObj as Blob, (base64Url: string) => {
+      userForm.avatar = base64Url;
       loading.value = false;
     });
   }
   if (info.file.status === 'error') {
     loading.value = false;
-    message.error('upload error');
+    message.error('上传失败');
   }
 };
 
 const beforeUpload = (file: UploadProps['fileList'][number]) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
-    message.error('You can only upload JPG file!');
+    message.error('只能上传 JPG 或 PNG 文件！');
+    return false;
   }
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
+    message.error('图片大小不能超过 2MB！');
+    return false;
   }
-  return isJpgOrPng && isLt2M;
+  return true;
 };
+
+function getBase64(img: Blob, callback: (base64Url: string) => void) {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result as string));
+  reader.readAsDataURL(img);
+}
+
+// 初始化
+onMounted(() => {
+  loadTagList();
+  loadUserProfile();
+});
 </script>
 
 <template>
   <a-row style="width: 100%;">
     <a-card title="基本信息" class="base-info-card">
-      <a-form
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-          ref="formRef"
-          :model="userForm"
-          :rules="rules">
-        <a-form-item label="头像" name="delivery">
+      <a-form :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef" :model="userForm" :rules="rules">
+        <a-form-item label="头像">
           <a-upload
               v-model:file-list="fileList"
               name="avatar"
@@ -255,54 +282,54 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
           >
             <a-avatar v-if="userForm.avatar" :size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 100, xxl: 120 }">
               <template #icon>
-                <a-image :preview="false" :src="userForm.avatar" alt="avatar"/>
+                <a-image :preview="false" :src="userForm.avatar" alt="avatar" />
               </template>
             </a-avatar>
-
             <div v-else>
-              <loading-outlined v-if="loading"></loading-outlined>
-              <plus-outlined v-else></plus-outlined>
+              <loading-outlined v-if="loading" />
+              <plus-outlined v-else />
               <div class="ant-upload-text">上传</div>
             </div>
           </a-upload>
-
-
         </a-form-item>
         <a-form-item label="显示昵称" name="nickname">
-
-          <a-input class="app-input" v-model:value="userForm.nickname"/>
+          <a-input class="app-input" v-model:value="userForm.nickname" />
         </a-form-item>
         <a-form-item label="性别" name="gender">
           <a-radio-group v-model:value="userForm.gender">
-            <a-radio :value=1>男</a-radio>
-            <a-radio :value=0>女</a-radio>
-            <a-radio :value=2>保密</a-radio>
+            <a-radio :value="1">男</a-radio>
+            <a-radio :value="0">女</a-radio>
+            <a-radio :value="2">保密</a-radio>
           </a-radio-group>
         </a-form-item>
         <a-form-item label="个人简介" name="introduce">
-          <a-textarea placeholder="个人介绍，最多100字" :maxlength="100" class="app-input"
-                      v-model:value="userForm.introduce"/>
+          <a-textarea
+              placeholder="个人介绍，最多100字"
+              :maxlength="100"
+              class="app-input"
+              v-model:value="userForm.introduce"
+          />
         </a-form-item>
         <a-form-item label="个人博客" name="personBlogAddress">
-          <a-input class="app-input" v-model:value="userForm.personBlogAddress"/>
+          <a-input class="app-input" v-model:value="userForm.personBlogAddress" />
         </a-form-item>
         <a-form-item label="Github" name="github">
-          <a-input class="app-input" v-model:value="userForm.github"/>
+          <a-input class="app-input" v-model:value="userForm.github" />
         </a-form-item>
         <a-form-item label="Gitee" name="gitee">
-          <a-input class="app-input" v-model:value="userForm.gitee"/>
+          <a-input class="app-input" v-model:value="userForm.gitee" />
         </a-form-item>
         <a-form-item label="CSDN" name="csdn">
-          <a-input class="app-input" v-model:value="userForm.csdn"/>
+          <a-input class="app-input" v-model:value="userForm.csdn" />
         </a-form-item>
         <a-form-item label="博客园" name="bokeyuan">
-          <a-input class="app-input" v-model:value="userForm.bokeyuan"/>
+          <a-input class="app-input" v-model:value="userForm.bokeyuan" />
         </a-form-item>
         <a-form-item label="哔哩哔哩" name="bilibli">
-          <a-input class="app-input" v-model:value="userForm.bilibli"/>
+          <a-input class="app-input" v-model:value="userForm.bilibli" />
         </a-form-item>
         <a-form-item label="兴趣标签" name="tag">
-          <div  class="selected-tags" style="margin-top: 5px">
+          <div class="selected-tags" style="margin-top: 5px">
             <a-tag
                 v-for="tag in selectedTags"
                 :key="tag.id"
@@ -314,7 +341,6 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
               {{ tag.name }}
             </a-tag>
           </div>
-          <!-- 可选择的标签列表 -->
           <div class="tag-list dashed-border" style="margin-top: 15px; padding: 15px">
             <a-checkable-tag
                 v-for="tag in tags"
@@ -331,24 +357,21 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
         <a-form-item label="作者名片" name="authorQr">
           <a-qrcode
               error-level="H"
-              :value="userForm.authorQr"
+              :value="userForm.authorQr || '暂无'"
               icon="https://www.antdv.com/assets/logo.1ef800a8.svg"
           />
         </a-form-item>
       </a-form>
     </a-card>
     <a-card title="教育信息" class="base-info-card">
-      <a-form
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-          :model="userForm">
-        <a-form-item ref="name" label="学校" name="universityName">
-          <a-input class="app-input" v-model:value="userForm.universityName"/>
+      <a-form :label-col="labelCol" :wrapper-col="wrapperCol" :model="userForm">
+        <a-form-item label="学校" name="universityName">
+          <a-input class="app-input" v-model:value="userForm.universityName" />
         </a-form-item>
-        <a-form-item ref="name" label="专业" name="majorName">
-          <a-input class="app-input" v-model:value="userForm.majorName"/>
+        <a-form-item label="专业" name="majorName">
+          <a-input class="app-input" v-model:value="userForm.majorName" />
         </a-form-item>
-        <a-form-item ref="name" label="学历" name="eduLevel">
+        <a-form-item label="学历" name="eduLevel">
           <a-select
               v-model:value="userForm.eduLevel"
               :options="eduLevelOptions"
@@ -356,13 +379,13 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
               class="app-input"
               placeholder="选择学历"
               style="width: 100%"
-          ></a-select>
+          />
         </a-form-item>
         <a-form-item label="入学时间" name="eduTime">
           <a-range-picker
               v-model:value="userForm.eduTime"
+              :format="dateFormat"
               class="app-input"
-              type="date"
               placeholder="选择入学时间"
               style="width: 100%"
           />
@@ -370,11 +393,8 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
       </a-form>
     </a-card>
     <a-card title="工作信息" class="base-info-card">
-      <a-form
-          :label-col="labelCol"
-          :wrapper-col="wrapperCol"
-          :model="userForm">
-        <a-form-item ref="name" label="职业方向" name="careerField">
+      <a-form :label-col="labelCol" :wrapper-col="wrapperCol" :model="userForm">
+        <a-form-item label="职业方向" name="careerField">
           <a-select
               v-model:value="userForm.careerField"
               :options="careerFieldOptions"
@@ -382,25 +402,24 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
               class="app-input"
               placeholder="职业领域"
               style="width: 100%"
-          ></a-select>
-
+          />
         </a-form-item>
-        <a-form-item ref="name" label="任职公司" name="company">
-          <a-input class="app-input" v-model:value="userForm.company"/>
+        <a-form-item label="任职公司" name="company">
+          <a-input class="app-input" v-model:value="userForm.company" />
         </a-form-item>
-        <a-form-item ref="name" label="岗位" name="jobTitle">
-          <a-input class="app-input" v-model:value="userForm.jobTitle"/>
+        <a-form-item label="岗位" name="jobTitle">
+          <a-input class="app-input" v-model:value="userForm.jobTitle" />
         </a-form-item>
         <a-form-item label="开始工作" name="jobTime">
           <a-date-picker
-              class="app-input"
               v-model:value="userForm.jobTime"
-              type="date"
+              :format="dateFormat"
+              class="app-input"
               placeholder="选择工作时间"
               style="width: 100%"
           />
         </a-form-item>
-        <a-form-item :wrapper-col="{offset: 1 }">
+        <a-form-item :wrapper-col="{ offset: 1 }">
           <a-button type="primary" @click="onSubmit">保存修改</a-button>
         </a-form-item>
       </a-form>
@@ -418,7 +437,7 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
   border-radius: 4px;
   background: #f2f3f5;
   color: #252933;
-  border: none #f2f3f5;
+  border: none;
 }
 
 .app-input:focus {
@@ -441,17 +460,16 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
   color: #666;
 }
 
-/*虚线div*/
 .dashed-border {
-  border: 2px dashed #999; /* 虚线边框，颜色为黑色 */
-  padding: 15px; /* 添加一些内边距以便内容显示更清晰 */
+  border: 2px dashed #999;
+  padding: 15px;
 }
 
 .tag-item {
-  margin: 0 8px 8px 0; /* 标签之间的间距 */
+  margin: 0 8px 8px 0;
 }
 
 .last-tag {
-  margin-right: 0; /* 最后一个标签不显示右边距 */
+  margin-right: 0;
 }
 </style>
