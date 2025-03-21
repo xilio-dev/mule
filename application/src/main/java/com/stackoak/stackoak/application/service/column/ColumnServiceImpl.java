@@ -50,9 +50,9 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     }
 
 
-    public Page getUserColumns(PageQuery query) {
+    public Page getUserColumns(ColumnQuery query) {
         LambdaQueryWrapper<Column> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Column::getUserId, StpKit.USER.getLoginIdAsString());
+        wrapper.eq(Column::getUserId, query.getUserId());
         return page(Page.of(query.getCurrent(), query.getSize()), wrapper);
     }
 
