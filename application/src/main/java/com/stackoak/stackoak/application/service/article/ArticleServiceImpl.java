@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.service.article;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserConfigService;
+import com.stackoak.stackoak.application.util.StringTools;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
@@ -167,6 +168,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String categoryId = dto.getCategoryId();
         List<String> tagNames = dto.getTagNames();
         List<String> columnNames = dto.getColumnNames();
+        //检查标题是否合法 可以在接口层校验
+        if(StringTools.hasSpecialChars(dto.getTitle())){
+            throw new BizException("标题不能包含特殊字符！");
+        }
         //检查分类领域是否存在
         Category category = categoryService.getById(categoryId);
         if (ObjectUtils.isEmpty(category)) {

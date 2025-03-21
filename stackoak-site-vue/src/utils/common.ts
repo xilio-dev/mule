@@ -14,6 +14,16 @@ export class CommonUtil {
         window.open(url)
     }
     /**
+     * 检查字符串是否包含特殊字符（默认定义的特殊字符）
+     * @param str 输入字符串
+     * @returns boolean 是否包含特殊字符
+     */
+    static hasSpecialChars(str: string): boolean {
+        // 定义特殊字符的正则表达式
+        const specialChars = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+        return specialChars.test(str);
+    }
+    /**
      * 从github或者gitee仓库链接中解析出用户名和项目名字
      * @param url
      */

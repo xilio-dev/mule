@@ -106,6 +106,7 @@ import {ARTICLE} from "@/constants/article.ts";
 import {message, Modal} from "ant-design-vue";
 import {validateFieldAndLength} from "@/utils/validate/article-validate.ts";
 import {onBeforeRouteLeave, onBeforeRouteUpdate} from 'vue-router'
+import {CommonUtil} from "@/utils/common.ts";
 /*----------------------------------------------------------------------*/
 //离开页面之前
 onBeforeRouteLeave((to, from) => {
@@ -201,10 +202,12 @@ const onPublishArticle = () => {
   formRef.value
       .validate()
       .then(() => {
+        //@ts-ignore
         if (articleDetailForm.value.creativeType == ARTICLE.CreativeTypeEnum.REPRINT && !authorizedStatus.value) {
           message.warning("转载类型文章需得到作者的授权,请确认已获得授权!")
           return
         }
+        //@ts-ignore
         if (articleDetailForm.value.visibleStatus == ARTICLE.VisibilityStatusEnum.PASSWORD && articleDetailForm.value.visitPassword == '') {
           message.warning("请输入访问密码！")
           return
@@ -236,6 +239,10 @@ const onPublishArticle = () => {
 const showModal = () => {
   if (!validateFieldAndLength(articleDetailForm.value.title, 5, '文章标题')) return;
   if (!validateFieldAndLength(articleDetailForm.value.content, 20, '文章内容')) return;
+  if(CommonUtil.hasSpecialChars(articleDetailForm.value.title)){
+    message.warning("标题不能包含特殊字符!")
+    return;
+  }
   openPublish.value = true;
 };
 // 更新选中的按钮ID
