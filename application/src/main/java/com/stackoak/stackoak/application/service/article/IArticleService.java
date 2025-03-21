@@ -2,6 +2,7 @@ package com.stackoak.stackoak.application.service.article;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
 
@@ -79,4 +80,6 @@ public interface IArticleService extends IService<Article> {
     Page<Article> listByUserAndColumn(ListByUserAndCategoryQuery query);
 
     public Page<ArticleBriefVO>  followList( PageQuery pageQuery);
+
+    Page<ArticleBriefVO> authorArticleList(@Valid CommonPageQuery dto);
 }

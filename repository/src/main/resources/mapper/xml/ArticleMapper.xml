@@ -142,4 +142,10 @@
           and visible_status!=2
         order by create_time desc
     </select>
+    <select id="selectAuthorArticleList"  resultMap="ArticleResultMap">
+        SELECT a.*
+        FROM article a
+        WHERE a.user_id = #{userId}
+        order by a.create_time desc
+    </select>
 </mapper>

@@ -80,5 +80,6 @@ declare module 'vue' {
     TagInput: typeof import('./src/components/TagInput/index.vue')['default']
     Test: typeof import('./src/components/CommentInput/test.vue')['default']
     TreeMenu: typeof import('./src/components/TreeMenu.vue')['default']
+    UserInfoCard: typeof import('./src/components/UserInfoCard/index.vue')['default']
   }
 }

@@ -4,6 +4,7 @@ package com.stackoak.stackoak.application.service.article;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserConfigService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.category.ICategoryService;
@@ -510,5 +511,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public Page<ArticleBriefVO> followList( PageQuery query) {
         String userId = StpKit.USER.getLoginIdAsString();
         return  baseMapper.selectFollowList(Page.of(query.getCurrent(), query.getSize()),userId);
+    }
+
+    @Override
+    public Page<ArticleBriefVO> authorArticleList(CommonPageQuery dto) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        return baseMapper.selectAuthorArticleList(Page.of(dto.getCurrent(), dto.getSize()), userId,dto.getKeyword());
+
     }
 }

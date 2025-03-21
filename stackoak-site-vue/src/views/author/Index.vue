@@ -1,13 +1,14 @@
 <script setup lang="ts">
 
 import ColumnList from "@/components/ColumnList.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {getFans, getFollows, getUserDetailInfo, unFollowUser} from "@/api/user.ts";
 import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
 import {message} from "ant-design-vue";
 import {columnLists} from "@/api/column.ts";
-import {authorArticleRank} from "@/api/post.ts";
+import {authorArticleList, authorArticleRank} from "@/api/post.ts";
+import ArticleList from "@/components/ArticleList.vue";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
 const collectActiveKey = ref('1')
@@ -20,6 +21,7 @@ const articleRank = ref([])
 const authorFansList = ref([])
 const authorFollowList = ref([])
 const openDrawer = ref(false)
+const authorArticles = reactive([])
 //判断是否是自己本人
 const isSelf = computed(() => {
   return userStore.userinfo.userId == authorId
@@ -31,6 +33,7 @@ onMounted(async () => {
   await loadFans()
   await loadUserColumns()
   await loadAuthorArticleRank()
+  await loadAuthorArticles()
 
 })
 
@@ -69,7 +72,11 @@ const loadAuthorArticleRank = async () => {
     articleRank.value = res.records
   })
 }
-
+//加载作者已经发布的文章
+const loadAuthorArticles = async () => {
+  const res = await authorArticleList({current: 1, size: 100, id: authorId})
+  Object.assign(authorArticles, res.records)
+}
 /*------------------------------------核心业务--------------------------------------------*/
 //点击关注或取消关注
 const onFollowAuthor = () => {
@@ -175,7 +182,7 @@ const openLink = (url: string) => {
       <div style="margin-left: 15px">
         <a-tabs v-model:activeKey="activeKey">
           <a-tab-pane key="1" tab="文章" force-render>
-
+            <ArticleList v-if="userStore.isLogin()&&authorArticles.length>0" :article-list="authorArticles"/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="合集" force-render>
             <ColumnList v-model:column-list="columns"/>
@@ -233,10 +240,10 @@ const openLink = (url: string) => {
               <a-tab-pane key="2" tab="我关注的">
 
               </a-tab-pane>
-              <template #rightExtra  >
-               <div style="margin-right: 10px">
-                 <a-button type="primary" size="small">新建收藏夹</a-button>
-               </div>
+              <template #rightExtra>
+                <div style="margin-right: 10px">
+                  <a-button type="primary" size="small">新建收藏夹</a-button>
+                </div>
               </template>
             </a-tabs>
           </a-tab-pane>

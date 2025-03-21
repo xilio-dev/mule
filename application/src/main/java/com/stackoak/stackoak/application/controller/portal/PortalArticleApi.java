@@ -8,6 +8,7 @@ import com.stackoak.stackoak.application.actors.limit.RateLimit;
 import com.stackoak.stackoak.application.actors.recommand.BehaviorLog;
 import com.stackoak.stackoak.application.actors.recommand.BehaviorType;
 import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
 import com.stackoak.stackoak.application.service.article.IArticleService;
@@ -47,6 +48,13 @@ public class PortalArticleApi {
     public Result followList(@RequestBody PageQuery pageQuery) {
         return Result.success(articleService.followList(pageQuery));
     }
+    @PostMapping("author_article_list")
+    @FieldFilter(type = ArticleBriefVO.class)
+    public Result authorArticleList(@RequestBody @Valid CommonPageQuery dto) {
+        return Result.success(articleService.authorArticleList(dto));
+    }
+
+
     @PostMapping("search")
     public Object search(@RequestParam String keyword) {
         return articleService.list();

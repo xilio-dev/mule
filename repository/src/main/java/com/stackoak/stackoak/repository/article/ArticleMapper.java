@@ -35,5 +35,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
 
     Page<ArticleBriefVO> selectFollowList(@Param("page") Page<ArticleBriefVO> page,@Param("userId") String userId);
+
+    Page<ArticleBriefVO> selectAuthorArticleList(@Param("page")Page<ArticleBriefVO> page,@Param("userId") String userId, @Param("title")String title);
 }
 

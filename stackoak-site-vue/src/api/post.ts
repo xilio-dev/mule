@@ -16,6 +16,7 @@ const Api = {
     GET_COLLECT_ARTICLE: '/article/get-collect-article',
     GET_COLUMN_ARTICLE: '/article/get-column-article',
     FOLLOW_LIST: '/article/follow_list',
+    AUTHOR_ARTICLE_LIST: '/article/author_article_list',
 
 };
 
@@ -79,4 +80,9 @@ export function getColumnArticle(query: any) {
 export function getFollowAuthorArticles(query: any) {
     return request.post(Api.FOLLOW_LIST, query)
 }
+
+export function authorArticleList(query: any) {
+    return request.post(Api.AUTHOR_ARTICLE_LIST, query)
+}
+
 
