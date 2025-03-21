@@ -21,4 +21,8 @@ public class ArticleBriefVO extends Article {
      * 标签名字列表
      */
     private String tagNames;
+    /**
+     * 用户昵称
+     */
+    private String nickname;
 }

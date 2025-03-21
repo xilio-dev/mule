@@ -13,6 +13,7 @@
 // }
 
 import {ImageUtils} from "@/utils/file.ts";
+import {CommonUtil} from "@/utils/common.ts";
 
 interface Tag {
   id: string;
@@ -46,8 +47,8 @@ const props = defineProps<{
       <div class="entry">
         <div class="content-wrapper">
           <div class="content-main">
-            <div class="title-row">
-              <div class="xx-link article-title" v-html="item.title"></div>
+            <div class="title-row" >
+              <div  class="xx-link article-title" v-html="item.title"></div>
             </div>
             <div class="abstract">
               <div class="xx-link">
@@ -56,7 +57,7 @@ const props = defineProps<{
             </div>
             <div class="entry-footer">
               <ul class="action-list ">
-                <li class="item meta-container">
+                <li class="item meta-container" @click="CommonUtil.openNewPage(`/author/${item.userId}`)">
                   <a class="xx-link user-message">
                     <div class="popover-box user-popover">{{ item.nickname }}</div>
                   </a>
@@ -312,7 +313,9 @@ const props = defineProps<{
 .popover-box {
   align-items: center;
 }
-
+.popover-box:hover{
+  color: blue;
+}
 .entry-footer-tags, .entry-footer {
   display: flex;
   flex-direction: row;

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
+import {computed, onMounted, onUnmounted, reactive, ref} from 'vue';
 import UserInfoCard from '@/components/UserInfoCard/index.vue';
 import ArticleList from '@/components/ArticleList.vue';
-import { useUserStore } from '@/store';
-import { useRoute, useRouter } from 'vue-router';
-import { getAuthorColumnDetail } from '@/api/column';
-import { getColumnPublishArticle } from '@/api/post';
-import { ImageUtils } from '@/utils/file';
-import { message } from 'ant-design-vue';
+import {useUserStore} from '@/store';
+import {useRoute, useRouter} from 'vue-router';
+import {getAuthorColumnDetail} from '@/api/column';
+import {getColumnPublishArticle} from '@/api/post';
+import {ImageUtils} from '@/utils/file';
+import {message} from 'ant-design-vue';
 
 /*------------------------------------类型定义---------------------------------------------*/
 interface IAnalyse {
@@ -34,7 +34,7 @@ const articleList = reactive<any[]>([]);
 const columnArticleQuery = reactive({
   total: 0,
   current: 1,
-  size: 3,
+  size: 10,
   id: '',
 });
 const maxLoadedPage = ref(0);
@@ -68,19 +68,17 @@ const loadColumnInfo = () => {
 
 const loadColumnArticleList = async (append = true) => {
   if (loading.value || (!hasMore.value && append)) return;
-
   if (append && columnArticleQuery.current <= maxLoadedPage.value) {
     return;
   }
-
   loading.value = true;
-  const res = await getColumnPublishArticle({ ...columnArticleQuery, id: cid });
+  const res = await getColumnPublishArticle({...columnArticleQuery, id: cid});
   if (res && res.records) {
-    message.info(columnArticleQuery.current + '页');
     try {
       const enhancedArticles = res.records.map((article: any) => ({
         ...article,
         ...userInfo,
+        userId: userInfo.id
       }));
       if (append) {
         articleList.push(...enhancedArticles);
@@ -130,7 +128,7 @@ const handleScroll = () => {
 /*------------------------------------核心业务--------------------------------------------*/
 const onSubscribeToColumn = () => {
   if (!userStore.isLogin()) {
-    router.push({ path: '/login' });
+    router.push({path: '/login'});
   }
 };
 </script>
@@ -139,7 +137,7 @@ const onSubscribeToColumn = () => {
   <a-row :gutter="20" style="width: 100%;">
     <a-col :span="6">
       <a-card style="height: 205px">
-        <UserInfoCard :user-info="userInfo" />
+        <UserInfoCard :user-info="userInfo"/>
       </a-card>
     </a-col>
     <a-col :span="18">
@@ -170,7 +168,7 @@ const onSubscribeToColumn = () => {
           </a-flex>
         </a-card>
         <a-card>
-          <ArticleList :article-list="articleList" />
+          <ArticleList :article-list="articleList"/>
           <div v-if="loading" style="text-align: center; padding: 20px;">加载中...</div>
           <div v-else-if="!hasMore" style="text-align: center; padding: 20px;">
             没有更多文章了
