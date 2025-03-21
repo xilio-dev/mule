@@ -47,7 +47,7 @@ const props = defineProps<{
         <div class="content-wrapper">
           <div class="content-main">
             <div class="title-row">
-              <div class="xx-link title" v-html="item.title"></div>
+              <div class="xx-link article-title" v-html="item.title"></div>
             </div>
             <div class="abstract">
               <div class="xx-link">
@@ -116,6 +116,7 @@ const props = defineProps<{
   width: 100%;
   background-color: #fff;
   position: relative;
+  word-break: break-all;
 }
 
 .item {
@@ -177,9 +178,10 @@ const props = defineProps<{
 .title-row {
   display: flex;
   margin-bottom: 2px;
+  word-break: break-all;
 }
 
-.title {
+.article-title {
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;

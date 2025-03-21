@@ -43,6 +43,6 @@ public interface ColumnMapper extends BaseMapper<Column> {
 
     Page<Column> findSubscribedColumnsByUserId(@Param("page") Page page, @Param("userId") String userId, @Param("name") String name);
 
-    ColumnDetailVo selectColumnDetailByUserId(@Param("uid")String uid, @Param("cid")String cid);
+    ColumnDetailVo selectColumnDetailByUserId(@Param("cid")String cid);
 }
 

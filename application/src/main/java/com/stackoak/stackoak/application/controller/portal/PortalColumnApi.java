@@ -65,8 +65,8 @@ public class PortalColumnApi {
         return Result.success();
     }
 
-    @PostMapping(value = "detail", name = "专栏详情")
-    public Result detail(@RequestBody ColumnDetailRequest req) {
-        return Result.success(columnService.detail(req));
+    @GetMapping(value = "detail", name = "专栏详情")
+    public Result detail(@RequestParam String  cid) {
+        return Result.success(columnService.detail(cid));
     }
 }

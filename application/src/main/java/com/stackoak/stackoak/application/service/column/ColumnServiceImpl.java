@@ -127,7 +127,7 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     }
 
     @Override
-    public ColumnDetailVo detail(ColumnDetailRequest req) {
-        return baseMapper.selectColumnDetailByUserId(req.uid(), req.cid());
+    public ColumnDetailVo detail(String  cid) {
+        return baseMapper.selectColumnDetailByUserId(cid);
     }
 }

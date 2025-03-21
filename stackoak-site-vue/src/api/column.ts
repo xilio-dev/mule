@@ -33,6 +33,7 @@ export function deleteColumn(columnId: string) {
         }
     })
 }
-export function getAuthorColumnDetail(data: any) {
-    return request.post(Api.DETAIL, data)
+
+export function getAuthorColumnDetail(cid: any) {
+    return request.get(Api.DETAIL + `?cid=${cid}`)
 }

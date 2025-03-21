@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import {PlusOutlined} from '@ant-design/icons-vue';
-import cover from '@/assets/avatar.jpeg';
 import {ImageUtils} from "@/utils/file.ts";
-
-import router from "@/router";
-
-
 const props = defineProps<{
   columnList: [];
-  userId:''
 }>();
 const onOpenColumn = (id: string) => {
-  window.open(`/column?cid=${id}&uid=${props.userId}`, '_blank')
+  window.open(`/column?cid=${id}`, '_blank')
 }
 </script>
 

@@ -179,7 +179,7 @@ const ontoChat = () => {
     </a-col>
     <a-col :span="18" style=" float: left">
       <a-card style="border: none">
-        <h1>{{ articleInfo.title }}</h1>
+        <h1 class="article-title">{{ articleInfo.title }}</h1>
         <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 15px">
           <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
             <div style="color: #515767;">{{ userInfo.nickname }}</div>
@@ -406,5 +406,8 @@ const ontoChat = () => {
 
 .comment-container {
   margin-top: 15px;
+}
+.article-title{
+  word-break: break-all;
 }
 </style>

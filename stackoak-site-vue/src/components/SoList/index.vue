@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import {ImageUtils} from "@/utils/file.ts";
+import { ImageUtils } from "@/utils/file.ts";
 
 defineProps<{
-  list: [],
-  loadMore:false
+  list: any[], // 修改为 any[] 以避免空数组类型问题
+  loadMore: boolean // 明确布尔类型
 }>();
 </script>
 
 <template>
-  <div v-for="item in list" class="title-container">
+  <div v-for="item in list" :key="item.id" class="title-container">
     <a-flex :gap="8" style="width: 100%;">
       <div class="cover" v-if="item.cover">
         <slot name="cover" :item="item">
-          <a-image style="width: 120px;height: 68px" :src="ImageUtils.getImgUrl(item.cover)" :preview="false"/>
+          <a-image
+              style="width: 120px; height: 68px; object-fit: cover;"
+              :src="ImageUtils.getImgUrl(item.cover)"
+              :preview="false"
+          />
         </slot>
       </div>
-      <a-flex style="width: 100%;" vertical justify="space-between">
-        <a-flex justify="space-between" :gutter="4">
+      <a-flex style="flex: 1; min-width: 0;" vertical justify="space-between">
+        <a-flex justify="space-between" :gutter="4" style="min-width: 0;">
           <h3 class="so-title so-ellipsis-text">
             <slot name="title" :item="item">
-              {{ item.title }}
+              <!-- 使用 v-html 处理特殊字符并保持样式 -->
+              <span v-html="item.title"></span>
             </slot>
           </h3>
           <div class="so-right">
@@ -28,22 +33,20 @@ defineProps<{
             </slot>
           </div>
         </a-flex>
-        <div>
-          <slot name="content" :item="item">
-
-          </slot>
+        <div class="content-wrapper">
+          <slot name="content" :item="item" />
         </div>
         <a-flex justify="space-between">
           <a-flex :gap="8">
-            <slot name="tag" :item="item"/>
+            <slot name="tag" :item="item" />
           </a-flex>
           <a-flex :gap="8" style="cursor: pointer">
-            <slot name="action" :item="item"/>
+            <slot name="action" :item="item" />
           </a-flex>
         </a-flex>
       </a-flex>
     </a-flex>
-    <a-divider/>
+    <a-divider />
   </div>
   <div style="text-align: center" v-if="loadMore">
     <slot name="loadMore">
@@ -53,40 +56,47 @@ defineProps<{
 </template>
 
 <style scoped>
+.title-container {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .cover {
   border-radius: 8px;
-  background-size: 100%;
+  flex-shrink: 0; /* 防止封面图被压缩 */
 }
 
 .so-title {
-  flex-shrink: 1;
+  margin: 0; /* 移除默认外边距 */
+  flex: 1; /* 允许标题占据可用空间 */
+  min-width: 0; /* 关键：允许元素收缩 */
   cursor: pointer;
 }
 
-.so-title a {
+.so-title span {
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%; /* 确保宽度不超过父容器 */
+  word-break: break-word; /* 处理特殊字符换行 */
+}
+
+/* 特殊字符处理 */
+.so-ellipsis-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .so-right {
-  flex-shrink: 0;
+  flex-shrink: 0; /* 防止右侧内容被压缩 */
+  white-space: nowrap; /* 保持时间格式不换行 */
 }
 
-/* 父容器的宽度限制 */
-.title-container {
-  width: 100%; /* 确保父容器宽度有限制 */
-  overflow: hidden; /* 防止子元素超出 */
-}
-
-/* 子元素的省略号样式 */
-.so-ellipsis-text {
-  white-space: nowrap; /* 防止文本换行 */
-  overflow: hidden; /* 隐藏超出部分 */
-  text-overflow: ellipsis; /* 显示省略号 */
-  max-width: 100%; /* 确保宽度不超过父容器 */
-  display: block; /* 确保样式生效 */
+.content-wrapper {
+  width: 100%;
+  overflow: hidden; /* 防止内容溢出 */
 }
 </style>

@@ -73,8 +73,8 @@
                  left join article_column ac on ac.column_id = c.id
                  left join article a on ac.article_id = a.id
                  left join column_subscription cs on c.id = cs.column_id
-        WHERE c.user_id = #{uid}
-          AND c.id = #{cid}
+        WHERE
+         c.id = #{cid}
 
     </select>
 </mapper>
