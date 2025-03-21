@@ -8,6 +8,7 @@ import {getAuthorColumnDetail} from '@/api/column';
 import {getColumnPublishArticle} from '@/api/post';
 import {ImageUtils} from '@/utils/file';
 import {message} from 'ant-design-vue';
+import {unFollowUser} from "@/api/user.ts";
 
 /*------------------------------------类型定义---------------------------------------------*/
 interface IAnalyse {
@@ -131,13 +132,24 @@ const onSubscribeToColumn = () => {
     router.push({path: '/login'});
   }
 };
+//关注和取消关注 todo emit没有生效
+const onToggleFollow=(isFollow:boolean)=>{
+  //如果没有关注，执行关注
+  //  followUser(authorId).then(res=>{
+  //    message.success("已关注")
+  //  })
+  unFollowUser(userInfo.userId).then(res => {
+    message.success("已取消关注")
+  })
+  //如果已经关注，执行取消关注
+}
 </script>
 
 <template>
   <a-row :gutter="20" style="width: 100%;">
     <a-col :span="6">
       <a-card style="height: 205px">
-        <UserInfoCard :user-info="userInfo"/>
+        <UserInfoCard :user-info="userInfo" @toggleFollow="onToggleFollow"/>
       </a-card>
     </a-col>
     <a-col :span="18">
@@ -168,7 +180,7 @@ const onSubscribeToColumn = () => {
           </a-flex>
         </a-card>
         <a-card>
-          <ArticleList :article-list="articleList"/>
+          <ArticleList  :article-list="articleList"/>
           <div v-if="loading" style="text-align: center; padding: 20px;">加载中...</div>
           <div v-else-if="!hasMore" style="text-align: center; padding: 20px;">
             没有更多文章了

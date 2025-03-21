@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {NumberUtils} from "../../utils/number-util.ts";
 
+const emit = defineEmits(['toggle-follow','on-chat'])
 const props = defineProps<{
   userInfo: UserInfo
 }>()
@@ -17,14 +18,15 @@ interface UserInfo {
   avatar: string
 }
 
-const emit = defineEmits(['toggleFollow', 'onChat'])
+
 //关注和取消关注
-const toggleFollow = () => {
-  emit('toggleFollow',!props.userInfo.isFollow)
+const onToggleFollow = () => {
+  emit('toggle-follow', !props.userInfo.isFollow);
+
 }
 //私信作者
 const toChat = () => {
-  emit('onChat')
+  emit('on-chat')
 }
 </script>
 
@@ -69,7 +71,7 @@ const toChat = () => {
       <a-button @click="toChat" type="default" style="width: 100%;">私信</a-button>
     </a-col>
     <a-col :span="12">
-      <a-button @click="toggleFollow" :type="!userInfo.isFollow?'primary':'default'" style="width: 100%;">
+      <a-button @click="onToggleFollow" :type="!userInfo.isFollow?'primary':'default'" style="width: 100%;">
         {{ userInfo.isFollow ? '已关注' : '关注' }}
       </a-button>
     </a-col>
