@@ -12,11 +12,11 @@ import Login from "@/components/Login.vue";
 import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
 import CommentInput from '@/components/CommentInput/index.vue'
 import UserInfoCard from '@/components/UserInfoCard/index.vue'
+import {followUser, unFollowUser} from "@/api/user.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
 const route = useRoute()
-const isLoading = ref(true);
 const articleInfo = ref({})
 const userInfo = ref({})
 const tags = ref({})
@@ -27,7 +27,7 @@ const commentInputRef = ref()
 const needVisitPass = ref(false)
 //打开登陆
 const openLoginModal = ref(false)
-
+const isLoading = ref(true); // 加载状态
 const comments = reactive([]);
 const commentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
@@ -130,20 +130,23 @@ const toApply = (comment: string) => {
   commentValue.value = ''
   commentInputRef.value.focus()
 }
-
+//关注和取消关注
+const onToggleFollow = async (isFollow: boolean) => {
+  userInfo.value.isFollow = isFollow/*切换关注状态*/
+  userInfo.value.fansCount = isFollow ? userInfo.value.fansCount + 1 : userInfo.value.fansCount - 1/*粉丝数变更*/
+  //已经关注，取消关注
+  if (isFollow) {
+    await unFollowUser(userInfo.value.userId)
+  } else {
+    //如果未关注，执行关注
+    await followUser(userInfo.value.userId)
+  }
+}
 
 /*-------------------------------------其他函数-------------------------------------------*/
 //如果用户已经登陆，而且是自己的文章，那么可以去编辑
 const onToEditEditor = (id: string) => {
   router.push({path: '/editor', query: {id: id}});
-}
-//关注和取消关注
-const toggleFollow = () => {
-  userInteract.value.isFollow = !userInteract.value.isFollow
-}
-//私信作者
-const ontoChat = () => {
-
 }
 
 
@@ -161,11 +164,10 @@ const ontoChat = () => {
       </a-flex>
     </a-flex>
   </a-flex>
-
-  <a-row :gutter="20" v-if="!needVisitPass">
+  <a-row :gutter="20" >
     <a-col :span="6">
-      <a-card style="height: 205px">
-        <UserInfoCard :user-info="userInfo"/>
+      <a-card>
+        <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo"/>
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
         <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
@@ -407,7 +409,8 @@ const ontoChat = () => {
 .comment-container {
   margin-top: 15px;
 }
-.article-title{
+
+.article-title {
   word-break: break-all;
 }
 </style>
