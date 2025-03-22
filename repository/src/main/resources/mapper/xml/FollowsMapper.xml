@@ -4,43 +4,35 @@
 
     <select id="selectFans" resultType="com.stackoak.stackoak.common.data.follow.FollowUserVO">
         SELECT
-            u.id AS userId,
+            u.id,
             u.nickname,
             u.avatar,
             u.introduce,
             CASE
-                WHEN f2.user_id IS NOT NULL AND f3.target_user_id IS NOT NULL THEN 1
+                WHEN f2.user_id IS NOT NULL AND f3.user_id IS NOT NULL THEN 1
                 ELSE 0
                 END AS relation
         FROM
-            follows AS f
-                JOIN
-            user AS u ON f.user_id = u.id
-                LEFT JOIN
-            follows AS f2 ON f2.target_user_id = f.user_id AND f2.user_id = #{visitorUserId}
-                LEFT JOIN
-            follows AS f3 ON f3.user_id = f.user_id AND f3.target_user_id = #{visitorUserId}
+            USER u
+                JOIN follows f ON u.id = f.user_id
+                LEFT JOIN follows f2 ON f2.user_id = u.id AND f2.target_user_id = #{visitorUserId}
+                LEFT JOIN follows f3 ON f3.user_id = #{visitorUserId} AND f3.target_user_id = u.id
         WHERE
             f.target_user_id = #{userId}
     </select>
     <select id="selectFollow" resultType="com.stackoak.stackoak.common.data.follow.FollowUserVO">
         SELECT
-            u.id AS userId,
+            u.id,
             u.nickname,
-            u.avatar,
-            u.introduce,
             CASE
-                WHEN f2.user_id IS NOT NULL AND f3.target_user_id IS NOT NULL THEN 1
+                WHEN f2.user_id IS NOT NULL AND f3.user_id IS NOT NULL THEN 1
                 ELSE 0
                 END AS relation
         FROM
-            follows AS f
-                JOIN
-            user AS u ON f.target_user_id = u.id
-                LEFT JOIN
-            follows AS f2 ON f2.target_user_id = f.target_user_id AND f2.user_id = #{visitorUserId}
-                LEFT JOIN
-            follows AS f3 ON f3.user_id = f.target_user_id AND f3.target_user_id = #{visitorUserId}
+            USER u
+                JOIN follows f ON u.id = f.target_user_id
+                LEFT JOIN follows f2 ON f2.user_id = u.id AND f2.target_user_id =  #{visitorUserId}
+                LEFT JOIN follows f3 ON f3.user_id = #{visitorUserId} AND f3.target_user_id = u.id
         WHERE
             f.user_id = #{userId}
     </select>
