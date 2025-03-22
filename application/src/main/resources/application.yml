@@ -70,3 +70,10 @@ redis:
           - name: NOTIFICATION_GROUP
             consumers: NOTIFICATION_CONSUMER_1
 
+heat:
+  calculator:
+    like-weight: 4
+    view-weight: 3
+    collect-weight: 5
+    comment-weight: 4
+    gravity: 1.5  # 衰减参数G

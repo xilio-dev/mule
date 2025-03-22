@@ -2,6 +2,7 @@ package com.stackoak.stackoak.application.service.article;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.stackoak.stackoak.application.actors.alg.ContentHeatCalculator;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserConfigService;
 import com.stackoak.stackoak.application.util.StringTools;
@@ -72,6 +73,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private ISearchService searchService;
     @Autowired
     private IUserConfigService userConfigService;
+    @Autowired
+    private ContentHeatCalculator heatCalculator;
 
     @Override
     public Page<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
@@ -528,5 +531,22 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public Page<ArticleBriefVO> getArticleListByColumn(CommonPageQuery query) {
         return baseMapper.selectArticleListByColumnId(Page.of(query.getCurrent(), query.getSize()), query.getId());
+    }
+
+    @Override
+    public Page<ArticleBriefVO> findAuthorHotArticleList(CommonPageQuery query) {
+        Page<ArticleBriefVO> page = new Page<>(query.getCurrent(), query.getSize());
+
+        // 从ContentHeatCalculator获取配置参数
+        int likeWeight = heatCalculator.getLikeWeight();
+        int viewWeight = heatCalculator.getViewWeight();
+        int collectWeight = heatCalculator.getCollectWeight();
+        int commentWeight = heatCalculator.getCommentWeight();
+        double gravity = heatCalculator.getGravity();
+
+        // 调用Mapper查询
+        return baseMapper.selectAuthorHotArticleList(
+                page, query.getId(), likeWeight, viewWeight, collectWeight, commentWeight, gravity
+        );
     }
 }

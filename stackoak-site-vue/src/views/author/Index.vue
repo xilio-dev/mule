@@ -7,8 +7,9 @@ import {useRoute} from "vue-router";
 import {useUserStore} from "@/store";
 import {message} from "ant-design-vue";
 import {columnLists} from "@/api/column.ts";
-import {authorArticleList, authorArticleRank} from "@/api/post.ts";
+import {authorArticleList, authorArticleRank, getAuthorHotArticleList} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
+import {CommonUtil} from "@/utils/common.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
 const collectActiveKey = ref('1')
@@ -22,9 +23,16 @@ const authorFansList = ref([])
 const authorFollowList = ref([])
 const openDrawer = ref(false)
 const authorArticles = reactive([])
+const authorHotArticles = reactive([])/*作者热门文章*/
+
 //判断是否是自己本人
 const isSelf = computed(() => {
   return userStore.userinfo.userId == authorId
+})
+const authorHotArticleQuery = reactive({
+  current: 1,
+  size: 6,
+  id: authorId
 })
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
@@ -32,9 +40,9 @@ onMounted(async () => {
   await loadFollows()
   await loadFans()
   await loadUserColumns()
-  await loadAuthorArticleRank()
+  // await loadAuthorArticleRank()
   await loadAuthorArticles()
-
+  await loadAuthorHotArticles()
 })
 
 /*------------------------------------初始化---------------------------------------------*/
@@ -77,6 +85,11 @@ const loadAuthorArticles = async () => {
   const res = await authorArticleList({current: 1, size: 100, id: authorId})
   Object.assign(authorArticles, res.records)
 }
+//加载作者热门文章
+const loadAuthorHotArticles = async () => {
+  const res = await getAuthorHotArticleList(authorHotArticleQuery)
+  Object.assign(authorHotArticles, res.records)
+}
 /*------------------------------------核心业务--------------------------------------------*/
 //点击关注或取消关注
 const onFollowAuthor = () => {
@@ -94,13 +107,14 @@ const onFollowAuthor = () => {
 const onChat = () => {
 
 }
-
+//更换作者热门文章
+const onChangeHotArticle = () => {
+  authorHotArticleQuery.current = authorHotArticleQuery.current + 1
+  loadAuthorHotArticles()
+}
 
 /*-------------------------------------其他函数-------------------------------------------*/
-//
-const onEnterPD = () => {
 
-}
 const openLink = (url: string) => {
   window.open(url, '_blank')
 }
@@ -171,9 +185,20 @@ const openLink = (url: string) => {
           <h3>收获 14563 粉丝</h3>
         </a-card>
 
-        <a-card :bordered=false title="阅读榜单" style=" box-shadow: none;margin-top: 15px;min-height: 200px">
-          <div v-for="item in articleRank">
-            {{ item.title }}
+        <a-card :bordered=false title="热门文章" style=" box-shadow: none;margin-top: 15px ">
+          <template #extra>
+            <span @click="onChangeHotArticle" class="change-label">换一换</span>
+          </template>
+          <div v-for="item in authorHotArticles" :key="item.id">
+            <a-flex :gap="2" justify="space-between" >
+              <div class="article-title  " @click="CommonUtil.openNewPage(`/post/${item.id}`)">
+                {{ item.title }}
+              </div>
+              <a-flex align="center">
+                <svg t="1742654875404" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3944" width="16" height="16"><path d="M710.287 320.707c-87.785 26.446-103.857 101.388-98.198 148.99-62.617-77.737-60.05-167.163-60.05-295.997C351.224 253.674 397.88 484.262 391.9 554.283c-50.513-43.664-60.055-147.987-60.055-147.987-53.328 28.965-80.076 106.364-80.076 169.138 0 151.81 116.513 274.867 260.23 274.867 143.714 0 260.23-123.059 260.23-274.867 0-90.22-62.713-131.85-61.957-254.727h0.015m0 0" p-id="3945" fill="#515151"></path></svg>
+                <span>{{ item.heat }}</span>
+              </a-flex>
+            </a-flex>
           </div>
         </a-card>
       </a-affix>
@@ -358,4 +383,36 @@ a-card {
   border: none;
   box-shadow: none;
 }
+
+:deep(.ant-card .ant-card-body) {
+  padding: 8px 12px;
+  border-radius: 0 0 8px 8px;
+}
+
+.article-title {
+  white-space: nowrap; /* 强制单行显示 */
+  overflow: hidden; /* 隐藏超出内容 */
+  text-overflow: ellipsis; /* 超出部分显示... */
+  word-break: break-all;
+  transition: all 0.3s ease; /* 添加过渡动画 */
+  margin-bottom: 8px
+}
+
+.article-title:hover {
+  cursor: pointer;
+}
+
+.article-title:last-child {
+  margin-bottom: 0; /* 最后一项移除下间距 */
+}
+
+.change-label {
+  cursor: pointer;
+  color: gray;
+}
+
+.change-label:hover {
+  color: #4c4ce6;
+}
+
 </style>

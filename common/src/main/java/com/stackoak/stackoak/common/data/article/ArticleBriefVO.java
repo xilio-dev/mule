@@ -25,4 +25,8 @@ public class ArticleBriefVO extends Article {
      * 用户昵称
      */
     private String nickname;
+    /**
+     * 文章热度
+     */
+    private Integer heat;
 }

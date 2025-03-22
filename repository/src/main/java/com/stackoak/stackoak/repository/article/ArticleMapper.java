@@ -34,9 +34,20 @@ public interface ArticleMapper extends BaseMapper<Article> {
     Page<Article> selectByColumn(@Param("page") Page<Article> page, @Param("cid") String cid);
 
 
-    Page<ArticleBriefVO> selectFollowList(@Param("page") Page<ArticleBriefVO> page,@Param("userId") String userId);
+    Page<ArticleBriefVO> selectFollowList(@Param("page") Page<ArticleBriefVO> page, @Param("userId") String userId);
 
-    Page<ArticleBriefVO> selectAuthorArticleList(@Param("page")Page<ArticleBriefVO> page,@Param("userId") String userId, @Param("title")String title);
-    Page<ArticleBriefVO> selectArticleListByColumnId(@Param("page")Page<ArticleBriefVO> page, @Param("cid")String cid);
+    Page<ArticleBriefVO> selectAuthorArticleList(@Param("page") Page<ArticleBriefVO> page, @Param("userId") String userId, @Param("title") String title);
+
+    Page<ArticleBriefVO> selectArticleListByColumnId(@Param("page") Page<ArticleBriefVO> page, @Param("cid") String cid);
+
+    Page<ArticleBriefVO> selectAuthorHotArticleList(
+            Page<ArticleBriefVO> page,
+            @Param("userId") String userId,
+            @Param("likeWeight") int likeWeight,
+            @Param("viewWeight") int viewWeight,
+            @Param("collectWeight") int collectWeight,
+            @Param("commentWeight") int commentWeight,
+            @Param("gravity") double gravity
+    );
 }
 

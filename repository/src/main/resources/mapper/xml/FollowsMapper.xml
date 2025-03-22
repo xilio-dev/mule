@@ -24,6 +24,8 @@
         SELECT
             u.id,
             u.nickname,
+            u.avatar,
+            u.introduce,
             CASE
                 WHEN f2.user_id IS NOT NULL AND f3.user_id IS NOT NULL THEN 1
                 ELSE 0

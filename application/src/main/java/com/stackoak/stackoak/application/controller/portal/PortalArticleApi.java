@@ -2,6 +2,7 @@ package com.stackoak.stackoak.application.controller.portal;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.application.actors.alg.ContentHeatCalculator;
 import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.actors.cut.FieldFilters;
 import com.stackoak.stackoak.application.actors.limit.RateLimit;
@@ -36,6 +37,7 @@ public class PortalArticleApi {
     @Autowired
     private IArticleService articleService;
 
+
     @PostMapping("list")
     @FieldFilter(type = ArticleBriefVO.class)
     public Result list(@RequestBody @Valid ArticleListDTO dto) {
@@ -46,6 +48,12 @@ public class PortalArticleApi {
     @FieldFilter(type = ArticleBriefVO.class)
     public Result getColumnArticleList(@RequestBody @Valid CommonPageQuery query  ) {
         return Result.success(articleService.getArticleListByColumn(query));
+    }
+
+    @PostMapping(value = "get_author_hot_article_list",name = "获取作者热门文章")
+    @FieldFilter(type = ArticleBriefVO.class)
+    public Result getAuthorHotArticleList(@RequestBody @Valid CommonPageQuery query  ) {
+        return Result.success(articleService.findAuthorHotArticleList(query));
     }
 
     @PostMapping(value = "follow_list",name = "关注作者的文章")

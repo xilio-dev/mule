@@ -85,4 +85,6 @@ public interface IArticleService extends IService<Article> {
 
 
     public Page<ArticleBriefVO>  getArticleListByColumn(@Valid CommonPageQuery query);
+
+    public Page<ArticleBriefVO>  findAuthorHotArticleList(@Valid CommonPageQuery query);
 }
