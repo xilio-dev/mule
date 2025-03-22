@@ -25,11 +25,18 @@ public class CommentDTO implements Serializable {
     private String articleId;
 
     /**
-     * 评论者ID，逻辑关联users表
+     * 评论者ID，
      */
     private String userId;
+    /**
+     * 评论者昵称
+     */
+    private String nickname;
 
-
+    /**
+     * 评论者头像
+     */
+    private String avatar;
     /**
      * 评论内容
      */

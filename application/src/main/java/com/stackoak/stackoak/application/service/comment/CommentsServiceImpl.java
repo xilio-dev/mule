@@ -14,6 +14,7 @@ import com.stackoak.stackoak.application.service.like.ILikesService;
 import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
 import com.stackoak.stackoak.application.service.notification.INotificationsService;
 import com.stackoak.stackoak.application.service.user.IUserService;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.comment.*;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
@@ -79,13 +80,15 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
      * @return 二级评论
      */
     @Override
-    public List<CommentDTO> getCommentByAid(String aid) {
+    public Page<CommentDTO> getCommentByAid(String aid) {
         String userId = StpKit.USER.getLoginIdAsString();
         Page<CommentDTO> page = Page.of(1, 100);
-        List<CommentDTO> comments = baseMapper.selectCommentByAid(page, aid, userId);
+        Page<CommentDTO> comments = baseMapper.selectCommentByAid(page, aid, userId);
 
         //转化为二级评论树 三级回复二级转化为 “三级以及以后评论用户” 回复 “二级评论用户”
-        return tran2LevelTree(comments);
+        List<CommentDTO> commentDTOS = tran2LevelTree(comments.getRecords());
+        comments.setRecords(commentDTOS);
+        return comments;
     }
 
     /**
@@ -190,6 +193,18 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
         //如果有子评论需要删除所有子评论
         removeByCommentPid(request.getCommentId());
 
+    }
+
+    @Override
+    public Page<CommentDTO> getAllOneLevelComment(PageQuery pageQuery) {
+        Page<CommentDTO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
+        String userId = StpKit.USER.getLoginIdAsString();
+        return baseMapper.selectAllOneLevelComment(page, userId);
+    }
+
+    @Override
+    public Page<CommentDTO> getAllOneLevelReply(PageQuery pageQuery) {
+        return null;
     }
 
     /**

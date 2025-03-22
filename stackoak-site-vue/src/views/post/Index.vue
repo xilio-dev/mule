@@ -62,8 +62,7 @@ async function fetchPostData() {
 const loadComments = async () => {
   if (articleInfo.value) {
     const res = await commentList({aid: articleInfo.value.id})
-    // res ? Object.assign(comments, res) : comments
-    comments.splice(0, comments.length, ...(res ?? []));
+    comments.splice(0, comments.length, ...(res.records ?? []));
   }
 }
 

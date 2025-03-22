@@ -4,6 +4,7 @@ const Api = {
     DIGG: '/comments/digg',
     UN_DIGG: '/comments/undigg',
     LIST: '/comments/list',
+    LISTS: '/comments/lists',
     ADD: '/comments/add',
     DEL: '/comments/del',
 };
@@ -18,6 +19,9 @@ export function unDiggComment(data: any) {
 
 export function commentList(data: any) {
     return request.post(Api.LIST, data)
+}
+export function commentListS(data: any) {
+    return request.post(Api.LISTS, data)
 }
 
 export function addComment(data: any) {

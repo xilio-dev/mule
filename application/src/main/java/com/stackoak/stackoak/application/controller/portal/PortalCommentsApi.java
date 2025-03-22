@@ -2,7 +2,9 @@ package com.stackoak.stackoak.application.controller.portal;
 
 import com.stackoak.stackoak.application.actors.limit.RateLimit;
 import com.stackoak.stackoak.application.actors.repeat.RepeatSubmit;
+import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.application.service.comment.ICommentsService;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleId;
 import com.stackoak.stackoak.common.data.comment.CommentId;
@@ -32,6 +34,18 @@ public class PortalCommentsApi {
     @PostMapping("list")
     public Result list(@RequestBody ArticleId articleId) {
         return Result.success(commentsService.getCommentByAid(articleId.aid()));
+    }
+
+
+    @PostMapping(value = "lists",name = "获取作者收到的所有一级评论")
+    @SaUserCheckLogin
+    public Result getAllOneLevelComment(@RequestBody PageQuery pageQuery) {
+        return Result.success(commentsService.getAllOneLevelComment(pageQuery));
+    }
+    @PostMapping(value = "replies",name = "获取作者所有的回复，一级")
+    @SaUserCheckLogin
+    public Result getAllOneLevelReply(@RequestBody PageQuery pageQuery) {
+        return Result.success(commentsService.getAllOneLevelReply(pageQuery));
     }
 
     @PostMapping(value = "digg", name = "评论点赞")

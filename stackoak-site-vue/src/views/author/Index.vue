@@ -190,7 +190,7 @@ const openLink = (url: string) => {
             <span @click="onChangeHotArticle" class="change-label">换一换</span>
           </template>
           <div v-for="item in authorHotArticles" :key="item.id">
-            <a-flex :gap="2" justify="space-between" >
+            <a-flex :gap="2" justify="space-between">
               <div class="article-title  " @click="CommonUtil.openNewPage(`/post/${item.id}`)">
                 <a-tooltip placement="top">
                   <template #title>
@@ -200,7 +200,12 @@ const openLink = (url: string) => {
                 </a-tooltip>
               </div>
               <a-flex align="center">
-                <svg t="1742654875404" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3944" width="16" height="16"><path d="M710.287 320.707c-87.785 26.446-103.857 101.388-98.198 148.99-62.617-77.737-60.05-167.163-60.05-295.997C351.224 253.674 397.88 484.262 391.9 554.283c-50.513-43.664-60.055-147.987-60.055-147.987-53.328 28.965-80.076 106.364-80.076 169.138 0 151.81 116.513 274.867 260.23 274.867 143.714 0 260.23-123.059 260.23-274.867 0-90.22-62.713-131.85-61.957-254.727h0.015m0 0" p-id="3945" fill="#515151"></path></svg>
+                <svg t="1742654875404" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                     xmlns="http://www.w3.org/2000/svg" p-id="3944" width="16" height="16">
+                  <path
+                      d="M710.287 320.707c-87.785 26.446-103.857 101.388-98.198 148.99-62.617-77.737-60.05-167.163-60.05-295.997C351.224 253.674 397.88 484.262 391.9 554.283c-50.513-43.664-60.055-147.987-60.055-147.987-53.328 28.965-80.076 106.364-80.076 169.138 0 151.81 116.513 274.867 260.23 274.867 143.714 0 260.23-123.059 260.23-274.867 0-90.22-62.713-131.85-61.957-254.727h0.015m0 0"
+                      p-id="3945" fill="#515151"></path>
+                </svg>
                 <span>{{ item.heat }}</span>
               </a-flex>
             </a-flex>

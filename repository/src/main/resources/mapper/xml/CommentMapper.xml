@@ -26,4 +26,35 @@
             c.article_id = #{aid}
           AND c.status = 1
     </select>
+    <select id="selectAllOneLevelComment" resultType="com.stackoak.stackoak.common.data.comment.CommentDTO">
+        SELECT c.id,
+        c.article_id AS articleId,
+        c.user_id    AS userId,
+        c.pid,
+        c.content,
+        c.created_at AS createdAt,
+        c.updated_at AS updatedAt,
+        c.like_count AS likeCount,
+        c.status,
+        u.nickname,
+        u.avatar,
+        CASE
+        WHEN #{userId} IS NULL THEN NULL
+        WHEN l.target_id IS NOT NULL THEN 1
+        ELSE 0
+        END AS liked
+        FROM comment c
+        LEFT JOIN likes l
+        ON l.target_id = c.id
+        AND l.user_id = #{userId}
+        AND l.type = 2
+        JOIN user u
+        ON u.id = c.user_id
+        JOIN article a
+        ON a.id = c.article_id
+        WHERE c.status = 1
+        AND c.user_id != #{userId}
+
+        ORDER BY c.created_at DESC
+    </select>
 </mapper>

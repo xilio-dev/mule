@@ -14,6 +14,14 @@ export class CommonUtil {
         window.open(url)
     }
     /**
+     * 去除字符串中的所有空格（性能优化版）
+     * @param str 输入的字符串
+     * @returns 处理后的字符串（无空格）
+     */
+    static removeAllSpaces(str: string): string {
+        return str.replace(/\s/g, '');
+    }
+    /**
      * 检查字符串是否包含特殊字符（默认定义的特殊字符）
      * @param str 输入字符串
      * @returns boolean 是否包含特殊字符

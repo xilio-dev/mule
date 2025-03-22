@@ -6,13 +6,16 @@ import CommentInput from "@/components/CommentInput/index.vue";
 const activeTab = ref('1');
 const activeCommentStatusTab = ref('1');
 const curCommentItem = ref()/*当前打开的评论项*/
+const comments = reactive([])
 const commentBody = ref({
   commentId: '',
   content: ''
 })
 
 /*------------------------------------生命周期-------------------------------------------*/
-
+onMounted(() => {
+  loadCommentMessages()
+})
 
 
 /*------------------------------------初始化---------------------------------------------*/
@@ -25,7 +28,11 @@ const data = ref([
 
 
 /*------------------------------------数据加载--------------------------------------------*/
-
+//加载评论消息
+const loadCommentMessages = async () => {
+  const res = await commentListS( {current: 1, size: 200})
+  res ? Object.assign(comments, res.records) : Object.assign(messages, [])
+}
 
 
 /*------------------------------------核心业务--------------------------------------------*/
@@ -63,8 +70,10 @@ const onDiggComment = (item: any) => {
 
 import dayjs from 'dayjs';
 import {LikeFilled, LikeOutlined, DislikeFilled, DislikeOutlined} from '@ant-design/icons-vue';
-import {ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import {getMessage} from "@/api/notify.ts";
+import {commentListS} from "@/api/comment.ts";
 
 dayjs.extend(relativeTime);
 
@@ -91,7 +100,7 @@ const dislike = () => {
       <a-tab-pane key="1" tab="文章评论">
         <a-tabs v-model:activeKey="activeCommentStatusTab">
           <a-tab-pane key="1" tab="评论我的">
-            <a-comment v-for="item in data">
+            <a-comment v-for="item in comments" :key="item.id">
               <template #actions>
                   <span key="comment-basic-like">
                     <a-tooltip title="Like">
@@ -121,22 +130,22 @@ const dislike = () => {
       </span>
                 <span @click="toggleReply(item)" key="comment-basic-reply-to">回复</span>
               </template>
-              <template #author><a>小虎开发</a></template>
+              <template #author><a>{{item.nickname}}</a></template>
               <template #avatar>
-                <a-avatar src="https://joeschmoe.io/api/v1/random" alt="Han Solo"/>
+                <a-avatar :src="item.avatar" :alt="item.nickname"/>
               </template>
               <template #content>
                 <p>
-                  不太懂啊，老哥，可以帮忙一下吗
+                  {{item.content}}
                 </p>
 
-                <CommentInput   v-if="item.isOpen" class="comment-container" placeholder="说点什么吧"
+                <CommentInput v-if="item.isOpen" class="comment-container" placeholder="说点什么吧"
                               ref="commentInputRef"
                               :disabled="commentBody.content==''" v-model:value="commentBody.content"/>
               </template>
               <template #datetime>
                 <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
-                  <span>{{ dayjs().fromNow() }}</span>
+                  <span>{{ dayjs().from(item.createdAt) }}</span>
                 </a-tooltip>
               </template>
             </a-comment>
@@ -175,7 +184,7 @@ a-card {
   box-shadow: none;
 }
 
-.comment-container{
+.comment-container {
   margin-top: 10px;
 }
 </style>

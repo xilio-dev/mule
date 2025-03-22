@@ -1,7 +1,9 @@
 package com.stackoak.stackoak.application.service.comment;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.comment.*;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -30,7 +32,7 @@ public interface ICommentsService extends IService<Comment> {
      */
     void cancelDigg(CommentId commentId);
 
-    List<CommentDTO> getCommentByAid(@NotEmpty String aid);
+    Page<CommentDTO> getCommentByAid(@NotEmpty String aid);
 
     /**
      * 添加评论
@@ -47,4 +49,8 @@ public interface ICommentsService extends IService<Comment> {
     void delCommentByUser(DeleteCommentRequest request);
 
     void delete(DeleteCommentRequest request);
+
+    Page<CommentDTO>  getAllOneLevelComment(PageQuery pageQuery);
+
+    Page<CommentDTO>  getAllOneLevelReply(PageQuery pageQuery);
 }

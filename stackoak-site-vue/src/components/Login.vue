@@ -6,8 +6,9 @@ import {type MenuProps, message} from "ant-design-vue";
 import {checkScanStatus, emailCodeLogin, emailLogin, getQrCode, qrLogin} from "@/api/auth.ts";
 import {getUserInfo} from "@/api/user.ts";
 import {sendEmail} from "@/api/email.ts";
+import {CommonUtil} from "@/utils/common.ts";
 /*------------------------------------变量定义------------------------------------------*/
-const props=defineProps(['openStatus'])
+const props = defineProps(['openStatus'])
 const qrCode = ref({})
 const scanStatusJob = ref()
 const isLogin = ref(false)
@@ -23,7 +24,7 @@ onMounted(() => {
   if (userStore.isLogin()) {
     isLogin.value = true
   }
-  checkLoginStatus()
+  //checkLoginStatus()
 })
 onBeforeUnmount(() => {
   clearInterval(scanStatusJob.value)/*清除定时器*/
@@ -66,7 +67,37 @@ const emailLoginDTO = reactive<EmailLoginDTO>({
   email: 'StackOak@163.com',
   password: '123456',
 });
+const emailSuffixOptions = [
+  {
+    value: 'gmail.com',
+    label: 'gmail.com',
+  },
+  {
+    value: '163.com',
+    label: '163.com',
+  },
+  {
+    value: 'qq.com',
+    label: 'qq.com',
+  },
 
+  {
+    value: 'outlook.com',
+    label: 'outlook.com',
+  },
+  {
+    value: 'yahoo.com',
+    label: 'yahoo.com',
+  },
+  {
+    value: 'hotmail.com',
+    label: 'hotmail.com',
+  },
+  {
+    value: 'icloud.com',
+    label: 'icloud.com',
+  }
+]
 /*------------------------------------数据加载--------------------------------------------*/
 const loadLoginQrCode = async () => {
   const res = await getQrCode()
@@ -76,7 +107,7 @@ const loadLoginQrCode = async () => {
 
 /*------------------------------------核心业务--------------------------------------------*/
 const checkLoginStatus = () => {
-  if (!props.openStatus)return
+  if (!props.openStatus) return
   scanStatusJob.value = setInterval(() => {
     checkScanStatus({sign: qrCode.value.sign}).then(res => {
       if (res.status == "PENDING") {
@@ -87,9 +118,9 @@ const checkLoginStatus = () => {
       }
 
       if (res.status == "CONFIRMED") {
-        const secrit=res.secrit
+        const secrit = res.secrit
         //调用接口登陆
-        qrLogin({secrit:secrit}).then(rsp => {
+        qrLogin({secrit: secrit}).then(rsp => {
 
           message.info('登陆成功')
           message.info(JSON.stringify(rsp))
@@ -104,8 +135,7 @@ const checkLoginStatus = () => {
   }, 2000);
 }
 const onEmailLoginFinish = (values: EmailLoginDTO) => {
-  console.log(values)
-  emailLogin(values)
+  emailLogin({...values, email: CommonUtil.removeAllSpaces(values.email)})
       .then(res => {
         userStore.setToken(res.tokenValue);
         // 获取用户信息
@@ -122,7 +152,7 @@ const onEmailLoginFinish = (values: EmailLoginDTO) => {
 //注册
 
 const onEmailRegisterFinish = (values: EmailLoginDTO) => {
-  emailCodeLogin(values).then(res => {
+  emailCodeLogin({...values, email: CommonUtil.removeAllSpaces(values.email)}).then(res => {
     if (res) {
       userStore.setToken(res.tokenValue);
       // 获取用户信息
@@ -167,7 +197,7 @@ const onAuth = (type: string) => {
   }
 }
 //清空定时器 父组件调用
-const clear=()=>{
+const clear = () => {
   clearInterval(scanStatusJob.value)
 }
 defineExpose({clear})
@@ -185,8 +215,9 @@ defineExpose({clear})
                 autocomplete="off"
                 @finish="onEmailLoginFinish">
               <a-form-item name="email" :rules="[{ required: true, message: '请填写邮箱!' }]">
-                <a-input v-model:value="emailLoginDTO.email" :bordered="false" placeholder="邮箱号"
-                         style="margin-top: 10px;background-color: #f2f3f5"/>
+                <a-mentions style="margin-top: 10px;background-color: #f2f3f5;border:none;box-shadow: none"
+                            placeholder="邮箱号" v-model:value="emailLoginDTO.email" rows="1"
+                            :options="emailSuffixOptions"/>
               </a-form-item>
 
               <a-form-item name="password" :rules="[{ required: true, message: '请输入账号密码!' }]">
@@ -210,8 +241,9 @@ defineExpose({clear})
                 autocomplete="off"
                 @finish="onEmailRegisterFinish">
               <a-form-item name="email" :rules="[{ required: true, message: '请填写邮箱!' }]">
-                <a-input v-model:value="emailRegisterDTO.email" :bordered="false" placeholder="邮箱号"
-                         style="margin-top: 10px;background-color: #f2f3f5;"/>
+                <a-mentions style="margin-top: 10px;background-color: #f2f3f5;border:none;box-shadow: none"
+                            placeholder="邮箱号" v-model:value="emailRegisterDTO.email" rows="1"
+                            :options="emailSuffixOptions"></a-mentions>
               </a-form-item>
 
               <a-form-item name="code" :rules="[{ required: true, message: '请输入验证码!' }]">

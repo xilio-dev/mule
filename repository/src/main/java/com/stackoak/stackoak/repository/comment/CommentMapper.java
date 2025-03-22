@@ -19,6 +19,8 @@ import java.util.List;
  */
 public interface CommentMapper extends BaseMapper<Comment> {
 
-    List<CommentDTO> selectCommentByAid(@Param("page") Page<CommentDTO>page, @Param("aid") String aid, @Param("userId") String userId);
+    Page<CommentDTO> selectCommentByAid(@Param("page") Page<CommentDTO>page, @Param("aid") String aid, @Param("userId") String userId);
+
+    Page<CommentDTO> selectAllOneLevelComment(@Param("page")Page<CommentDTO> page, @Param("userId") String userId);
 }
 
