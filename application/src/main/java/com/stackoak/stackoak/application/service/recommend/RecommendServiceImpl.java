@@ -1,7 +1,9 @@
 package com.stackoak.stackoak.application.service.recommend;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.article.IArticleService;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleBriefVO;
 import com.stackoak.stackoak.common.data.recommend.RecommendByUserQuery;
@@ -32,8 +34,10 @@ public class RecommendServiceImpl implements IRecommendService {
      * @return 推荐列表
      */
     @Override
-    public Page<ArticleBriefVO> homeRecommendByUserId(RecommendByUserQuery query) {
-        final String redisKey = RECOMMEND_ARTICLE_USER + query.getUserId();
+    public Page<ArticleBriefVO> getHomeArticleRecommend(PageQuery query) {
+        //如果是登陆用户，根据登陆用户的喜好进行推荐
+        String userId = StpKit.USER.getLoginIdAsString();
+        final String redisKey = RECOMMEND_ARTICLE_USER + userId;
         Long current = query.getCurrent();
         Long size = query.getSize();
         // 计算分页索引（ZSet使用0-based索引）
@@ -42,6 +46,9 @@ public class RecommendServiceImpl implements IRecommendService {
 
         // todo 获取分页数据（按分数降序排列） 测试
         Set aids = redisTemplate.opsForZSet().reverseRange(redisKey, start, end);
+        if (aids == null || aids.isEmpty()) {
+            return null;
+        }
         List<Article> list = articleService.listByIds(aids);
         Page<Article> page = Page.of(current, size);
         page.setRecords(list);

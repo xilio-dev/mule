@@ -163,12 +163,12 @@
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
         <a-card title="热门资讯" :bordered="false" style="margin-top: 12px;min-height: 150px">
-          <a-list item-layout="horizontal" :data-source="listWithIndex" :split="false">
+          <a-list item-layout="horizontal" :data-source="articleRankList" :split="false">
             <template #renderItem="{ item }">
               <a-list-item>
                 <a-list-item-meta>
                   <template #title>
-                    <span class="no-wrap rank-title">{{ item.name.last }}</span>
+                    <span class="no-wrap rank-title">{{ item.title }}</span>
                   </template>
                 </a-list-item-meta>
               </a-list-item>
@@ -249,38 +249,67 @@
   </a-row>
 </template>
 <script lang="ts" setup>
-import {computed, onMounted} from 'vue';
+import {onMounted} from 'vue';
 import {ref, reactive, watch} from 'vue';
 import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {type ItemType, type MenuProps, message} from "ant-design-vue";
 import {categoryList, twoLevelCategoryTree} from "@/api/category.ts";
-import {articleComprehensiveRank, articleList, getFollowAuthorArticles} from "@/api/post.ts";
+import {articleList, getFollowAuthorArticles} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
 import {useUserStore} from '@/store';
-/*------------------------------------变量定义------------------------------------------*/
 
+import router from "@/router";
+import Login from "@/components/Login.vue";
+import {friendLinkList} from "@/api/friendlink.ts";
+import {getSearchHistory} from "@/api/search.ts";
+import {getSysConfigInfo} from "@/api/config.ts";
+import {CommonUtil} from "@/utils/common.ts";
+import {getArticleRecommend} from "@/api/recommend.ts";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/api/https.ts";
+/*------------------------------------变量定义------------------------------------------*/
+const userStore = useUserStore()
 const categoryTree = ref([])
 const authorArticles = reactive([])
 const articleRankList = reactive([])
 const articleRankTotalPage = ref(0)
 const loading = ref(true)/*数据加载中*/
+const openLoginModal = ref(false)/*是否打开登陆框*/
+const selectedKeys = ref(['0']);
+const openKeys = ref(['0']);
+const items: ItemType[] = reactive([]);
+const openCategoryDrawer = ref(false)
+const friendLinks = ref()
+//获取用户搜索历史
+const searchHistory = ref()
+const siteConfigInfo = ref({})
+//搜索
+const search_key = ref('')
+const list = ref([]);
 const articleRankPageQuery = reactive({
   current: 1,
   size: 5
 })
-
-
+const activeKey = ref('3');
+const articles = ref([])
+const queryParam = ref({
+  current: 1,
+  size: 6,
+  categoryId: '0',
+  showType: activeKey.value
+})
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
+  loadLeftMenu()
+  loadHomeData()
+  loadFriendLink()
+  loadSiteConfigInfo()
+
   loadTwoLevelCategoryTree()
+  loadArticleRecommend()
   loadFollowAuthorArticles()
   loadArticleComprehensiveRank()
 })
-
-
-/*------------------------------------初始化---------------------------------------------*/
-
-
 /*------------------------------------数据加载--------------------------------------------*/
 const loadTwoLevelCategoryTree = () => {
   twoLevelCategoryTree().then(res => {
@@ -299,72 +328,13 @@ const loadFollowAuthorArticles = async () => {
 
 //加载文章综合排名
 const loadArticleComprehensiveRank = async () => {
-  const res = await articleComprehensiveRank(articleRankPageQuery)
+  const res = await Https.action(API.ARTICLE.articleComprehensiveRank, articleRankPageQuery);
+  //const res = await articleComprehensiveRank(articleRankPageQuery)
   if (res) {
     Object.assign(articleRankList, res.records)
     articleRankTotalPage.value = res.pages
   }
 }
-
-/*------------------------------------核心业务--------------------------------------------*/
-const onNextPageArticleRank = () => {
-  // 如果没有下一页，直接返回
-  if (articleRankPageQuery.current >= articleRankTotalPage.value) {
-    return;
-  }
-  articleRankPageQuery.current += 1
-  loadArticleComprehensiveRank()
-}
-// 计算当前序号
-const getCurrentIndex = (index: number) => {
-  return (articleRankPageQuery.current - 1) * articleRankPageQuery.size + index + 1;
-};
-// 根据索引动态设置类名
-const getArticleRankClass = (index: number) => {
-  if (index <= 3) {
-    return `article-rank-color-${index}`; // 前三个页码分别设置不同颜色
-  } else {
-    return 'article-rank-color-default'; // 后面的页码统一颜色
-  }
-};
-/*-------------------------------------其他函数-------------------------------------------*/
-const userStore = useUserStore()
-import router from "@/router";
-import Login from "@/components/Login.vue";
-import {friendLinkList} from "@/api/friendlink.ts";
-import {getSearchHistory} from "@/api/search.ts";
-import {getSysConfigInfo} from "@/api/config.ts";
-import {CommonUtil} from "@/utils/common.ts";
-
-const openLoginModal = ref(false)/*是否打开登陆框*/
-const selectedKeys = ref(['0']);
-const openKeys = ref(['0']);
-const items: ItemType[] = reactive([]);
-const openCategoryDrawer = ref(false)
-//进入创作中心登陆判断处理
-const onOpenLoginModel = (to: string) => {
-  if (!userStore.isLogin()) {
-    //打开登陆框
-    openLoginModal.value = true
-    return;
-  }
-  router.push({path: to})
-}
-const activeKey = ref('3');
-const articles = ref([])
-const queryParam = ref({
-  current: 1,
-  size: 6,
-  categoryId: '0',
-  showType: activeKey.value
-})
-const onSelectCategory = (cat: any) => {
-  message.info(JSON.stringify(cat))
-}
-const onChange = (current: string) => {
-  console.log(current);
-};
-
 //加载主页文章数据
 const loadHomeData = async () => {
   loading.value = true
@@ -380,6 +350,10 @@ const loadHomeData = async () => {
   } finally {
     loading.value = false
   }
+}
+//加载推荐文章
+const loadArticleRecommend = async () => {
+  const res = await getArticleRecommend({current: 1, size: 10})
 }
 //加载左侧菜单
 const loadLeftMenu = async () => {
@@ -406,37 +380,38 @@ const loadLeftMenu = async () => {
   } catch (err) {
   }
 }
-const friendLinks = ref()
 const loadFriendLink = async () => {
   const res = await friendLinkList()
   friendLinks.value = res || []
 }
-const siteConfigInfo = ref({})
+
 const loadSiteConfigInfo = async () => {
   const res = await getSysConfigInfo()
   if (res) {
     siteConfigInfo.value = res || {}
   }
 }
-//获取用户搜索历史
-const searchHistory = ref()
-const onSearchFocus = async () => {
-  if (userStore.isLogin()) {
-    const res = await getSearchHistory()
-    searchHistory.value = res || []
+/*------------------------------------核心业务--------------------------------------------*/
+const onNextPageArticleRank = () => {
+  // 如果没有下一页，直接返回
+  if (articleRankPageQuery.current >= articleRankTotalPage.value) {
+    return;
   }
+  articleRankPageQuery.current += 1
+  loadArticleComprehensiveRank()
 }
-//通过历史记录进行搜索
-const onHisSearch = (keyword: string) => {
-  search_key.value = keyword
-  onSearch()
-}
-onMounted(async () => {
-  await loadLeftMenu()
-  await loadHomeData()
-  await loadFriendLink()
-  await loadSiteConfigInfo()
-})
+// 计算当前序号
+const getCurrentIndex = (index: number) => {
+  return (articleRankPageQuery.current - 1) * articleRankPageQuery.size + index + 1;
+};
+// 根据索引动态设置类名
+const getArticleRankClass = (index: number) => {
+  if (index <= 3) {
+    return `article-rank-color-${index}`; // 前三个页码分别设置不同颜色
+  } else {
+    return 'article-rank-color-default'; // 后面的页码统一颜色
+  }
+};
 //左侧菜单点击事件
 const handleClick: MenuProps['onClick'] = e => {
   let categoryId = e.key;
@@ -454,6 +429,32 @@ const handleClick: MenuProps['onClick'] = e => {
     loadHomeData()
   }
 };
+const onSelectCategory = (cat: any) => {
+  message.info(JSON.stringify(cat))
+}
+const onChange = (current: string) => {
+  console.log(current);
+};
+const onSearchFocus = async () => {
+  if (userStore.isLogin()) {
+    const res = await getSearchHistory()
+    searchHistory.value = res || []
+  }
+}
+//通过历史记录进行搜索
+const onHisSearch = (keyword: string) => {
+  search_key.value = keyword
+  onSearch()
+}
+//进入创作中心登陆判断处理
+const onOpenLoginModel = (to: string) => {
+  if (!userStore.isLogin()) {
+    //打开登陆框
+    openLoginModal.value = true
+    return;
+  }
+  router.push({path: to})
+}
 const onTabClick = (targetKey: string) => {
   queryParam.value.showType = targetKey
   loadHomeData()
@@ -461,38 +462,14 @@ const onTabClick = (targetKey: string) => {
 watch(openKeys, val => {
   console.log('openKeys', val);
 });
-//搜索
-const search_key = ref('')
+
 const onSearch = () => {
   if (search_key.value == '') {
     return;
   }
   router.push({path: '/search', query: {keyword: search_key.value}})
 }
-
-
-const count = 3;
-const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender,email,nat,picture&noinfo`;
-
-
-const data = ref([]);
-const list = ref([]);
-onMounted(() => {
-  fetch(fakeDataUrl)
-      .then(res => res.json())
-      .then(res => {
-
-        data.value = res.results;
-        list.value = res.results;
-      });
-});
-// 计算属性：为列表项添加序号
-const listWithIndex = computed(() => {
-  return list.value.map((item, index) => ({
-    ...item,
-    index: index + 1, // 序号从 1 开始
-  }));
-});
+/*-------------------------------------其他函数-------------------------------------------*/
 
 </script>
 <style scoped>
@@ -616,10 +593,12 @@ a-card {
   align-items: center; /* 垂直居中 */
   padding: 0 30px; /* 确保左右间距 */
 }
+
 /*-------------------搜索框定制start--------------------*/
 .centered-search {
   width: 100%; /* 搜索框宽度占满容器 */
 }
+
 /* 统一设置输入框边框样式 */
 .centered-search :deep(.ant-input) {
   border-color: transparent; /* 默认边框颜色 */
@@ -641,7 +620,7 @@ a-card {
 
 /* 统一设置按钮边框样式 */
 .centered-search :deep(.ant-btn) {
-  border-color:transparent;
+  border-color: transparent;
   outline: none;
   box-shadow: none;
   transition: none;
@@ -658,6 +637,7 @@ a-card {
   border-color: transparent;
   box-shadow: none;
 }
+
 /*-------------------搜索框定制end--------------------*/
 :deep(.ant-list .ant-list-item .ant-list-item-action) {
   margin-inline-start: 2px;

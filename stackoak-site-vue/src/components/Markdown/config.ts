@@ -26,6 +26,10 @@ export const getConfig = ({
     return {
         id: id,
         value: value,
+        externals: {
+            katex: window.katex,
+            MathJax: window.MathJax,
+        },
         // 解析引擎配置
         engine: {
             // 全局配置
@@ -102,12 +106,11 @@ export const getConfig = ({
                 },
                 mathBlock: {
                     engine: 'MathJax', // katex或MathJax
-                    src: '',
+                    src: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js',
                     plugins: true, // 默认加载插件
                 },
                 inlineMath: {
                     engine: 'MathJax', // katex或MathJax
-                    src: '',
                 },
                 toc: {
                     /** 默认只渲染一个目录 */
