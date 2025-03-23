@@ -30,6 +30,17 @@ export const API = {
         lists: { url: '/comments/lists', method: 'post' } as ApiConfig,
         add: { url: '/comments/add', method: 'post' } as ApiConfig,
         delete: { url: '/comments/del', method: 'post' } as ApiConfig,
+        deletes: { url: '/comments/delete', method: 'post' } as ApiConfig,
+    },
+    USER: {
+        getUserInfo: { url: '/user/get', method: 'get' } as ApiConfig,
+        getUserDetail: { url: '/user/detail/{userId}', method: 'get', pathParams: ['userId'] } as ApiConfig,
+        follows: { url: '/user/follows', method: 'post' } as ApiConfig,
+        fans: { url: '/user/fans', method: 'post' } as ApiConfig,
+        updateProfile: { url: '/user/update-profile', method: 'put' } as ApiConfig,
+        getUserProfile: { url: '/user/get-profile', method: 'get' } as ApiConfig,
+        followUser: { url: '/user/follow', method: 'post' } as ApiConfig,
+        unFollowUser: { url: '/user/unfollow', method: 'put' } as ApiConfig,
     },
 } as const;
 

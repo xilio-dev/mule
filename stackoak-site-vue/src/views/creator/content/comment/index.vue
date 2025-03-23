@@ -1,40 +1,33 @@
 <script setup lang="ts">
-
-/*------------------------------------变量定义------------------------------------------*/
+import dayjs from 'dayjs';
+import {LikeFilled, LikeOutlined} from '@ant-design/icons-vue';
+import {onMounted, reactive, ref} from 'vue';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import {commentListS} from "@/api/comment.ts";
 import CommentInput from "@/components/CommentInput/index.vue";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/api/https.ts";
+import {message} from "ant-design-vue";
 
+dayjs.extend(relativeTime);
+/*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
 const activeCommentStatusTab = ref('1');
 const curCommentItem = ref()/*当前打开的评论项*/
 const comments = reactive([])
-const commentBody = ref({
-  commentId: '',
-  content: ''
-})
-
+const commentValue = ref('')
+const commentInputRef = ref()
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
-  loadCommentMessages()
+  loadComment()
 })
-
-
-/*------------------------------------初始化---------------------------------------------*/
-const data = ref([
-  {id: "1001", content: '的时代'},
-  {id: "1002", content: 's得到的'},
-  {id: "1003", content: '单身狗'},
-  {id: "1004", content: '颠三倒四'},
-])
-
-
 /*------------------------------------数据加载--------------------------------------------*/
 //加载评论消息
-const loadCommentMessages = async () => {
-  const res = await commentListS( {current: 1, size: 200})
-  res ? Object.assign(comments, res.records) : Object.assign(messages, [])
+const loadComment = async () => {
+  const res = await commentListS({current: 1, size: 200})
+  //@ts-ignore
+  comments.splice(0, comments.length, ...(res.records ?? []))
 }
-
-
 /*------------------------------------核心业务--------------------------------------------*/
 //打开或关闭评论回复框
 const toggleReply = (item: any) => {
@@ -47,51 +40,46 @@ const toggleReply = (item: any) => {
   if (curCommentItem.value) {
     curCommentItem.value.isOpen = false/*关闭上一个*/
   }
-  commentBody.value.commentId = item.id/*设置当前父评论ID*/
-  commentBody.value.content = ''/*清空内容*/
+  commentValue.value = ''/*清空内容*/
   item.isOpen = true/* 打开新的评论项*/
   curCommentItem.value = item
 }
-//删除评论
-const onRemoveComment = (item: any) => {
-
-}
-//回复用户的评论
+//添加评论
 const onReplyComment = (item: any) => {
-
+  if (commentValue.value && commentValue.value.length > 0) {
+    Https.action(API.COMMENT.add, {
+      aid: item.articleId,
+      commentPid: item.id,
+      content: commentValue.value
+    }).then(res => {
+      commentValue.value = ''
+      message.info("已回复")
+      loadComment()
+    })
+  }
 }
-//点赞评论
-const onDiggComment = (item: any) => {
-
+//评论点赞/取消点赞
+const onDiggComment = (comment: any) => {
+  if (comment.liked === 1) {
+    Https.action(API.COMMENT.unDigg, {commentId: comment.id}).then(res => {
+      comment['liked'] = 0
+      message.info("取消点赞")
+    })
+  } else {
+    Https.action(API.COMMENT.digg, {commentId: comment.id}).then(res => {
+      comment['liked'] = 1
+      message.success("点赞")
+    })
+  }
 }
-
+//删除评论
+const onDeleteComment = (item: any) => {
+  Https.action(API.COMMENT.deletes, {aid: item.articleId, commentId: item.id}).then(res => {
+    message.success("删除成功！")
+     loadComment()//todo 待优化
+  })
+}
 /*-------------------------------------其他函数-------------------------------------------*/
-
-
-import dayjs from 'dayjs';
-import {LikeFilled, LikeOutlined, DislikeFilled, DislikeOutlined} from '@ant-design/icons-vue';
-import {onMounted, reactive, ref} from 'vue';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import {getMessage} from "@/api/notify.ts";
-import {commentListS} from "@/api/comment.ts";
-
-dayjs.extend(relativeTime);
-
-const likes = ref<number>(0);
-const dislikes = ref<number>(0);
-const action = ref<string>();
-
-const like = () => {
-  likes.value = 1;
-  dislikes.value = 0;
-  action.value = 'liked';
-};
-
-const dislike = () => {
-  likes.value = 0;
-  dislikes.value = 1;
-  action.value = 'disliked';
-};
 </script>
 
 <template>
@@ -102,46 +90,35 @@ const dislike = () => {
           <a-tab-pane key="1" tab="评论我的">
             <a-comment v-for="item in comments" :key="item.id">
               <template #actions>
-                  <span key="comment-basic-like">
+                <span @click="toggleReply(item)" key="comment-basic-reply-to">回复</span>
+                <span key="comment-basic-like">
                     <a-tooltip title="Like">
-                      <template v-if="action === 'liked'">
-                        <LikeFilled @click="like"/>
+                      <template v-if="item['liked'] ==1">
+                        <LikeFilled @click="onDiggComment(item)"/>
                       </template>
                       <template v-else>
-                        <LikeOutlined @click="like"/>
+                        <LikeOutlined @click="onDiggComment(item)"/>
                       </template>
                     </a-tooltip>
                     <span style="padding-left: 8px; cursor: auto">
-                      {{ likes }}
+                      {{ item.likeCount }}
                     </span>
                       </span>
-                <span key="comment-basic-dislike">
-        <a-tooltip title="Dislike">
-          <template v-if="action === 'disliked'">
-            <DislikeFilled @click="dislike"/>
-          </template>
-          <template v-else>
-            <DislikeOutlined @click="dislike"/>
-          </template>
-        </a-tooltip>
-        <span style="padding-left: 8px; cursor: auto">
-          {{ dislikes }}
-        </span>
-      </span>
-                <span @click="toggleReply(item)" key="comment-basic-reply-to">回复</span>
+                <span @click="onDeleteComment(item)">删除</span>
               </template>
-              <template #author><a>{{item.nickname}}</a></template>
+              <template #author><a>{{ item.nickname }}</a></template>
               <template #avatar>
                 <a-avatar :src="item.avatar" :alt="item.nickname"/>
               </template>
               <template #content>
                 <p>
-                  {{item.content}}
+                  {{ item.content }}
                 </p>
 
-                <CommentInput v-if="item.isOpen" class="comment-container" placeholder="说点什么吧"
+                <CommentInput @onClick="onReplyComment(item)" v-if="item.isOpen" class="comment-container"
+                              placeholder="说点什么吧"
                               ref="commentInputRef"
-                              :disabled="commentBody.content==''" v-model:value="commentBody.content"/>
+                              :disabled="commentValue==''" v-model:value="commentValue"/>
               </template>
               <template #datetime>
                 <a-tooltip :title="dayjs().format('YYYY-MM-DD HH:mm:ss')">
@@ -151,7 +128,7 @@ const dislike = () => {
             </a-comment>
           </a-tab-pane>
           <a-tab-pane key="2" tab="我发布的评论">
-            <a-comment v-for="item in data">
+            <a-comment v-for="item in comments">
               <template #actions>
                 <span>删除评论</span>
               </template>

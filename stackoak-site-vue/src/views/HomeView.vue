@@ -322,7 +322,7 @@ const loadFollowAuthorArticles = async () => {
   if (userStore.isLogin()) {
     const res = await getFollowAuthorArticles(queryParam.value)
     //@ts-ignore
-    res ? authorArticles.splice(0, authorArticles.length, ...(res.records ?? [])) : []
+    authorArticles.splice(0, authorArticles.length, ...(res.records ?? []))
   }
 }
 

@@ -10,6 +10,8 @@ import {columnLists} from "@/api/column.ts";
 import {authorArticleList, authorArticleRank, getAuthorHotArticleList} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
 import {CommonUtil} from "@/utils/common.ts";
+import {Https} from "@/api/https.ts";
+import {API} from "@/api/ApiConfig.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
 const collectActiveKey = ref('1')
@@ -44,12 +46,6 @@ onMounted(async () => {
   await loadAuthorArticles()
   await loadAuthorHotArticles()
 })
-
-/*------------------------------------初始化---------------------------------------------*/
-
-
-
-
 /*------------------------------------数据加载--------------------------------------------*/
 //加载作者关注的人
 const loadFollows = async () => {
@@ -65,7 +61,7 @@ const loadFans = async () => {
 }
 //加载作者信息
 const loadAuthorInfo = async () => {
-  const res = await getUserDetailInfo(authorId)
+  const res = await Https.action(API.USER.getUserDetail, {userId: authorId})
   authorInfo.value = res || {}
 }
 //加载作者的专栏
