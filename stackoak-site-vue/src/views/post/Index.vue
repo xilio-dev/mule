@@ -13,6 +13,7 @@ import {addComment, commentList, deleteComment, diggComment, unDiggComment} from
 import CommentInput from '@/components/CommentInput/index.vue'
 import UserInfoCard from '@/components/UserInfoCard/index.vue'
 import {followUser, unFollowUser} from "@/api/user.ts";
+import {CommonUtil} from "@/utils/common.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
@@ -31,6 +32,7 @@ const isLoading = ref(true); // 加载状态
 const comments = reactive([]);
 const commentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
+const activeColumnKey=ref('1')
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
   await fetchPostData();
@@ -183,7 +185,7 @@ const onToEditEditor = (id: string) => {
         <h1 class="article-title">{{ articleInfo.title }}</h1>
         <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 15px">
           <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
-            <div style="color: #515767;">{{ userInfo.nickname }}</div>
+            <div @click="CommonUtil.openNewPage(`/author/${userInfo.userId}`)" style="color: #515767;cursor: pointer">{{ userInfo.nickname }}</div>
             <div>{{ articleInfo.publishTime }}</div>
             <div>12566</div>
             <div>字数 {{ NumberUtils.formatNumber(articleInfo.contentCount) }}</div>
@@ -203,7 +205,15 @@ const onToEditEditor = (id: string) => {
           </a-flex>
         </a-flex>
       </a-card>
-      <a-card style="border: none;margin-top: 15px">专栏
+      <a-card style="border: none;margin-top: 15px">
+
+        <a-collapse :bordered="false" v-model:activeKey="activeColumnKey">
+          <a-collapse-panel key="1" header="共收录到3个专栏">
+             <a-empty/>
+          </a-collapse-panel>
+
+        </a-collapse>
+
       </a-card>
       <a-card style="border: none;margin-top: 15px">
         <h3>评论 {{ comments.length }}</h3>

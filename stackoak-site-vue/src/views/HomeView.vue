@@ -140,7 +140,7 @@
         </template>
       </a-card>
 
-      <a-card title="阅读排行" :bordered="false" style="margin-top: 12px;min-height: 150px">
+      <a-card title="热门榜单" :bordered="false" style="margin-top: 12px;min-height: 150px">
         <template #extra>
           <span @click="onNextPageArticleRank">换一换</span>
         </template>
@@ -149,7 +149,7 @@
             <a-list-item>
               <a-list-item-meta>
                 <template #title>
-                  <span class="no-wrap rank-title">{{
+                  <span @click="CommonUtil.openNewPage(`/post/${item.id}`)" class="no-wrap rank-title">{{
                       item.title
                     }}</span>
                 </template>
@@ -334,6 +334,7 @@ import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
 import {getSearchHistory} from "@/api/search.ts";
 import {getSysConfigInfo} from "@/api/config.ts";
+import {CommonUtil} from "@/utils/common.ts";
 
 const openLoginModal = ref(false)/*是否打开登陆框*/
 const selectedKeys = ref(['0']);
@@ -354,7 +355,7 @@ const articles = ref([])
 const queryParam = ref({
   current: 1,
   size: 6,
-  categoryId: 0,
+  categoryId: '0',
   showType: activeKey.value
 })
 const onSelectCategory = (cat: any) => {
@@ -447,6 +448,7 @@ const handleClick: MenuProps['onClick'] = e => {
     }
     openCategoryDrawer.value = true
   } else {
+    openCategoryDrawer.value = false
     queryParam.value.categoryId = categoryId
     //筛选数据
     loadHomeData()
@@ -635,9 +637,9 @@ a-card {
 }
 
 .rank-title {
+  cursor: pointer;
   font-weight: 800;
   color: rgb(37, 41, 51);
-  font-family: Archivo;
 }
 
 /*排名样式*/

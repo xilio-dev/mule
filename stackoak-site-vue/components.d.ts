@@ -17,6 +17,8 @@ declare module 'vue' {
     ACheckableTag: typeof import('ant-design-vue/es')['CheckableTag']
     ACheckbox: typeof import('ant-design-vue/es')['Checkbox']
     ACol: typeof import('ant-design-vue/es')['Col']
+    ACollapse: typeof import('ant-design-vue/es')['Collapse']
+    ACollapsePanel: typeof import('ant-design-vue/es')['CollapsePanel']
     AComment: typeof import('ant-design-vue/es')['Comment']
     ADatePicker: typeof import('ant-design-vue/es')['DatePicker']
     ADivider: typeof import('ant-design-vue/es')['Divider']
