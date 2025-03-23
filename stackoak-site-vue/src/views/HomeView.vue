@@ -71,7 +71,9 @@
             <ArticleList :article-list="articles"/>
           </a-tab-pane>
           <a-tab-pane key="3" tab="最新">
-            <ArticleList :article-list="articles"/>
+            <a-skeleton :loading="loading" active size="large" :block="true" :paragraph="{ rows: 5 }">
+              <ArticleList :article-list="articles"/>
+            </a-skeleton>
           </a-tab-pane>
 
         </a-tabs>
@@ -261,6 +263,7 @@ const categoryTree = ref([])
 const authorArticles = reactive([])
 const articleRankList = reactive([])
 const articleRankTotalPage = ref(0)
+const loading = ref(true)/*数据加载中*/
 const articleRankPageQuery = reactive({
   current: 1,
   size: 5
@@ -350,7 +353,7 @@ const activeKey = ref('3');
 const articles = ref([])
 const queryParam = ref({
   current: 1,
-  size: 150,
+  size: 6,
   categoryId: 0,
   showType: activeKey.value
 })
@@ -363,13 +366,19 @@ const onChange = (current: string) => {
 
 //加载主页文章数据
 const loadHomeData = async () => {
-  await articleList(queryParam.value).then(res => {
-    if (res == null) {
-      articles.value = []
-      return
-    }
-    articles.value = res.records
-  })
+  loading.value = true
+  try {
+    await articleList(queryParam.value).then(res => {
+      if (res == null) {
+        articles.value = []
+        return
+      }
+      articles.value = res.records
+    })
+    loading.value = false
+  } finally {
+    loading.value = false
+  }
 }
 //加载左侧菜单
 const loadLeftMenu = async () => {
