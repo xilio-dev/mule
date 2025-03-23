@@ -549,4 +549,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 page, query.getId(), likeWeight, viewWeight, collectWeight, commentWeight, gravity
         );
     }
+
+    @Override
+    public Page<ArticleBriefVO> articleComprehensiveRank(PageQuery pageQuery) {
+        long current = pageQuery.getCurrent();
+        long size = pageQuery.getSize();
+
+        // 计算总页数，确保不超过50条记录
+        long totalPages = (50 + size - 1) / size; // 向上取整
+        if (current > totalPages) {
+            // 如果请求页超过最大页数，返回空页
+            return new Page<>(current, size, 0);
+        }
+
+        // 调整分页参数，确保总记录数不超过50条
+        Page<ArticleBriefVO> page = new Page<>(current, size, 50);
+        int likeWeight = heatCalculator.getLikeWeight();
+        int viewWeight = heatCalculator.getViewWeight();
+        int collectWeight = heatCalculator.getCollectWeight();
+        int commentWeight = heatCalculator.getCommentWeight();
+        double gravity = heatCalculator.getGravity();
+        return baseMapper.findComprehensiveRank(page,likeWeight, viewWeight, collectWeight, commentWeight, gravity);
+
+    }
 }

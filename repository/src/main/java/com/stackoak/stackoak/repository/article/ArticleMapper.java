@@ -41,7 +41,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
     Page<ArticleBriefVO> selectArticleListByColumnId(@Param("page") Page<ArticleBriefVO> page, @Param("cid") String cid);
 
     Page<ArticleBriefVO> selectAuthorHotArticleList(
-            Page<ArticleBriefVO> page,
+            @Param("page") Page<ArticleBriefVO> page,
             @Param("userId") String userId,
             @Param("likeWeight") int likeWeight,
             @Param("viewWeight") int viewWeight,
@@ -49,5 +49,11 @@ public interface ArticleMapper extends BaseMapper<Article> {
             @Param("commentWeight") int commentWeight,
             @Param("gravity") double gravity
     );
+
+    Page<ArticleBriefVO> findComprehensiveRank(@Param("page") Page<ArticleBriefVO> page, @Param("likeWeight") int likeWeight,
+                                               @Param("viewWeight") int viewWeight,
+                                               @Param("collectWeight") int collectWeight,
+                                               @Param("commentWeight") int commentWeight,
+                                               @Param("gravity") double gravity);
 }
 

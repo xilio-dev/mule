@@ -50,6 +50,11 @@ public class PortalArticleApi {
         return Result.success(articleService.getArticleListByColumn(query));
     }
 
+    @PostMapping(value = "rank/comprehensive",name = "文章综合排行榜")
+    @FieldFilter(type = ArticleBriefVO.class)
+    public Result articleRank(@RequestBody PageQuery pageQuery) {
+        return Result.success(articleService.articleComprehensiveRank(pageQuery));
+    }
     @PostMapping(value = "get_author_hot_article_list",name = "获取作者热门文章")
     @FieldFilter(type = ArticleBriefVO.class)
     public Result getAuthorHotArticleList(@RequestBody @Valid CommonPageQuery query  ) {

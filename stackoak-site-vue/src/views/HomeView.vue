@@ -139,15 +139,20 @@
       </a-card>
 
       <a-card title="阅读排行" :bordered="false" style="margin-top: 12px;min-height: 150px">
-        <a-list item-layout="horizontal" :data-source="listWithIndex" :split="false">
-          <template #renderItem="{ item }">
+        <template #extra>
+          <span @click="onNextPageArticleRank">换一换</span>
+        </template>
+        <a-list item-layout="horizontal" :data-source="articleRankList" :split="false">
+          <template #renderItem="{ item,index }">
             <a-list-item>
               <a-list-item-meta>
                 <template #title>
-                  <span class="no-wrap rank-title">{{ item.name.last }}</span>
+                  <span class="no-wrap rank-title">{{
+                      item.title
+                    }}</span>
                 </template>
                 <template #avatar>
-                  <span>{{ item.index }}</span>
+                  <span :class="getArticleRankClass(getCurrentIndex(index))">{{ getCurrentIndex(index) }}</span>
                 </template>
               </a-list-item-meta>
             </a-list-item>
@@ -247,17 +252,26 @@ import {ref, reactive, watch} from 'vue';
 import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {type ItemType, type MenuProps, message} from "ant-design-vue";
 import {categoryList, twoLevelCategoryTree} from "@/api/category.ts";
-import {articleList, getFollowAuthorArticles} from "@/api/post.ts";
+import {articleComprehensiveRank, articleList, getFollowAuthorArticles} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
 import {useUserStore} from '@/store';
 /*------------------------------------变量定义------------------------------------------*/
 
 const categoryTree = ref([])
 const authorArticles = reactive([])
+const articleRankList = reactive([])
+const articleRankTotalPage = ref(0)
+const articleRankPageQuery = reactive({
+  current: 1,
+  size: 5
+})
+
+
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
   loadTwoLevelCategoryTree()
   loadFollowAuthorArticles()
+  loadArticleComprehensiveRank()
 })
 
 
@@ -280,12 +294,36 @@ const loadFollowAuthorArticles = async () => {
   }
 }
 
+//加载文章综合排名
+const loadArticleComprehensiveRank = async () => {
+  const res = await articleComprehensiveRank(articleRankPageQuery)
+  if (res) {
+    Object.assign(articleRankList, res.records)
+    articleRankTotalPage.value = res.pages
+  }
+}
 
 /*------------------------------------核心业务--------------------------------------------*/
-
-
-
-
+const onNextPageArticleRank = () => {
+  // 如果没有下一页，直接返回
+  if (articleRankPageQuery.current >= articleRankTotalPage.value) {
+    return;
+  }
+  articleRankPageQuery.current += 1
+  loadArticleComprehensiveRank()
+}
+// 计算当前序号
+const getCurrentIndex = (index: number) => {
+  return (articleRankPageQuery.current - 1) * articleRankPageQuery.size + index + 1;
+};
+// 根据索引动态设置类名
+const getArticleRankClass = (index: number) => {
+  if (index <= 3) {
+    return `article-rank-color-${index}`; // 前三个页码分别设置不同颜色
+  } else {
+    return 'article-rank-color-default'; // 后面的页码统一颜色
+  }
+};
 /*-------------------------------------其他函数-------------------------------------------*/
 const userStore = useUserStore()
 import router from "@/router";
@@ -593,6 +631,27 @@ a-card {
   font-family: Archivo;
 }
 
+/*排名样式*/
+.article-rank-color-1 {
+  color: #F56C6C;
+  font-weight: 600;
+}
 
+.article-rank-color-2 {
+  color: #E6A23C;
+  font-weight: 600;
+}
+
+.article-rank-color-3 {
+  color: #67C23A;
+  font-weight: 600;
+}
+
+.article-rank-color-default {
+  font-weight: 600;
+  color: #909399
+}
+
+/*排名样式*/
 </style>
 

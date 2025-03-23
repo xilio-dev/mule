@@ -208,4 +208,24 @@
         WHERE a.user_id = #{userId}  and a.publish_status = 1
         ORDER BY heat DESC
     </select>
+    <select id="findComprehensiveRank" resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
+        SELECT a.id,
+               a.title,
+               a.cover,
+               a.like_count     AS likeCount,
+               a.view_count     AS viewCount,
+               a.collect_count  AS collectCount,
+               a.description,
+               a.visible_status AS visibleStatus,
+               a.publish_time   AS publishTime,
+               ROUND(
+                       ((a.like_count * #{likeWeight} + a.view_count * #{viewWeight} +
+                         a.collect_count * #{collectWeight} + a.comment_count * #{commentWeight}) + u.power)
+                           / POW(DATEDIFF(NOW(), a.publish_time) + 1, #{gravity})
+               )                AS heat
+        FROM article a
+                 join user u on a.user_id = u.id
+        WHERE a.publish_status = 1
+        ORDER BY heat DESC
+    </select>
 </mapper>

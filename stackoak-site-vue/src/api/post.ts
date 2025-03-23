@@ -19,6 +19,7 @@ const Api = {
     AUTHOR_ARTICLE_LIST: '/article/author_article_list',
     GET_COLUMN_ARTICLE_LIST: '/article/get_column_article_list',
     GET_AUTHOR_HOT_ARTICLE_LIST: '/article/get_author_hot_article_list',
+    ARTICLE_COMPREHENSIVE_RANK: '/article/rank/comprehensive',
 
 };
 
@@ -92,5 +93,10 @@ export function getColumnPublishArticle(query: any) {
 export function getAuthorHotArticleList(query: any) {
     return request.post(Api.GET_AUTHOR_HOT_ARTICLE_LIST, query)
 }
+export function articleComprehensiveRank(query: any) {
+    return request.post(Api.ARTICLE_COMPREHENSIVE_RANK, query)
+}
+
+
 
 
