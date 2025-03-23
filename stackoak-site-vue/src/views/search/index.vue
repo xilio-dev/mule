@@ -5,6 +5,7 @@ import {searchArticle} from "@/api/search.ts";
 import {StarOutlined, LikeOutlined, MessageOutlined} from '@ant-design/icons-vue';
 import {ImageUtils} from "@/utils/file.ts";
 import {message} from "ant-design-vue";
+import {CommonUtil} from "@/utils/common.ts";
 
 const route = useRoute()
 const articles = ref([])
@@ -51,10 +52,7 @@ const onSearch = () => {
   startSearch()
 }
 
-const goArticleDetail = (id: string) => {
-  const url = `/post#/post/${id}`;
-  window.open(url, '_blank');
-}
+
 </script>
 
 <template>
@@ -73,9 +71,10 @@ const goArticleDetail = (id: string) => {
       <a-card style="width: 100%;box-shadow: none;margin-bottom: 15px" :bordered="false">
         <a-tabs v-model:activeKey="activeKey">
           <a-tab-pane key="1" tab="文章">
-            <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="articles">
+            <a-empty v-if="articles.length<1"/>
+            <a-list v-else item-layout="vertical" size="large" :pagination="pagination" :data-source="articles">
               <template #renderItem="{ item }">
-                <a-list-item :key="item.id" class="article-item-action" @click="goArticleDetail(item.id)">
+                <a-list-item :key="item.id" class="article-item-action" @click="CommonUtil.openNewPage(`/post/${item.id}`)">
                   <template #actions>
                     <span><component :is="StarOutlined" style="margin-right: 8px"/>{{ item.collectCount }}</span>
                     <span><component :is="LikeOutlined" style="margin-right: 8px"/>{{ item.likeCount }}</span>

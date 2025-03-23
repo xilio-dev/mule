@@ -616,13 +616,49 @@ a-card {
   align-items: center; /* 垂直居中 */
   padding: 0 30px; /* 确保左右间距 */
 }
-
+/*-------------------搜索框定制start--------------------*/
 .centered-search {
   width: 100%; /* 搜索框宽度占满容器 */
-  border: none;
+}
+/* 统一设置输入框边框样式 */
+.centered-search :deep(.ant-input) {
+  border-color: transparent; /* 默认边框颜色 */
+  outline: none; /* 去除聚焦边框 */
+  box-shadow: none; /* 去除阴影 */
+}
+
+/* 悬浮状态 */
+.centered-search :deep(.ant-input:hover) {
+  border-color: transparent; /* 与默认一致 */
   box-shadow: none;
 }
 
+/* 聚焦状态 */
+.centered-search :deep(.ant-input:focus) {
+  border-color: transparent; /* 与默认一致 */
+  box-shadow: none;
+}
+
+/* 统一设置按钮边框样式 */
+.centered-search :deep(.ant-btn) {
+  border-color:transparent;
+  outline: none;
+  box-shadow: none;
+  transition: none;
+}
+
+/* 按钮悬浮状态 */
+.centered-search :deep(.ant-btn:hover) {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* 按钮聚焦状态 */
+.centered-search :deep(.ant-btn:focus) {
+  border-color: transparent;
+  box-shadow: none;
+}
+/*-------------------搜索框定制end--------------------*/
 :deep(.ant-list .ant-list-item .ant-list-item-action) {
   margin-inline-start: 2px;
 }
