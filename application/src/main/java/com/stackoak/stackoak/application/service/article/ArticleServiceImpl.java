@@ -172,9 +172,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<String> tagNames = dto.getTagNames();
         List<String> columnNames = dto.getColumnNames();
         //检查标题是否合法 可以在接口层校验
-        if (StringTools.hasSpecialChars(dto.getTitle())) {
-            throw new BizException("标题不能包含特殊字符！");
-        }
+//        if (StringTools.hasSpecialChars(dto.getTitle())) {
+//            throw new BizException("标题不能包含特殊字符！");
+//        }
         //检查分类领域是否存在
         Category category = categoryService.getById(categoryId);
         if (ObjectUtils.isEmpty(category)) {

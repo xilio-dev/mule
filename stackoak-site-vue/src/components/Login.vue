@@ -64,7 +64,7 @@ interface EmailLoginDTO {
 }
 
 const emailLoginDTO = reactive<EmailLoginDTO>({
-  email: 'StackOak@163.com',
+  email: 'ziyi@163.com',
   password: '123456',
 });
 const emailSuffixOptions = [

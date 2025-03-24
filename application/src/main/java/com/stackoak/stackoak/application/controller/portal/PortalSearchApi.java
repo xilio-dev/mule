@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 @Tag(name = "全文搜索")
 @RestController
@@ -21,7 +22,7 @@ public class PortalSearchApi {
     private ISearchHistoryService searchHistoryService;
 
     @PostMapping("search")
-    public Result search(@RequestBody @Valid SearchRequest request) {
+    public Result search(@RequestBody @Valid SearchRequest request) throws IOException {
         IPage page = searchService.fullTextSearch(request.getKeyword(), request);
         return Result.success(page);
     }

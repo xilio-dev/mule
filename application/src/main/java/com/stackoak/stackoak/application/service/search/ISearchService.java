@@ -5,6 +5,8 @@ import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleId;
 import com.stackoak.stackoak.common.data.search.SearchRequest;
 
+import java.io.IOException;
+
 public interface ISearchService {
     /**
      * 保存文章索引
@@ -16,5 +18,5 @@ public interface ISearchService {
 
     public int deleteIndex(ArticleId articleId);
 
-    public IPage fullTextSearch(String keyword, SearchRequest request);
+    public IPage fullTextSearch(String keyword, SearchRequest request) throws IOException;
 }

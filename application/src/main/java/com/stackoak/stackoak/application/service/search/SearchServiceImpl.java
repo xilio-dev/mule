@@ -6,25 +6,21 @@ import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleId;
 import com.stackoak.stackoak.common.data.search.SearchHistory;
 import com.stackoak.stackoak.common.data.search.SearchRequest;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.highlight.Highlighter;
-import org.apache.lucene.search.highlight.QueryScorer;
-import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
-import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
+import org.apache.lucene.search.*;
+import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
+
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import java.io.File;
@@ -38,6 +34,9 @@ import java.util.List;
 public class SearchServiceImpl implements ISearchService {
     private final static String INDEX_DIR = "store/lucene/index";
     private final static String ARTICLE_INDEX = INDEX_DIR + "/article";
+    private static final String[] SEARCH_FIELDS = {"title", "description", "content"};
+    private static final int MAX_FRAGMENT_SIZE = 200;
+    private static final int MAX_PAGE_SIZE = 100; // 最大分页大小限制
 @Autowired
 private ISearchHistoryService searchHistoryService;
     /**
@@ -167,89 +166,154 @@ private ISearchHistoryService searchHistoryService;
         }
         return 0;
     }
-
     /**
+     * 全文搜索文章
+     *
      * @param keyword 搜索关键字
-     * @param request 搜索请求
-     * @return 返回结果
+     * @param request 搜索请求（包含分页信息）
+     * @return 分页的文章搜索结果
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public IPage<Article> fullTextSearch(String keyword, SearchRequest request) {
-        int page = request.getPage();
-        int limit = request.getSize();
-        List<Article> searchList = new ArrayList<>();
+    public IPage<Article> fullTextSearch(String keyword, SearchRequest request) throws IOException {
+        // 参数校验
+        int page = Math.max(1, request.getPage());
+        int limit = Math.min(Math.max(1, request.getSize()), MAX_PAGE_SIZE);
         Page<Article> pageData = new Page<>(page, limit);
+        List<Article> searchList = new ArrayList<>();
 
-        try (Analyzer analyzer = new IKAnalyzer()) {
-            Directory directory = FSDirectory.open(Paths.get(ARTICLE_INDEX));
-            IndexReader indexReader = DirectoryReader.open(directory);
+        Directory directory = null;
+        IndexReader indexReader = null;
+        try (Analyzer analyzer = new IKAnalyzer(true)) {
+            // 打开索引目录
+            directory = FSDirectory.open(Paths.get(ARTICLE_INDEX));
+            indexReader = DirectoryReader.open(directory);
             IndexSearcher indexSearcher = new IndexSearcher(indexReader);
 
-            // 多字段查询
-            QueryParser queryParser = new MultiFieldQueryParser(new String[]{"title", "description", "content",}, analyzer);
-          //  Query query = queryParser.parse(StringUtils.hasText(keyword) ? keyword : "*:*");
-            Query query = queryParser.parse(QueryParser.escape(keyword)); // 使用 QueryParser.escape 避免特殊字符问题
-            // 获取总记录数
-            int total = (int) indexSearcher.search(query, 1).totalHits.value;
-            pageData.setTotal(total);
+            // 处理关键字
+            String sanitizedKeyword = StringUtils.defaultIfBlank(keyword, "*:*");
+            QueryParser queryParser = new MultiFieldQueryParser(SEARCH_FIELDS, analyzer);
+            Query query = queryParser.parse(QueryParser.escape(sanitizedKeyword));
 
-            // 分页逻辑
-            ScoreDoc lastSd = null;
-            if (page > 1) {
-                int num = limit * (page - 1);
-                TopDocs tds = indexSearcher.search(query, num);
-                lastSd = tds.scoreDocs[num - 1];
-            }
+            // 单次查询获取总数和分页数据
+            int totalHits = searchAndPaginate(indexSearcher, query, page, limit, searchList, analyzer);
 
-            // 获取当前页数据
-            TopDocs tds = indexSearcher.searchAfter(lastSd, query, limit);
-
-            // 高亮处理
-            QueryScorer queryScorer = new QueryScorer(query);
-            SimpleSpanFragmenter fragmenter = new SimpleSpanFragmenter(queryScorer, 200);
-            SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<b><font color='red'>", "</font></b>");
-            Highlighter highlighter = new Highlighter(formatter, queryScorer);
-            highlighter.setTextFragmenter(fragmenter);
-
-            for (ScoreDoc sd : tds.scoreDocs) {
-                Document doc = indexSearcher.doc(sd.doc);
-                Article article = new Article();
-                String id = doc.get("id");
-
-                // 高亮标题和内容
-                String titleBestFragment = highlighter.getBestFragment(analyzer, "title", doc.get("title"));
-                String descBestFragment = highlighter.getBestFragment(analyzer, "description", doc.get("description"));
-                String contentBestFragment = highlighter.getBestFragment(analyzer, "content", doc.get("content"));
-
-                article.setId(id);
-                //todo 需要处理一下，一开始没有值
-                article.setTitle(StringUtils.hasText(titleBestFragment) ? titleBestFragment : doc.get("title"));
-                article.setContent(StringUtils.hasText(descBestFragment) ? descBestFragment : contentBestFragment);
-                article.setLikeCount(Integer.valueOf(doc.get("likeCount")));
-                article.setViewCount(Integer.valueOf(doc.get("viewCount")));
-                article.setCommentCount(Integer.valueOf(doc.get("commentCount")));
-                article.setCollectCount(Integer.valueOf(doc.get("collectCount")));
-                article.setPublishTime(LocalDateTime.parse(doc.get("publishTime")));
-                article.setCover(doc.get("cover"));
-
-                searchList.add(article);
-            }
-
+            // 设置分页信息
+            pageData.setTotal(totalHits);
             pageData.setRecords(searchList);
-            //记录搜索历史
-            String userId="1";//todo 临时用户
-            //如果是登陆用户，需要记录搜索历史
-            searchHistoryService.save(new SearchHistory(userId,keyword));
+
+            // 记录搜索历史
+            String userId = getCurrentUserId();
+            if (StringUtils.isNotBlank(userId) && !sanitizedKeyword.equals("*:*")) {
+                searchHistoryService.save(new SearchHistory(userId, sanitizedKeyword));
+            }
+
+
             return pageData;
+
         } catch (Exception e) {
-            // 记录异常信息
-            e.printStackTrace();
-            throw new RuntimeException("全文检索出错：" + e.getMessage());
+            throw new RuntimeException("全文检索出错：" + e.getMessage(), e);
         } finally {
-            // 确保资源正确关闭
+            indexReader.close();
+            directory.close();
 
         }
+    }
+
+    /**
+     * 执行搜索并分页
+     *
+     * @param searcher    索引搜索器
+     * @param query       查询对象
+     * @param page        当前页码
+     * @param limit       每页大小
+     * @param searchList  结果列表
+     * @param analyzer    分词器
+     * @return 总记录数
+     * @throws IOException IO异常
+     */
+    private int searchAndPaginate(IndexSearcher searcher, Query query, int page, int limit,
+                                  List<Article> searchList, Analyzer analyzer) throws IOException, InvalidTokenOffsetsException {
+        // 查询足够多的记录以支持分页
+        int maxDocsToFetch = page * limit;
+        TopDocs topDocs = searcher.search(query, maxDocsToFetch);
+
+        int totalHits = (int) topDocs.totalHits.value;
+        if (totalHits == 0) {
+            return 0;
+        }
+
+        // 计算分页范围
+        int startIndex = (page - 1) * limit;
+        int endIndex = Math.min(startIndex + limit, totalHits);
+
+        if (startIndex >= totalHits) {
+            return totalHits; // 返回总数但无数据
+        }
+
+        // 高亮处理
+        QueryScorer queryScorer = new QueryScorer(query);
+        SimpleSpanFragmenter fragmenter = new SimpleSpanFragmenter(queryScorer, MAX_FRAGMENT_SIZE);
+        SimpleHTMLFormatter formatter = new SimpleHTMLFormatter("<b><font color='red'>", "</font></b>");
+        Highlighter highlighter = new Highlighter(formatter, queryScorer);
+        highlighter.setTextFragmenter(fragmenter);
+
+        // 提取当前页数据
+        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        for (int i = startIndex; i < endIndex; i++) {
+            Document doc = searcher.doc(scoreDocs[i].doc);
+            Article article = buildArticleFromDoc(doc, analyzer, highlighter);
+            searchList.add(article);
+        }
+
+        return totalHits;
+    }
+    /**
+     * 从 Lucene Document 构建 Article 对象
+     */
+    private Article buildArticleFromDoc(Document doc, Analyzer analyzer, Highlighter highlighter) throws IOException, InvalidTokenOffsetsException {
+        Article article = new Article();
+        String id = doc.get("id");
+        if (StringUtils.isBlank(id)) {
+            return article;
+        }
+
+        article.setId(id);
+
+        String title = doc.get("title");
+        String description = doc.get("description");
+        String content = doc.get("content");
+
+        String titleFragment = highlighter.getBestFragment(analyzer, "title", title);
+        String descFragment = highlighter.getBestFragment(analyzer, "description", description);
+        String contentFragment = highlighter.getBestFragment(analyzer, "content", content);
+
+        article.setTitle(StringUtils.defaultIfBlank(titleFragment, title));
+        article.setContent(StringUtils.defaultIfBlank(descFragment, StringUtils.defaultIfBlank(contentFragment, content)));
+
+        article.setLikeCount(parseIntField(doc.get("likeCount"), 0));
+        article.setViewCount(parseIntField(doc.get("viewCount"), 0));
+        article.setCommentCount(parseIntField(doc.get("commentCount"), 0));
+        article.setCollectCount(parseIntField(doc.get("collectCount"), 0));
+
+        String publishTime = doc.get("publishTime");
+        article.setPublishTime(StringUtils.isNotBlank(publishTime) ? LocalDateTime.parse(publishTime) : null);
+        article.setCover(doc.get("cover"));
+
+        return article;
+    }
+
+    private int parseIntField(String value, int defaultValue) {
+        try {
+            return StringUtils.isNotBlank(value) ? Integer.parseInt(value) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    private String getCurrentUserId() {
+        // TODO: 替换为实际用户认证逻辑
+        return "1";
     }
 //    public IPage<Article> fullTextSearch(String keyword, SearchRequest request) {
 //        int page = request.getPage();
