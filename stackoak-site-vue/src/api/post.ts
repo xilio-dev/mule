@@ -20,7 +20,6 @@ const Api = {
     GET_COLUMN_ARTICLE_LIST: '/article/get_column_article_list',
     GET_AUTHOR_HOT_ARTICLE_LIST: '/article/get_author_hot_article_list',
     ARTICLE_COMPREHENSIVE_RANK: '/article/rank/comprehensive',
-
 };
 
 export function articleList(query: any) {

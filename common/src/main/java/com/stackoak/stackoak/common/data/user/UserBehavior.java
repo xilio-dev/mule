@@ -44,7 +44,7 @@ public class UserBehavior implements Serializable {
     private String articleId;
 
     /**
-     * 行为类型
+     * 行为类型：点赞、收藏、关注、评论、阅读文章
      */
     @TableField("behavior_type")
     private String behaviorType;
@@ -55,21 +55,5 @@ public class UserBehavior implements Serializable {
     @TableField("behavior_time")
     private LocalDateTime behaviorTime;
 
-    /**
-     * 评论ID（需关联comments表，仅当行为类型为COMMENT时有效）
-     */
-    @TableField("comment_id")
-    private String commentId;
 
-    /**
-     * 行为来源
-     */
-    @TableField("referrer")
-    private String referrer;
-
-    /**
-     * 会话ID
-     */
-    @TableField("session_id")
-    private String sessionId;
 }

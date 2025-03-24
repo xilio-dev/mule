@@ -66,6 +66,7 @@ declare module 'vue' {
     CommentInput: typeof import('./src/components/CommentInput/index.vue')['default']
     DocTree: typeof import('./src/components/DocTree/index.vue')['default']
     DocTree2: typeof import('./src/components/DocTree2/index.vue')['default']
+    DocumentTree: typeof import('./src/components/DocumentTree.vue')['default']
     GoogleAd: typeof import('./src/components/GoogleAd.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
