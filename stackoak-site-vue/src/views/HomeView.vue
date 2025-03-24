@@ -68,7 +68,7 @@
             <a-empty v-else/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="推荐" force-render>
-            <ArticleList :article-list="articles"/>
+            <ArticleList :article-list="recommendArticles"/>
           </a-tab-pane>
           <a-tab-pane key="3" tab="最新">
             <a-skeleton :loading="loading" active size="large" :block="true" :paragraph="{ rows: 5 }">
@@ -290,11 +290,12 @@ const articleRankPageQuery = reactive({
   current: 1,
   size: 5
 })
-const activeKey = ref('3');
+const activeKey = ref('2');
 const articles = ref([])
+const recommendArticles=reactive([])
 const queryParam = ref({
   current: 1,
-  size: 6,
+  size: 20,
   categoryId: '0',
   showType: activeKey.value
 })
@@ -353,7 +354,9 @@ const loadHomeData = async () => {
 }
 //加载推荐文章
 const loadArticleRecommend = async () => {
-  const res = await getArticleRecommend({current: 1, size: 10})
+  const res = await getArticleRecommend({current: 0, size: 10})
+  //@ts-ignore
+  recommendArticles.splice(0, recommendArticles.length, ...(res.records ?? []))
 }
 //加载左侧菜单
 const loadLeftMenu = async () => {

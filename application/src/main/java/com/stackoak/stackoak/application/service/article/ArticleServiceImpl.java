@@ -208,6 +208,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             saveArticle.setVisitPassword(dto.getVisitPassword());
         }
+        saveArticle.setStatus(1);//todo 临时测试
         saveArticle.setPublishStatus(dto.getPublishStatus());
         if (dto.getCreativeType() == 2) {
             if (!StringUtils.hasLength(dto.getOriginalUrl())) {

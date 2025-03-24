@@ -1,30 +1,28 @@
 package com.stackoak.stackoak.application.service.recommend;
 
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.article.ArticleBriefVO;
-import com.stackoak.stackoak.common.data.recommend.RecommendByUserQuery;
-import com.stackoak.stackoak.common.data.user.User;
+import com.stackoak.stackoak.common.data.article.Article;
+
+
+import java.util.List;
 
 public interface IRecommendService {
     /**
-     * 基于用户进行个性化推荐
-     * @param query 查询参数
-     * @return 推荐列表
+     * 个性化推荐用户文章
+     *
+     * @param userId    用户ID
+     * @param pageQuery 分页参数
+     * @return 推荐结果
      */
-    Page<ArticleBriefVO> getHomeArticleRecommend(PageQuery query);
+    Page<Article> getPersonalizedArticleRecommendations(String userId, PageQuery pageQuery);
 
     /**
-     * 首页作者推荐
-     * @param query 查询参数
-     * @return 推荐作者列表
+     * 用户没有登陆时，提供默认推荐
+     *
+     * @param pageQuery 分页参数
+     * @return 推荐结果
      */
-    Page<User> homeAuthorRecommendByUserId(RecommendByUserQuery query);
-
-    /**
-     * 获取相关文章
-     * @param query 查询参数
-     * @return 推荐列表
-     */
-    Page<ArticleBriefVO> getRelatedArticles(RecommendByUserQuery query);
+    Page<Article> getDefaultArticleRecommendations(PageQuery pageQuery);
 }

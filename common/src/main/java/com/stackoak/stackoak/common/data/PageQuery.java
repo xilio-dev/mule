@@ -11,14 +11,14 @@ import java.io.Serializable;
 public class PageQuery implements Serializable {
     private static final long serialVersionUID = 1L;
     @NonNull
-    private Long current = 1L;
+    private Long current;
     @NonNull
     private Long size = 5L;
 
     public @NonNull Long getCurrent() {
-        if (current < 1) {
-            current = 1L;
-        }
+//        if (current < 1) {
+//            current = 1L;
+//        }
         return current;
     }
 
