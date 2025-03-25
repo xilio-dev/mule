@@ -21,7 +21,7 @@
             autoplay
             loop
             muted
-            src="https://lf3-static.bytednsdoc.com/obj/eden-cn/111eh7nupehpqps/1220下酒菜.mp4"
+            :src="siteConfigInfo.searchVideoCover"
         >
         </video>
         <div class="search-container">
@@ -103,13 +103,15 @@
               </template>
               <a-list-item-meta>
                 <template #title>
-                  <a href="https://www.antdv.com/">{{ item.nickname }}</a>
+                  <a :href="`/author/${item.id}`" target="_blank">{{ item.nickname }}</a>
                 </template>
                 <template #description>
-                  <span class="no-wrap">{{item.introduce}}</span>
+                  <span class="no-wrap">{{ item.introduce }}</span>
                 </template>
                 <template #avatar>
-                  <a-avatar :src="ImageUtils.getImgUrl(item.avatar)"/>
+                  <router-link :to="`/author/${item.id}`" target="_blank">
+                    <a-avatar :src="ImageUtils.getImgUrl(item.avatar)"/>
+                  </router-link>
                 </template>
               </a-list-item-meta>
             </a-list-item>
@@ -347,8 +349,8 @@ const loadArticleRecommend = async () => {
 }
 //加载为用户推荐的作者
 const loadRecommendAuthor = async () => {
-   const res=await Https.action(API.RECOMMEND.author, {current: 0, size: 6})
-  if (res){
+  const res = await Https.action(API.RECOMMEND.author, {current: 0, size: 6})
+  if (res) {
     //@ts-ignore
     recommendAuthors.splice(0, recommendAuthors.length, ...(res.records ?? []))
   }

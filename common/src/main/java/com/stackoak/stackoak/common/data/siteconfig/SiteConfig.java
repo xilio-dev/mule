@@ -3,10 +3,13 @@ package com.stackoak.stackoak.common.data.siteconfig;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
 /**
  * <p>
  *
@@ -22,7 +25,8 @@ import lombok.ToString;
 public class SiteConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @TableId("id")
+    private String id;
     /**
      * 网站logo
      */
@@ -89,6 +93,9 @@ public class SiteConfig implements Serializable {
     @TableField("open_pc_site")
     private Integer openPcSite;
 
-    @TableId("id")
-    private String id;
+    /**
+     * 首页搜索框视频背景
+     */
+    @TableField("search_video_cover")
+    private String searchVideoCover;
 }

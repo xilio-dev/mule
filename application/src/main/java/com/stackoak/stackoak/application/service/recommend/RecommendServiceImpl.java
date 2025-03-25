@@ -137,7 +137,7 @@ public class RecommendServiceImpl implements IRecommendService {
             return pageRes;
 
         } catch (TasteException e) {
-             throw new BizException(e.getMessage());
+            throw new BizException(e.getMessage());
         }
     }
 
@@ -160,7 +160,7 @@ public class RecommendServiceImpl implements IRecommendService {
     }
 
 
-    public Page<User> recommendAuthors(String userId,PageQuery pageQuery) {
+    public Page<User> recommendAuthors(String userId, PageQuery pageQuery) {
         int page = Math.toIntExact(pageQuery.getCurrent());
         int size = Math.toIntExact(pageQuery.getSize());
         int offset = page * size;
@@ -178,7 +178,7 @@ public class RecommendServiceImpl implements IRecommendService {
     private List<User> recommendForLoggedInUser(String userId, int offset, int size) {
         // 获取用户行为
         LambdaQueryWrapper<UserBehavior> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(UserBehavior::getUserId,userId);
+        wrapper.eq(UserBehavior::getUserId, userId);
         List<UserBehavior> behaviors = userBehaviorService.list(wrapper);
 
         // 计算每个作者的得分
@@ -216,7 +216,9 @@ public class RecommendServiceImpl implements IRecommendService {
                 .limit(size)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-
+        if (authorIds.isEmpty()) {
+            return Collections.emptyList();
+        }
         return userService.listByIds(authorIds);
     }
 
