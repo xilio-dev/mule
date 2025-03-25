@@ -14,6 +14,7 @@ import CommentInput from '@/components/CommentInput/index.vue'
 import UserInfoCard from '@/components/UserInfoCard/index.vue'
 import {followUser, unFollowUser} from "@/api/user.ts";
 import {CommonUtil} from "@/utils/common.ts";
+import {ImageUtils} from "@/utils/file.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
@@ -220,7 +221,7 @@ const onToEditEditor = (id: string) => {
 
         <a-comment>
           <template #avatar>
-            <a-avatar v-if="useUser.isLogin()" :src="useUser.userinfo.avatar" alt="Han Solo"/>
+            <a-avatar v-if="useUser.isLogin()" :src="ImageUtils.getImgUrl(useUser.userinfo.avatar)" alt="Han Solo"/>
           </template>
           <template #content>
             <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
@@ -252,7 +253,7 @@ const onToEditEditor = (id: string) => {
             <a>{{ comment.user.nickname }}</a>
           </template>
           <template #avatar>
-            <a-avatar :src="comment.user.avatar" alt="Avatar"/>
+            <a-avatar :src="ImageUtils.getImgUrl(comment.user.avatar)" alt="Avatar"/>
           </template>
           <template #content>
             <p>{{ comment.content }}</p>
@@ -284,7 +285,7 @@ const onToEditEditor = (id: string) => {
               <a>{{ reply.user.nickname }} 回复 {{ reply.toUser ? reply.toUser.nickname : '' }}</a>
             </template>
             <template #avatar>
-              <a-avatar :src="reply.user.avatar" alt="Avatar"/>
+              <a-avatar :src="ImageUtils.getImgUrl(reply.user.avatar)" alt="Avatar"/>
             </template>
             <template #content>
               <p>{{ reply.content }}</p>
@@ -379,7 +380,7 @@ const onToEditEditor = (id: string) => {
   <a-drawer :width="500" title="评论9999" placement="right" :open="openCommentDrawer" @close="openCommentDrawer=false">
     <a-comment>
       <template #avatar>
-        <a-avatar v-if="useUser.isLogin()" :src="useUser.userinfo.avatar" alt="Han Solo"/>
+        <a-avatar v-if="useUser.isLogin()" :src="ImageUtils.getImgUrl(useUser.userinfo.avatar)" alt="Han Solo"/>
       </template>
       <template #content>
         <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"

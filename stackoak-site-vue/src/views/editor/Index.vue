@@ -12,7 +12,7 @@
           <a-button type="default">存草稿</a-button>
           <a-button type="primary" @click="showModal">发布</a-button>
           <div>
-            <a-avatar :src="useUser.userinfo.avatar"/>
+            <a-avatar :src="ImageUtils.getImgUrl(useUser.userinfo.avatar||'#')"/>
           </div>
         </div>
       </a-col>

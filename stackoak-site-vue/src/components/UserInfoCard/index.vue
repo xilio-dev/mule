@@ -2,6 +2,7 @@
 import {NumberUtils} from "../../utils/number-util.ts";
 import {computed} from "vue";
 import {useUserStore} from "@/store";
+import {ImageUtils} from "@/utils/file.ts";
 
 const useStore = useUserStore()
 const emit = defineEmits(['toggle-follow', 'on-chat'])
@@ -41,7 +42,7 @@ const toChat = () => {
   <a-row :class="{ 'hidden-until-mounted': isLoading }" style="text-align: left;width: 100%" v-else>
     <a-col :span="6">
       <RouterLink :to="`/author/${userInfo.userId}`" target="_blank">
-        <a-avatar :size="50" :src="userInfo.avatar"/>
+        <a-avatar :size="50" :src="ImageUtils.getImgUrl(userInfo.avatar)"/>
       </RouterLink>
     </a-col>
     <a-col :span="18" style="padding-left: 7px">
