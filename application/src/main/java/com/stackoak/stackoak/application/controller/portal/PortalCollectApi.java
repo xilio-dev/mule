@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.collect.ICollectService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
@@ -30,9 +31,8 @@ public class PortalCollectApi {
     private ICollectService collectService;
 
     @PostMapping(value = "list", name = "获取用户收藏夹列表")
-    public Result list(@RequestBody PageQuery pageQuery) {
-        String userId = StpKit.USER.getLoginIdAsString();
-        return Result.success(collectService.listByPageAndUser(userId, pageQuery));
+    public Result list(@RequestBody CommonPageQuery pageQuery) {
+        return Result.success(collectService.listByPageAndUser(pageQuery));
     }
 
     @PostMapping(value = "save", name = "保存收藏夹")

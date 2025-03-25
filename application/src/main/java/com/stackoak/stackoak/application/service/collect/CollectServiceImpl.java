@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.application.exception.BizException;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
@@ -84,15 +85,14 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     /**
      * 获取用户创建的收藏夹列表
      *
-     * @param userId    用户编号
      * @param pageQuery 查询参数
      * @return 收藏夹列表
      */
     @Override
-    public Page<Collect> listByPageAndUser(String userId, PageQuery pageQuery) {
+    public Page<Collect> listByPageAndUser( CommonPageQuery pageQuery) {
         Page<Collect> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Collect::getUserId, userId);
+        wrapper.eq(Collect::getUserId, pageQuery.getId());
         wrapper.eq(Collect::getStatus, 1);
         return page(page, wrapper);
     }

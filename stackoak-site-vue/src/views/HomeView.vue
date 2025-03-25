@@ -45,19 +45,6 @@
           </a-popover>
         </div>
       </div>
-
-
-      <!--        <a-input-search style="margin: 15px" size="large"/>-->
-
-
-      <!--      <a-carousel style="margin-bottom: 10px" :after-change="onChange">-->
-      <!--        <img src="https://picsum.photos/1920/1080?random=2"/>-->
-      <!--        <img src="https://picsum.photos/1920/1080?random=3"/>-->
-      <!--        <img src="https://picsum.photos/1920/1080?random=4"/>-->
-      <!--        <img src="https://picsum.photos/1920/1080?random=5"/>-->
-      <!--        <img src="https://picsum.photos/1920/1080?random=6"/>-->
-      <!--      </a-carousel>-->
-
       <a-card style="margin-top: 8px;box-shadow: none " class="index-article-card" :bordered="false">
         <a-tabs v-model:activeKey="activeKey" @tabClick="onTabClick">
           <a-tab-pane key="1" tab="关注">
@@ -75,13 +62,10 @@
               <ArticleList :article-list="articles"/>
             </a-skeleton>
           </a-tab-pane>
-
         </a-tabs>
       </a-card>
     </a-col>
     <a-col :span="6">
-
-
       <a-card title="创作中心" :bordered="false" style="border-radius: 4px;">
         <a-flex justify="space-around" align="center" style="margin-top: 15px">
           <div @click="onOpenLoginModel('/editor')" style="text-decoration: none" class="creator-link-container">
@@ -111,7 +95,7 @@
 
       </a-card>
       <a-card title="推荐关注" :bordered="false" style="margin-top: 12px;min-height: 150px">
-        <a-list item-layout="horizontal" :data-source="list" :split="false">
+        <a-list item-layout="horizontal" :data-source="recommendAuthors" :split="false">
           <template #renderItem="{ item }">
             <a-list-item>
               <template #actions>
@@ -119,13 +103,13 @@
               </template>
               <a-list-item-meta>
                 <template #title>
-                  <a href="https://www.antdv.com/">{{ item.name.last }}</a>
+                  <a href="https://www.antdv.com/">{{ item.nickname }}</a>
                 </template>
                 <template #description>
-                  <span class="no-wrap">后端开发工程师,2年开发经</span>
+                  <span class="no-wrap">{{item.introduce}}</span>
                 </template>
                 <template #avatar>
-                  <a-avatar :src="item.picture.large"/>
+                  <a-avatar :src="ImageUtils.getImgUrl(item.avatar)"/>
                 </template>
               </a-list-item-meta>
             </a-list-item>
@@ -267,6 +251,7 @@ import {CommonUtil} from "@/utils/common.ts";
 import {getArticleRecommend} from "@/api/recommend.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {Https} from "@/api/https.ts";
+import {ImageUtils} from "@/utils/file.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const userStore = useUserStore()
 const categoryTree = ref([])
@@ -292,7 +277,8 @@ const articleRankPageQuery = reactive({
 })
 const activeKey = ref('2');
 const articles = ref([])
-const recommendArticles=reactive([])
+const recommendArticles = reactive([])/*推荐的文章列表*/
+const recommendAuthors = reactive([])/*推荐的作者列表*/
 const queryParam = ref({
   current: 1,
   size: 20,
@@ -310,6 +296,7 @@ onMounted(() => {
   loadArticleRecommend()
   loadFollowAuthorArticles()
   loadArticleComprehensiveRank()
+  loadRecommendAuthor()
 })
 /*------------------------------------数据加载--------------------------------------------*/
 const loadTwoLevelCategoryTree = () => {
@@ -357,6 +344,14 @@ const loadArticleRecommend = async () => {
   const res = await getArticleRecommend({current: 0, size: 20})
   //@ts-ignore
   recommendArticles.splice(0, recommendArticles.length, ...(res.records ?? []))
+}
+//加载为用户推荐的作者
+const loadRecommendAuthor = async () => {
+   const res=await Https.action(API.RECOMMEND.author, {current: 0, size: 6})
+  if (res){
+    //@ts-ignore
+    recommendAuthors.splice(0, recommendAuthors.length, ...(res.records ?? []))
+  }
 }
 //加载左侧菜单
 const loadLeftMenu = async () => {

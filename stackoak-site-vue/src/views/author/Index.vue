@@ -40,6 +40,7 @@ const authorHotArticleQuery = reactive({
 })
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
+  loadAuthorCollect()
   await loadAuthorInfo()
   await loadFollows()
   await loadFans()
@@ -47,7 +48,7 @@ onMounted(async () => {
   // await loadAuthorArticleRank()
   await loadAuthorArticles()
   await loadAuthorHotArticles()
-  loadAuthorCollect()
+
 })
 /*------------------------------------数据加载--------------------------------------------*/
 //加载作者关注的人
@@ -91,7 +92,7 @@ const loadAuthorHotArticles = async () => {
 }
 //加载作者公开的收藏夹
 const loadAuthorCollect = async () => {
-  const res = await Https.action(API.COLLECT.list, {current: 1, size: 10})
+  const res = await Https.action(API.COLLECT.list, {current: 1, size: 10,id:authorId})
   //@ts-ignore
   authorCollects.splice(0, authorCollects.length, ...(res.records ?? []))
 }

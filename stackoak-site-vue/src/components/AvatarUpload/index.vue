@@ -82,5 +82,6 @@ const beforeUpload = (file: UploadProps['fileList'][number]) => {
   width: 100px;
   height: 100px;
   border-radius: 8px;
+  object-fit: cover;
 }
 </style>

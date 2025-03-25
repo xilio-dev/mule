@@ -6,6 +6,7 @@ import {deleteArticle, getColumnArticle} from "@/api/post.ts";
 import type {Rule} from "ant-design-vue/es/form";
 import {ImageUtils} from "@/utils/file.ts";
 import {message, Modal} from "ant-design-vue";
+import AvatarUpload from "@/components/AvatarUpload/index.vue";
 
 /*------------------------------------变量定义------------------------------------------*/
 const activeTab = ref('1');
@@ -26,7 +27,7 @@ const articleQueryParam = ref({
   current: 1,
   size: 10,
 })
-
+const avatarUploadUrl = import.meta.env.VITE_APP_BASE_API + '/file/upload'
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
   loadColumns()
@@ -41,6 +42,7 @@ const tabs = [
   {key: '2', label: '未通过'},
 
 ];
+
 interface ColumnForm {
   id: string;
   name: string;
@@ -98,7 +100,7 @@ const onSaveColumn = () => {
       .then(() => {
         saveColumn(columnForm).then(res => {
           message.info("保存成功")
-          openColumnFormModel.value=false
+          openColumnFormModel.value = false
           clearColumnForm()
           loadColumns()
         })
@@ -108,7 +110,7 @@ const onNewColumn = () => {
   clearColumnForm()
   openColumnFormModel.value = true
 }
-const removeColumn=(cid:string)=>{
+const removeColumn = (cid: string) => {
   Modal.confirm({
     title: '您确定删除该专栏?',
     content: '删除后不可恢复！',
@@ -116,7 +118,7 @@ const removeColumn=(cid:string)=>{
     okType: 'danger',
     cancelText: '取消',
     onOk() {
-      deleteColumn(cid).then(res=>{
+      deleteColumn(cid).then(res => {
         //过滤掉已经删除的文章
         columns.value = columns.value.filter(column => column.id !== cid);
         message.success("已删除")
@@ -204,13 +206,14 @@ const removeColumn=(cid:string)=>{
       </template>
       <template #action="{item}">
         <div>编辑</div>
-        <div>删除</div>
+        <div>移除</div>
       </template>
     </SoList>
     <a-empty v-else description="暂无数据"/>
   </a-modal>
 
-  <a-modal v-model:open="openColumnFormModel" :title="columnForm.id==''?'新建专栏':'编辑专栏'" ok-text="保存" cancel-text="取消" @ok="onSaveColumn">
+  <a-modal v-model:open="openColumnFormModel" :title="columnForm.id==''?'新建专栏':'编辑专栏'" ok-text="保存"
+           cancel-text="取消" @ok="onSaveColumn">
     <a-form
         ref="columnFormRef"
         :model="columnForm"
@@ -219,17 +222,8 @@ const removeColumn=(cid:string)=>{
         <a-input v-model:value="columnForm.name"/>
       </a-form-item>
       <a-form-item label="封面" name="cover">
-        <a-upload
-            v-model:file-list="fileList"
-            name="avatar"
-            list-type="picture-card"
-            :show-upload-list="false"
-            action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-            :before-upload="beforeUpload"
-            @change="handleChange"
-        >
-          <a-image style="width: 120px;height: 68px" :preview="false" v-if="columnForm.cover" :src="ImageUtils.getImgUrl(columnForm.cover)" alt="avatar"/>
-        </a-upload>
+        <AvatarUpload :action="avatarUploadUrl" :headers="{}"
+                      v-model:img-url="columnForm.cover"/>
       </a-form-item>
       <a-form-item label="描述" name="intro">
         <a-textarea v-model:value="columnForm.intro"/>

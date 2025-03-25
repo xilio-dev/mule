@@ -50,6 +50,9 @@ export const API = {
         get: {url: '/collect/get', method: 'get'} as ApiConfig,
         del: {url: '/collect/del', method: 'delete'} as ApiConfig,
         save: {url: '/collect/save', method: 'post'} as ApiConfig,
+    },
+    RECOMMEND: {
+        author: {url: '/recommend/author', method: 'post'} as ApiConfig,
     }
 } as const;
 

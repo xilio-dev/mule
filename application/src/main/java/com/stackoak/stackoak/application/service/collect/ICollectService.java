@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.collect;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
@@ -35,11 +36,11 @@ public interface ICollectService extends IService<Collect> {
 
     /**
      * 获取用户创建的收藏夹列表
-     * @param userId 用户编号
+
      * @param pageQuery 查询参数
      * @return 收藏夹列表
      */
-    Page<Collect> listByPageAndUser(String userId, PageQuery pageQuery);
+    Page<Collect> listByPageAndUser(CommonPageQuery pageQuery);
 
     /**
      * 删除收藏夹
