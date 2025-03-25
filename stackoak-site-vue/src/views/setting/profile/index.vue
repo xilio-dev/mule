@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, reactive, ref, toRaw} from 'vue';
+import {computed, onMounted, reactive, ref, toRaw} from 'vue';
 import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import dayjs, {Dayjs} from 'dayjs';
@@ -9,6 +9,7 @@ import {message} from 'ant-design-vue';
 import AvatarUpload from "@/components/AvatarUpload/index.vue"
 
 import {useUserStore} from "@/store";
+import {ImageUtils} from "@/utils/file.ts";
 
 /*------------------------------------类型定义---------------------------------------------*/
 interface Tag {
@@ -46,7 +47,10 @@ interface UserForm {
 }
 
 /*------------------------------------变量定义------------------------------------------*/
-const avatarUploadUrl = import.meta.env.VITE_APP_ROOT_API + '/file/upload'
+const avatarUploadUrl = import.meta.env.VITE_APP_BASE_API + '/file/upload'
+const authorQr=computed(()=>{
+  return "http://192.168.0.151:3002/author"
+})
 // 表单相关
 const formRef = ref();
 const labelCol = {span: 4};
@@ -298,8 +302,8 @@ const onSubmit = () => {
         <a-form-item label="作者名片" name="authorQr">
           <a-qrcode
               error-level="H"
-              :value="userForm.authorQr || '暂无'"
-              icon="https://www.antdv.com/assets/logo.1ef800a8.svg"
+              :value="`${authorQr}/${userForm.id}`"
+              :icon="ImageUtils.getImgUrl(userForm.avatar)"
           />
         </a-form-item>
       </a-form>

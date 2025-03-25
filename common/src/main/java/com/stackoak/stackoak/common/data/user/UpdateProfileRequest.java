@@ -13,6 +13,10 @@ import java.util.List;
 @Data
 public class UpdateProfileRequest implements Serializable {
     /**
+     * 用户id
+     */
+    private String id;
+    /**
      * 用户名
      */
     private String nickname;

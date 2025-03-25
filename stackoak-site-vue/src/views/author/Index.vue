@@ -27,7 +27,8 @@ const authorFollowList = ref([])
 const openDrawer = ref(false)
 const authorArticles = reactive([])
 const authorHotArticles = reactive([])/*作者热门文章*/
-
+const authorCollects = reactive([])/*作者收藏夹*/
+const authorFollowCollect = reactive([])/*作者关注的收藏夹*/
 //判断是否是自己本人
 const isSelf = computed(() => {
   return userStore.userinfo.userId == authorId
@@ -46,6 +47,7 @@ onMounted(async () => {
   // await loadAuthorArticleRank()
   await loadAuthorArticles()
   await loadAuthorHotArticles()
+  loadAuthorCollect()
 })
 /*------------------------------------数据加载--------------------------------------------*/
 //加载作者关注的人
@@ -86,6 +88,12 @@ const loadAuthorArticles = async () => {
 const loadAuthorHotArticles = async () => {
   const res = await getAuthorHotArticleList(authorHotArticleQuery)
   Object.assign(authorHotArticles, res.records)
+}
+//加载作者公开的收藏夹
+const loadAuthorCollect = async () => {
+  const res = await Https.action(API.COLLECT.list, {current: 1, size: 10})
+  //@ts-ignore
+  authorCollects.splice(0, authorCollects.length, ...(res.records ?? []))
 }
 /*------------------------------------核心业务--------------------------------------------*/
 //点击关注或取消关注
@@ -267,7 +275,9 @@ const openLink = (url: string) => {
           <a-tab-pane key="5" tab="收藏" force-render>
             <a-tabs v-model:activeKey="collectActiveKey">
               <a-tab-pane key="1" tab="我创建的">
-                我创建的
+                 <div v-for="item in authorCollects" :key="item.id">
+                   {{item.name}}
+                 </div>
               </a-tab-pane>
               <a-tab-pane key="2" tab="我关注的">
 
