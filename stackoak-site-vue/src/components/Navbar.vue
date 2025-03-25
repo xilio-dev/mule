@@ -9,7 +9,7 @@
       <a-menu @click="handleClick" v-model:selectedKeys="current" mode="horizontal" :items="items1"/>
     </a-col>
     <a-col :span="14" style="white-space: nowrap">
-      <div  style="float: right;margin-top: 6px">
+      <div style="float: right;margin-top: 6px">
         <a-input-search
             v-if="false"
             style="width: 400px;margin-right: 15px"
@@ -89,7 +89,8 @@
               <a-button @click="logout" type="text">退出登陆</a-button>
             </a-flex>
           </template>
-          <a-avatar style="margin-left:  15px; " :src="userStore.userinfo.avatar" shape="square"/>
+          <a-avatar style="margin-left:  15px; " :src="ImageUtils.getImgUrl(userStore.userinfo.avatar||'')"
+                    shape="square"/>
         </a-popover>
       </div>
     </a-col>
@@ -104,7 +105,7 @@ import {reactive} from 'vue';
 import {useUserStore} from '@/store';
 /*------------------------------------变量定义------------------------------------------*/
 
-const loginPageRef=ref()
+const loginPageRef = ref()
 
 /*------------------------------------生命周期-------------------------------------------*/
 
@@ -131,8 +132,8 @@ const loadUnReadMessageCount = async () => {
 
 
 /*-------------------------------------其他函数-------------------------------------------*/
-const closeLoginModel=()=>{
-  openLoginModal.value=false
+const closeLoginModel = () => {
+  openLoginModal.value = false
   if (loginPageRef.value) {
     loginPageRef.value.clear()
   }
@@ -184,7 +185,6 @@ interface EmailLoginDTO {
   email: string;
   password: string;
 }
-
 
 
 //退出登陆
@@ -247,6 +247,7 @@ import {type MenuProps, message, notification} from "ant-design-vue";
 import {sendEmail} from "@/api/email.ts";
 import Login from "@/components/Login.vue";
 import {getUnreadCount} from "@/api/notify.ts";
+import {ImageUtils} from "@/utils/file.ts";
 
 
 const listData: Record<string, string>[] = [];
@@ -299,6 +300,7 @@ const onOpenMsg = () => {
   border-bottom: none;
   box-shadow: none;
 }
+
 /*输入框颜色*/
 :deep(.ant-input-group .ant-input-group-addon) {
   cursor: pointer;

@@ -42,7 +42,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     public UploadResultDTO uploadImage(MultipartFile file) {
         UploadResultDTO uploadResult = uploadService.uploadImage(file);
         Material material = new Material();
-        material.setImgUrl(uploadResult.url());
+        material.setImgUrl(uploadResult.imgUrl());
         material.setSpice(0);
         material.setTitle(uploadResult.originName());
         material.setType(2);

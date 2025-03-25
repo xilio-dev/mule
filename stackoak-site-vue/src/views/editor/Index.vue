@@ -100,7 +100,6 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import {ImageUtils} from "@/utils/file.ts";
 import router from "@/router";
 import {tagList} from "@/api/tag.ts";
-// @ts-ignore
 import TagInput from '@/components/TagInput/index.vue'
 import {ARTICLE} from "@/constants/article.ts";
 import {message, Modal} from "ant-design-vue";

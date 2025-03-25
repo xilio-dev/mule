@@ -1,6 +1,8 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import {sendLogout} from "@/api/auth.ts";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/api/https.ts";
 
 interface UserInfo {
     userId?: string;
@@ -37,6 +39,14 @@ export const useUserStore = defineStore('user', () => {
         localStorage.removeItem('userinfo');
         sendLogout()
     }
+
+    function updateUserInfo() {
+        Https.action(API.USER.getUserInfo).then(res => {
+            userinfo.value = {...userinfo.value, ...res};
+            setUserInfo(userinfo.value)
+        })
+    }
+
     // 定义 setUserInfo 方法，参数类型为 UserInfo
     function setUserInfo(userInfo: UserInfo) {
         userinfo.value = {...userinfo.value, ...userInfo};
@@ -52,6 +62,7 @@ export const useUserStore = defineStore('user', () => {
     function updateEmail(newEmail: string) {
         setUserInfo({...userinfo.value, email: newEmail});
     }
+
     // 获取用户信息
     function getUserInfo(): UserInfo {
         const storedUserInfo = localStorage.getItem('userinfo');
@@ -65,5 +76,5 @@ export const useUserStore = defineStore('user', () => {
     if (localStorage.getItem('userinfo')) {
         userinfo.value = getUserInfo();
     }
-    return {userinfo, setUserInfo, logout, setToken, isLogin, updateEmail};
+    return {userinfo, updateUserInfo, setUserInfo, logout, setToken, isLogin, updateEmail};
 });

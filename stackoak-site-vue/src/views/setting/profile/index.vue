@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, toRaw } from 'vue';
-import type { UnwrapRef } from 'vue';
-import type { Rule } from 'ant-design-vue/es/form';
-import dayjs, { Dayjs } from 'dayjs';
-import { getUserProfile, updateProfile } from '@/api/user.ts';
-import { tagList } from '@/api/tag.ts';
-import { message } from 'ant-design-vue';
-import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
+import {onMounted, reactive, ref, toRaw} from 'vue';
+import type {UnwrapRef} from 'vue';
+import type {Rule} from 'ant-design-vue/es/form';
+import dayjs, {Dayjs} from 'dayjs';
+import {getUserProfile, updateProfile} from '@/api/user.ts';
+import {tagList} from '@/api/tag.ts';
+import {message} from 'ant-design-vue';
+import AvatarUpload from "@/components/AvatarUpload/index.vue"
 
-// 类型定义
+import {useUserStore} from "@/store";
+
+/*------------------------------------类型定义---------------------------------------------*/
 interface Tag {
   id: number;
   name: string;
@@ -44,6 +45,17 @@ interface UserForm {
   tagIds?: number[];
 }
 
+/*------------------------------------变量定义------------------------------------------*/
+const avatarUploadUrl = import.meta.env.VITE_APP_ROOT_API + '/file/upload'
+// 表单相关
+const formRef = ref();
+const labelCol = {span: 4};
+const wrapperCol = {span: 20};
+const userUser=useUserStore()
+// 日期格式
+const dateFormat = 'YYYY/MM/DD';
+const tags = ref<Tag[]>([]);
+const selectedTags = ref<Tag[]>([]);
 // 响应式表单数据
 const userForm: UnwrapRef<UserForm> = reactive({
   id: undefined,
@@ -68,22 +80,35 @@ const userForm: UnwrapRef<UserForm> = reactive({
   jobTime: null,
   tagIds: [],
 });
-
-// 表单相关
-const formRef = ref();
-const labelCol = { span: 4 };
-const wrapperCol = { span: 20 };
 const rules: Record<string, Rule[]> = {
   nickname: [
-    { required: true, message: '请填写您的账号昵称', trigger: 'change' },
-    { min: 2, max: 15, message: '字数限制 2-15', trigger: 'change' },
+    {required: true, message: '请填写您的账号昵称', trigger: 'change'},
+    {min: 2, max: 15, message: '字数限制 2-15', trigger: 'change'},
   ],
-  gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
+  gender: [{required: true, message: '请选择性别', trigger: 'change'}],
 };
+// 选项数据
+const eduLevelOptions = [
+  {value: '1', label: '大专'},
+  {value: '2', label: '本科'},
+  {value: '3', label: '硕士'},
+  {value: '4', label: '博士'},
+];
+const careerFieldOptions = [
+  {value: '1', label: '后端'},
+  {value: '2', label: '前端'},
+  {value: '3', label: '人工智能'},
+  {value: '4', label: '大数据'},
+  {value: '5', label: '网络安全'},
+  {value: '6', label: '测试'},
+];
+/*------------------------------------生命周期-------------------------------------------*/
+onMounted(() => {
+  loadTagList();
+  loadUserProfile();
+});
 
-// 日期格式
-const dateFormat = 'YYYY/MM/DD';
-
+/*------------------------------------数据加载--------------------------------------------*/
 // 加载用户数据
 const loadUserProfile = () => {
   getUserProfile()
@@ -114,13 +139,8 @@ const loadUserProfile = () => {
         message.error('加载用户信息失败');
       });
 };
-
-// 标签相关
-const tags = ref<Tag[]>([]);
-const selectedTags = ref<Tag[]>([]);
-
 const loadTagList = () => {
-  tagList({ current: 1, size: 100 })
+  tagList({current: 1, size: 100})
       .then((res) => {
         tags.value = (res.records || []).map((tag: any) => ({
           id: tag.id,
@@ -136,21 +156,21 @@ const loadTagList = () => {
         message.error('加载标签失败');
       });
 };
-
+/*------------------------------------核心业务--------------------------------------------*/
 const initSelectedTags = () => {
   if (!tags.value || !userForm.tagIds) return;
   userForm.tagIds.forEach((tagId) => {
     const tag = tags.value.find((t) => t.id === tagId);
     if (tag) {
       tag.checked = true;
-      selectedTags.value.push({ ...tag });
+      selectedTags.value.push({...tag});
     }
   });
 };
 
 const handleChanges = (tag: Tag) => {
   if (tag.checked) {
-    selectedTags.value.push({ ...tag });
+    selectedTags.value.push({...tag});
   } else {
     const index = selectedTags.value.findIndex((t) => t.id === tag.id);
     if (index !== -1) selectedTags.value.splice(index, 1);
@@ -171,7 +191,7 @@ const onSubmit = () => {
   formRef.value
       .validate()
       .then(() => {
-        const formData = { ...toRaw(userForm) };
+        const formData = {...toRaw(userForm)};
         // 处理日期字段
         formData.jobTime = formData.jobTime ? formData.jobTime.format(dateFormat) : '';
         if (formData.eduTime && formData.eduTime.length === 2) {
@@ -188,6 +208,7 @@ const onSubmit = () => {
 
         updateProfile(formData)
             .then(() => {
+               userUser.updateUserInfo()
               message.success('更新成功');
             })
             .catch((err) => {
@@ -201,68 +222,7 @@ const onSubmit = () => {
       });
 };
 
-// 选项数据
-const eduLevelOptions = [
-  { value: '1', label: '大专' },
-  { value: '2', label: '本科' },
-  { value: '3', label: '硕士' },
-  { value: '4', label: '博士' },
-];
-const careerFieldOptions = [
-  { value: '1', label: '后端' },
-  { value: '2', label: '前端' },
-  { value: '3', label: '人工智能' },
-  { value: '4', label: '大数据' },
-  { value: '5', label: '网络安全' },
-  { value: '6', label: '测试' },
-];
-
-// 头像上传
-const fileList = ref([]);
-const loading = ref<boolean>(false);
-
-const handleChange = (info: UploadChangeParam) => {
-  if (info.file.status === 'uploading') {
-    loading.value = true;
-    return;
-  }
-  if (info.file.status === 'done') {
-    getBase64(info.file.originFileObj as Blob, (base64Url: string) => {
-      userForm.avatar = base64Url;
-      loading.value = false;
-    });
-  }
-  if (info.file.status === 'error') {
-    loading.value = false;
-    message.error('上传失败');
-  }
-};
-
-const beforeUpload = (file: UploadProps['fileList'][number]) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('只能上传 JPG 或 PNG 文件！');
-    return false;
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('图片大小不能超过 2MB！');
-    return false;
-  }
-  return true;
-};
-
-function getBase64(img: Blob, callback: (base64Url: string) => void) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-}
-
-// 初始化
-onMounted(() => {
-  loadTagList();
-  loadUserProfile();
-});
+/*------------------------------------ 工具函数 -------------------------------------------*/
 </script>
 
 <template>
@@ -270,30 +230,11 @@ onMounted(() => {
     <a-card title="基本信息" class="base-info-card">
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef" :model="userForm" :rules="rules">
         <a-form-item label="头像">
-          <a-upload
-              v-model:file-list="fileList"
-              name="avatar"
-              list-type="picture-card"
-              class="avatar-uploader"
-              :show-upload-list="false"
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              :before-upload="beforeUpload"
-              @change="handleChange"
-          >
-            <a-avatar v-if="userForm.avatar" :size="{ xs: 24, sm: 32, md: 40, lg: 64, xl: 100, xxl: 120 }">
-              <template #icon>
-                <a-image :preview="false" :src="userForm.avatar" alt="avatar" />
-              </template>
-            </a-avatar>
-            <div v-else>
-              <loading-outlined v-if="loading" />
-              <plus-outlined v-else />
-              <div class="ant-upload-text">上传</div>
-            </div>
-          </a-upload>
+          <AvatarUpload :action="avatarUploadUrl" :headers="{}"
+                        v-model:img-url="userForm.avatar"/>
         </a-form-item>
         <a-form-item label="显示昵称" name="nickname">
-          <a-input class="app-input" v-model:value="userForm.nickname" />
+          <a-input class="app-input" v-model:value="userForm.nickname"/>
         </a-form-item>
         <a-form-item label="性别" name="gender">
           <a-radio-group v-model:value="userForm.gender">
@@ -311,22 +252,22 @@ onMounted(() => {
           />
         </a-form-item>
         <a-form-item label="个人博客" name="personBlogAddress">
-          <a-input class="app-input" v-model:value="userForm.personBlogAddress" />
+          <a-input class="app-input" v-model:value="userForm.personBlogAddress"/>
         </a-form-item>
         <a-form-item label="Github" name="github">
-          <a-input class="app-input" v-model:value="userForm.github" />
+          <a-input class="app-input" v-model:value="userForm.github"/>
         </a-form-item>
         <a-form-item label="Gitee" name="gitee">
-          <a-input class="app-input" v-model:value="userForm.gitee" />
+          <a-input class="app-input" v-model:value="userForm.gitee"/>
         </a-form-item>
         <a-form-item label="CSDN" name="csdn">
-          <a-input class="app-input" v-model:value="userForm.csdn" />
+          <a-input class="app-input" v-model:value="userForm.csdn"/>
         </a-form-item>
         <a-form-item label="博客园" name="bokeyuan">
-          <a-input class="app-input" v-model:value="userForm.bokeyuan" />
+          <a-input class="app-input" v-model:value="userForm.bokeyuan"/>
         </a-form-item>
         <a-form-item label="哔哩哔哩" name="bilibli">
-          <a-input class="app-input" v-model:value="userForm.bilibli" />
+          <a-input class="app-input" v-model:value="userForm.bilibli"/>
         </a-form-item>
         <a-form-item label="兴趣标签" name="tag">
           <div class="selected-tags" style="margin-top: 5px">
@@ -366,10 +307,10 @@ onMounted(() => {
     <a-card title="教育信息" class="base-info-card">
       <a-form :label-col="labelCol" :wrapper-col="wrapperCol" :model="userForm">
         <a-form-item label="学校" name="universityName">
-          <a-input class="app-input" v-model:value="userForm.universityName" />
+          <a-input class="app-input" v-model:value="userForm.universityName"/>
         </a-form-item>
         <a-form-item label="专业" name="majorName">
-          <a-input class="app-input" v-model:value="userForm.majorName" />
+          <a-input class="app-input" v-model:value="userForm.majorName"/>
         </a-form-item>
         <a-form-item label="学历" name="eduLevel">
           <a-select
@@ -405,10 +346,10 @@ onMounted(() => {
           />
         </a-form-item>
         <a-form-item label="任职公司" name="company">
-          <a-input class="app-input" v-model:value="userForm.company" />
+          <a-input class="app-input" v-model:value="userForm.company"/>
         </a-form-item>
         <a-form-item label="岗位" name="jobTitle">
-          <a-input class="app-input" v-model:value="userForm.jobTitle" />
+          <a-input class="app-input" v-model:value="userForm.jobTitle"/>
         </a-form-item>
         <a-form-item label="开始工作" name="jobTime">
           <a-date-picker
@@ -443,21 +384,6 @@ onMounted(() => {
 .app-input:focus {
   outline: none !important;
   box-shadow: none !important;
-}
-
-.avatar-uploader > .ant-upload {
-  width: 128px;
-  height: 128px;
-}
-
-.ant-upload-select-picture-card i {
-  font-size: 32px;
-  color: #999;
-}
-
-.ant-upload-select-picture-card .ant-upload-text {
-  margin-top: 8px;
-  color: #666;
 }
 
 .dashed-border {

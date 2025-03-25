@@ -61,6 +61,7 @@ declare module 'vue' {
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     AUpload: typeof import('ant-design-vue/es')['Upload']
     AUploadDragger: typeof import('ant-design-vue/es')['UploadDragger']
+    AvatarUpload: typeof import('./src/components/AvatarUpload/index.vue')['default']
     CherryMarkdownv2: typeof import('./src/components/icons/CherryMarkdownv2.vue')['default']
     ColumnList: typeof import('./src/components/ColumnList.vue')['default']
     CommentInput: typeof import('./src/components/CommentInput/index.vue')['default']

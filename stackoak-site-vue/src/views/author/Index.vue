@@ -12,6 +12,7 @@ import ArticleList from "@/components/ArticleList.vue";
 import {CommonUtil} from "@/utils/common.ts";
 import {Https} from "@/api/https.ts";
 import {API} from "@/api/ApiConfig.ts";
+import {ImageUtils} from "@/utils/file.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
 const collectActiveKey = ref('1')
@@ -123,7 +124,7 @@ const openLink = (url: string) => {
         <a-col :span="20">
           <a-flex :gap="12">
             <div>
-              <a-avatar class="author-avatar" :src="authorInfo.avatar" :size="90"/>
+              <a-avatar class="author-avatar" :src="ImageUtils.getImgUrl(authorInfo.avatar||'')" :size="90"/>
             </div>
             <a-flex vertical justify="space-around" style="width: 100%;">
               <div class="author-title">

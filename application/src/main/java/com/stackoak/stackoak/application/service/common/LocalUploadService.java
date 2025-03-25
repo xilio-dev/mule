@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Component
 @ConditionalOnProperty(name = "stackoak.fileUploadModel", havingValue = "Local")
 public class LocalUploadService extends AbstractUploadService {
+
     /**
      * 图片上传
      *
@@ -53,8 +54,7 @@ public class LocalUploadService extends AbstractUploadService {
                         originFileName,
                         fileName,
                         file.getSize(),
-                        file.getContentType());
-            }
+                        file.getContentType());}
             throw new BizException("上传图片不能为空！");
         } catch (Exception e) {
             throw new BizException("上传失败，请重试！");
