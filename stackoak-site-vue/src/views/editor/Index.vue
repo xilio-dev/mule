@@ -236,7 +236,7 @@ const onPublishArticle = () => {
 /*-------------------------------------------其他函数---------------------------------------------*/
 //发布对话框
 const showModal = () => {
-  if (!validateFieldAndLength(articleDetailForm.value.title, 5, '文章标题')) return;
+  if (!validateFieldAndLength(articleDetailForm.value.title, 4, '文章标题')) return;
   if (!validateFieldAndLength(articleDetailForm.value.content, 20, '文章内容')) return;
   // if(CommonUtil.hasSpecialChars(articleDetailForm.value.title)){
   //   message.warning("标题不能包含特殊字符!")

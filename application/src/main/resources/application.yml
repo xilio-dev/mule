@@ -14,7 +14,7 @@ stackoak:
       prefix: /admin
       package: com.stackoak.stackoak.application.controller.admin
     portal:
-      prefix: /portal
+      prefix: /api
       package: com.stackoak.stackoak.application.controller.portal
 server:
   port: 9856

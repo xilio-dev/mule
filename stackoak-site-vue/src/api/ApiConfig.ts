@@ -42,6 +42,9 @@ export const API = {
         followUser: { url: '/user/follow', method: 'post' } as ApiConfig,
         unFollowUser: { url: '/user/unfollow', method: 'put' } as ApiConfig,
     },
+    FILE:{
+        uploadImage: { url: '/file/upload', method: 'post' } as ApiConfig
+    }
 } as const;
 
 export type ApiGroup = typeof API;

@@ -1,4 +1,6 @@
-import {uploadImage} from "@/api/material.ts";
+import {ImageUtils} from "@/utils/file.ts";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/api/https.ts";
 
 export const Callbacks = (cherryInstance: any, emit: any) => ({
     urlProcessor: (url: string, srcType: any) => url,
@@ -6,18 +8,16 @@ export const Callbacks = (cherryInstance: any, emit: any) => ({
         if (/image/i.test(file.type)) {
             const formData = new FormData();
             formData.append("file", file);
-
-            uploadImage(formData).then((res) => {
+            Https.action(API.FILE.uploadImage, formData).then(res => {
                 //@ts-ignore
-                const imageUrl = res.imgUrl;
+                const imageUrl = ImageUtils.getImgUrl(res.imgUrl);
                 callback(imageUrl, {
                     name: file.name.replace(/\.[^.]+$/, ""),
                     isShadow: true,
                     width: "60%",
                     height: "auto",
                 });
-            })
-                .catch((error) => {
+            }).catch((error) => {
                     console.error("Error uploading image:", error);
                     callback("images/demo-error.png"); // 回显错误图片
                 });

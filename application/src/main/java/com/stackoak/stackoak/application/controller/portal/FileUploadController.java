@@ -1,7 +1,6 @@
-package com.stackoak.stackoak.application.controller.common;
+package com.stackoak.stackoak.application.controller.portal;
 
 import com.stackoak.stackoak.application.service.common.IUploadService;
-import com.stackoak.stackoak.application.util.SpringHelper;
 import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

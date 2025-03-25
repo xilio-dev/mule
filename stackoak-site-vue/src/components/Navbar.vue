@@ -148,7 +148,8 @@ const messages = ref([]);
 const eventSource = ref();
 onMounted(() => {
   if (userStore.isLogin()) {
-    eventSource.value = new EventSource(`http://localhost:9856/portal/notification/createSse/${userStore.userinfo.userId}`);
+
+    eventSource.value = new EventSource(`${import.meta.env.VITE_APP_BASE_API}/notification/createSse/${userStore.userinfo.userId}`);
     eventSource.value.onmessage = (event: any) => {
       if (event.data) {
         console.log(event.data)
