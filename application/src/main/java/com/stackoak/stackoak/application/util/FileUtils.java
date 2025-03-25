@@ -23,4 +23,23 @@ public class FileUtils {
         String currentDir = StringUtils.substring(uploadDir, dirLastIndex);
         return Constants.RESOURCE_PREFIX + "/" + currentDir + "/" + fileName;
     }
+    /**
+     * 从文件名中获取文件后缀名（含点号）
+     * 示例: "example.txt" -> ".txt", "myfile.tar.gz" -> ".gz", "noextension" -> ""
+     *
+     * @param fileName 文件名，可以包含路径
+     * @return 文件后缀名（小写，含点号），如果没有后缀名则返回空字符串
+     */
+    public static String getFileExtensionWithDot(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return "";
+        }
+
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == 0 || lastDotIndex == fileName.length() - 1) {
+            return ""; // 没有后缀名、文件名以点开头或结尾
+        }
+
+        return fileName.substring(lastDotIndex).toLowerCase();
+    }
 }

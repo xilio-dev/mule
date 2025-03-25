@@ -17,8 +17,7 @@ public class MinioUploadService extends AbstractUploadService{
      */
     @Override
     public UploadResultDTO uploadImage(MultipartFile file) {
-        UploadResultDTO dto = new UploadResultDTO();
-        dto.setImgUrl("http://stackoak.com/minio" + file.getOriginalFilename());
-        return dto;
+
+        return null;
     }
 }

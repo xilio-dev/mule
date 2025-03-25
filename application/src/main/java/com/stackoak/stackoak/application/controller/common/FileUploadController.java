@@ -17,8 +17,6 @@ public class FileUploadController {
     private IUploadService uploadService;
     @PostMapping("upload")
     public Result uploadFile(@RequestParam("file") MultipartFile file) {
-
-
         return Result.success(uploadService.uploadImage(file));
     }
 }

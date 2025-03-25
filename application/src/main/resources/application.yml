@@ -8,7 +8,7 @@ stackoak:
   copyrightYear: 2025
   # 文件路径
   profile: /Users/liuxin/Desktop/stackoak/uploadPath
-  fileUploadModel: Minio
+  fileUploadModel: Local
   api:
     admin:
       prefix: /admin
