@@ -6,8 +6,8 @@ import java.io.Serializable;
 @Data
 public  class UserInteractDTO implements Serializable {
     private String userId;
-    private Boolean isDigg=true;
-    private Boolean isFollow=true;
-    private Boolean isCollect=true;
+    private Boolean isLike=false;
+    private Boolean isFollow=false;
+    private Boolean isCollect=false;
 
 }

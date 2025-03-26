@@ -134,8 +134,8 @@ const toApply = (comment: string) => {
 }
 //关注和取消关注
 const onToggleFollow = async (isFollow: boolean) => {
-  userInfo.value.isFollow = isFollow/*切换关注状态*/
-  userInfo.value.fansCount = isFollow ? userInfo.value.fansCount + 1 : userInfo.value.fansCount - 1/*粉丝数变更*/
+  userInfo.value.isFollow = !isFollow/*切换关注状态*/
+  userInfo.value.fansCount = !isFollow ? userInfo.value.fansCount + 1 : userInfo.value.fansCount - 1/*粉丝数变更*/
   //已经关注，取消关注
   if (isFollow) {
     await unFollowUser(userInfo.value.userId)

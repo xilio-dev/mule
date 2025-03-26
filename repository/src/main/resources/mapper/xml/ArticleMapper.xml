@@ -235,4 +235,20 @@
         WHERE a.publish_status = 1
         ORDER BY heat DESC
     </select>
+    <select id="selectUserInteract" resultType="com.stackoak.stackoak.common.data.article.UserInteractDTO">
+        SELECT CASE WHEN f.user_id IS NOT NULL THEN 1 ELSE 0 END AS isFollow,
+               CASE WHEN l.user_id IS NOT NULL THEN 1 ELSE 0 END AS isLike,
+               CASE WHEN c.user_id IS NOT NULL THEN 1 ELSE 0 END AS isCollect
+        FROM (SELECT 1) AS dummy
+                 LEFT JOIN follows f
+                           ON f.user_id = #{visitUserId} AND f.target_user_id = #{authorId}
+                 LEFT JOIN likes l
+                           ON l.user_id = #{visitUserId} AND l.target_id = #{articleId} AND l.type = 1
+                 LEFT JOIN (SELECT c.user_id
+                            FROM collect c
+                                     JOIN article_collect ac ON c.id = ac.collect_id
+                            WHERE c.user_id = #{visitUserId}
+                              AND ac.article_id = #{articleId}) c ON c.user_id = #{visitUserId};
+
+    </select>
 </mapper>

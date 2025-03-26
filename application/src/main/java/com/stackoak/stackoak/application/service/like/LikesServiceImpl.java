@@ -20,11 +20,11 @@ import org.springframework.stereotype.Service;
 public class LikesServiceImpl extends ServiceImpl<LikesMapper, Like> implements ILikesService {
 
     @Override
-    public Like getLike(String userId, String targetId, LikeTypeEnum likeTypeEnum) {
+    public boolean isLiked(String userId, String targetId, LikeTypeEnum likeTypeEnum) {
         LambdaQueryWrapper<Like> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Like::getUserId, userId);
         wrapper.eq(Like::getTargetId, targetId);
         wrapper.eq(Like::getType, likeTypeEnum.getType());
-        return getOne(wrapper);
+        return exists(wrapper);
     }
 }

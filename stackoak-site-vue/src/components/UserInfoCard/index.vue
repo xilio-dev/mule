@@ -29,7 +29,7 @@ const isSelf = computed(() => {
 })
 //关注和取消关注
 const onToggleFollow = () => {
-  emit('toggle-follow', !props.userInfo.isFollow);
+  emit('toggle-follow', props.userInfo.isFollow);
 }
 //私信作者
 const toChat = () => {

@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -141,18 +142,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .collect(Collectors.toList());
                 articleDetail.setColumns(columns);
             }
-
+            UserInteractDTO defaultUserInteract = new UserInteractDTO();
             //判断是否是登陆用户
             if (StpKit.USER.isLogin()) {
-                UserInteractDTO userInteract = getUserInteract(dto.getId());
+                //获取当前访问者与文章的交互关系
+                String visitUserId = StpKit.USER.getLoginIdAsString();
+                String authorId = articleDetail.getUserInfo().getUserId();
+                defaultUserInteract = baseMapper.selectUserInteract(visitUserId, authorId, dto.getId());
                 //设置交互信息为
-                articleDetail.setUserInteract(userInteract);
+                articleDetail.setUserInteract(defaultUserInteract);
             }
-            UserInfoDTO userInfo = articleDetail.getUserInfo();
-            String userId = userInfo.getUserId();
-
-            UserConfig userConfig = userConfigService.getById(userId);
-            articleDetail.setConfig(userConfig);
             return articleDetail;
         }
 
@@ -370,23 +369,29 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param op        操作类型：1是点赞、0是取消点赞
      */
     private void diggAndUndigg(ArticleId articleId, Integer op) {
+        String currentUser = StpKit.USER.getLoginIdAsString();
         Article article = getById(articleId.aid());
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
-        Like likes = new Like();
-        likes.setTargetId(article.getId());
-        likes.setUserId(StpKit.USER.getLoginIdAsString());
-        likes.setType(LikeTypeEnum.ARTICLE.getType());
         if (op == 1) {
             //判断是否已经点过赞了，不能重复点赞
-            Like like = likesService.getLike(StpKit.USER.getLoginIdAsString(), article.getId(), LikeTypeEnum.ARTICLE);
-            if (!ObjectUtils.isEmpty(like)) {
+            boolean isLiked = likesService.isLiked(currentUser, article.getId(), LikeTypeEnum.ARTICLE);
+            if (isLiked) {
                 throw new BizException("不能重复点赞！");
             }
-            likesService.save(likes);
+            Like like = new Like();
+            like.setTargetId(article.getId());
+            like.setUserId(currentUser);
+            like.setType(LikeTypeEnum.ARTICLE.getType());
+            likesService.save(like);
         } else {
-            likesService.removeById(likes);
+            //取消点赞
+            LambdaQueryWrapper<Like> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Like::getTargetId, article.getId())
+                    .eq(Like::getUserId, currentUser)
+                    .eq(Like::getType, LikeTypeEnum.ARTICLE.getType());
+            likesService.remove(wrapper);
         }
     }
 
@@ -570,7 +575,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         int collectWeight = heatCalculator.getCollectWeight();
         int commentWeight = heatCalculator.getCommentWeight();
         double gravity = heatCalculator.getGravity();
-        return baseMapper.findComprehensiveRank(page,likeWeight, viewWeight, collectWeight, commentWeight, gravity);
+        return baseMapper.findComprehensiveRank(page, likeWeight, viewWeight, collectWeight, commentWeight, gravity);
 
     }
 }

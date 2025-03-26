@@ -15,5 +15,5 @@ import com.stackoak.stackoak.common.data.likes.Like;
  */
 public interface ILikesService extends IService<Like> {
 
-    Like getLike(String userId, String targetId, LikeTypeEnum likeType);
+    boolean isLiked(String userId, String targetId, LikeTypeEnum likeType);
 }

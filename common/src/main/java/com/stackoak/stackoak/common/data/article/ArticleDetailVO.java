@@ -30,7 +30,6 @@ public class ArticleDetailVO implements Serializable {
     private List<Column> columns;
     private String columnIds;
     private String columnNames;
-    private UserConfig config;
 }
 
 

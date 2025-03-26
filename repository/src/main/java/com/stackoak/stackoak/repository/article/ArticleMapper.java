@@ -4,10 +4,7 @@ package com.stackoak.stackoak.repository.article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.stackoak.stackoak.common.data.article.ArticleBriefVO;
-import com.stackoak.stackoak.common.data.article.Article;
-import com.stackoak.stackoak.common.data.article.ArticleDetailVO;
-import com.stackoak.stackoak.common.data.article.ArticleListDTO;
+import com.stackoak.stackoak.common.data.article.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
 
@@ -55,5 +52,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
                                                @Param("collectWeight") int collectWeight,
                                                @Param("commentWeight") int commentWeight,
                                                @Param("gravity") double gravity);
+
+    UserInteractDTO selectUserInteract(@Param("visitUserId") String visitUserId,@Param("authorId") String authorId,@Param("articleId") String articleId);
+
 }
 

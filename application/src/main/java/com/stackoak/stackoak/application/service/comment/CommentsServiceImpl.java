@@ -317,8 +317,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
 
         if (op == 1) {
             //检查是否已经点过赞了 避免重复点赞
-            Like like = likesService.getLike(userId, request.getCommentId(), LikeTypeEnum.COMMENT);
-            if (!ObjectUtils.isEmpty(like)) {
+            boolean isLiked = likesService.isLiked(userId, request.getCommentId(), LikeTypeEnum.COMMENT);
+            if (isLiked) {
                 throw new BizException("已经点过赞了");
             }
             Like newLike = new Like();
