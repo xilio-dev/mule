@@ -15,6 +15,8 @@ import UserInfoCard from '@/components/UserInfoCard/index.vue'
 import {followUser, unFollowUser} from "@/api/user.ts";
 import {CommonUtil} from "@/utils/common.ts";
 import {ImageUtils} from "@/utils/file.ts";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/api/https.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
@@ -33,7 +35,7 @@ const isLoading = ref(true); // 加载状态
 const comments = reactive([]);
 const commentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
-const activeColumnKey=ref('1')
+const activeColumnKey = ref('1')
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
   await fetchPostData();
@@ -47,16 +49,18 @@ onMounted(async () => {
 
 
 /*------------------------------------数据加载--------------------------------------------*/
-async function fetchPostData() {
+const  fetchPostData=async ()=> {
   try {
     const res = await postDetail({id: route.params.id})
-    articleInfo.value = res.articleInfo || {}
-    userInfo.value = res.userInfo || {}
-    tags.value = res.tags || []
-    category.value = res.category || {}
-    userInteract.value = res.userInteract || {}
-    config.value = res.config || {}
-    isLoading.value = false
+    if (res){
+      articleInfo.value = res.articleInfo || {}
+      userInfo.value = res.userInfo || {}
+      tags.value = res.tags || []
+      category.value = res.category || {}
+      userInteract.value = res.userInteract || {}
+      config.value = res.config || {}
+      isLoading.value = false
+    }
   } catch (err) {
     isLoading.value = false
   }
@@ -76,9 +80,17 @@ const onDiggOrunDigg = () => {
     openLoginModal.value = true
     return
   }
-  diggArticle({aid: articleInfo.value.id})
-  userInteract.value.isDigg = !userInteract.value.isDigg
-  message.success("已点赞")
+  //如果之前是点赞状态则取消点赞
+  if (userInteract.value.isLike) {
+    Https.action(API.ARTICLE.unDigg,  {aid:articleInfo.value.id}).then(res => {
+      message.success("取消点赞")
+    })
+  } else {
+    Https.action(API.ARTICLE.digg, {aid:articleInfo.value.id}).then(res => {
+      message.success("点赞")
+    })
+  }
+  userInteract.value.isLike = !userInteract.value.isLike
 }
 //添加文章到收藏夹或从收藏夹取消收藏
 const onSaveArticleToCollect = () => {
@@ -166,7 +178,7 @@ const onToEditEditor = (id: string) => {
       </a-flex>
     </a-flex>
   </a-flex>
-  <a-row :gutter="20" >
+  <a-row :gutter="20">
     <a-col :span="6">
       <a-card>
         <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo"/>
@@ -186,7 +198,9 @@ const onToEditEditor = (id: string) => {
         <h1 class="article-title">{{ articleInfo.title }}</h1>
         <a-flex justify="space-between" align="center" style="white-space: nowrap;margin-top: 8px;margin-bottom: 15px">
           <a-flex gap="middle" style="white-space: nowrap;color: #8a919f;font-size: 15px">
-            <div @click="CommonUtil.openNewPage(`/author/${userInfo.userId}`)" style="color: #515767;cursor: pointer">{{ userInfo.nickname }}</div>
+            <div @click="CommonUtil.openNewPage(`/author/${userInfo.userId}`)" style="color: #515767;cursor: pointer">
+              {{ userInfo.nickname }}
+            </div>
             <div>{{ articleInfo.publishTime }}</div>
             <div>12566</div>
             <div>字数 {{ NumberUtils.formatNumber(articleInfo.contentCount) }}</div>
@@ -197,7 +211,8 @@ const onToEditEditor = (id: string) => {
           </a-button>
         </a-flex>
         <!--    文章Markdown内容    -->
-        <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="userInfo.editorCodeTheme" :main-theme="userInfo.editorMainTheme"
+        <Markdown v-if="!isLoading" :md-id="userInfo.userId" :code-theme="userInfo.editorCodeTheme"
+                  :main-theme="userInfo.editorMainTheme"
                   :anchor-style="userInfo.editorAnchorStyle" :preview="false" :value="articleInfo.content"/>
         <a-flex justify="start" align="center" style="margin-top: 20px">
           <span>标签：</span>
@@ -210,7 +225,7 @@ const onToEditEditor = (id: string) => {
 
         <a-collapse :bordered="false" v-model:activeKey="activeColumnKey">
           <a-collapse-panel key="1" header="共收录到3个专栏">
-             <a-empty/>
+            <a-empty/>
           </a-collapse-panel>
 
         </a-collapse>
@@ -307,7 +322,7 @@ const onToEditEditor = (id: string) => {
   <a-float-button-group v-if="!needVisitPass" shape="circle" style="position: fixed; right: 6%; bottom: 43%;">
     <a-float-button @click="onDiggOrunDigg" shape="circle" :badge="{ count: '9', color: 'rgb(194, 200, 209)' }">
       <template #icon>
-        <svg :fill="userInteract.isDigg?'#1e80ff':'#8a919f'" viewBox="64 64 896 896" focusable="false" data-icon="like"
+        <svg :fill="userInteract.isLike?'#1e80ff':'#8a919f'" viewBox="64 64 896 896" focusable="false" data-icon="like"
              width="1em" height="1em"
              aria-hidden="true">
           <path

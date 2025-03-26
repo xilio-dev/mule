@@ -358,7 +358,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void digg(ArticleId articleId) {
+    public void digg(String articleId) {
         diggAndUndigg(articleId, 1);
     }
 
@@ -368,9 +368,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @param articleId 文章编号
      * @param op        操作类型：1是点赞、0是取消点赞
      */
-    private void diggAndUndigg(ArticleId articleId, Integer op) {
+    private void diggAndUndigg(String articleId, Integer op) {
         String currentUser = StpKit.USER.getLoginIdAsString();
-        Article article = getById(articleId.aid());
+        Article article = getById(articleId);
         if (ObjectUtils.isEmpty(article)) {
             throw new BizException("文章不存在！");
         }
@@ -396,7 +396,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public void cancelDigg(ArticleId articleId) {
+    public void cancelDigg(String articleId) {
         diggAndUndigg(articleId, 0);
     }
 

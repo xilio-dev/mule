@@ -46,27 +46,29 @@ public class PortalArticleApi {
 
     @PostMapping("get_column_article_list")
     @FieldFilter(type = ArticleBriefVO.class)
-    public Result getColumnArticleList(@RequestBody @Valid CommonPageQuery query  ) {
+    public Result getColumnArticleList(@RequestBody @Valid CommonPageQuery query) {
         return Result.success(articleService.getArticleListByColumn(query));
     }
 
-    @PostMapping(value = "rank/comprehensive",name = "文章综合排行榜")
+    @PostMapping(value = "rank/comprehensive", name = "文章综合排行榜")
     @FieldFilter(type = ArticleBriefVO.class)
     public Result articleRank(@RequestBody PageQuery pageQuery) {
         return Result.success(articleService.articleComprehensiveRank(pageQuery));
     }
-    @PostMapping(value = "get_author_hot_article_list",name = "获取作者热门文章")
+
+    @PostMapping(value = "get_author_hot_article_list", name = "获取作者热门文章")
     @FieldFilter(type = ArticleBriefVO.class)
-    public Result getAuthorHotArticleList(@RequestBody @Valid CommonPageQuery query  ) {
+    public Result getAuthorHotArticleList(@RequestBody @Valid CommonPageQuery query) {
         return Result.success(articleService.findAuthorHotArticleList(query));
     }
 
-    @PostMapping(value = "follow_list",name = "关注作者的文章")
+    @PostMapping(value = "follow_list", name = "关注作者的文章")
     @FieldFilter(type = ArticleBriefVO.class)
     @SaUserCheckLogin
     public Result followList(@RequestBody PageQuery pageQuery) {
         return Result.success(articleService.followList(pageQuery));
     }
+
     @PostMapping("author_article_list")
     @FieldFilter(type = ArticleBriefVO.class)
     public Result authorArticleList(@RequestBody @Valid CommonPageQuery dto) {
@@ -110,16 +112,16 @@ public class PortalArticleApi {
         return Result.success(articleService.getArticleById(id));
     }
 
-    @PostMapping(value = "digg", name = "文章点赞")
-    @BehaviorLog(businessId = "#articleId.aid", type = BehaviorType.LIKE)
-    public Result digg(@RequestBody @Valid ArticleId articleId) {
-        articleService.digg(articleId);
+    @PostMapping(value = "digg/{aid}", name = "文章点赞")
+    @BehaviorLog(businessId = "#aid", type = BehaviorType.LIKE)
+    public Result digg(@PathVariable String aid) {
+        articleService.digg(aid);
         return Result.success();
     }
 
-    @DeleteMapping(value = "undigg", name = "取消文章点赞")
-    public Result unDigg(ArticleId articleId) {
-        articleService.cancelDigg(articleId);
+    @PutMapping(value = "undigg/{aid}", name = "取消文章点赞")
+    public Result unDigg(@PathVariable String aid) {
+        articleService.cancelDigg(aid);
         return Result.success();
     }
 

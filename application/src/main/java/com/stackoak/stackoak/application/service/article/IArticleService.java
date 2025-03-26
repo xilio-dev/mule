@@ -37,14 +37,14 @@ public interface IArticleService extends IService<Article> {
      *
      * @param articleId 文章ID
      */
-    void digg(ArticleId articleId);
+    void digg(String articleId);
 
     /**
      * 取消文章点赞
      *
      * @param articleId 文章ID
      */
-    void cancelDigg(ArticleId articleId);
+    void cancelDigg(String articleId);
 
     /**
      * 将文章添加到收藏夹
