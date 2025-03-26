@@ -276,7 +276,41 @@ public class User implements Serializable {
      */
     @TableField("tag_ids")
     private String tagIds;
+    /**
+     * 背景图
+     */
+    @TableField("bg_photo")
+    private String bgPhoto;
 
+    /**
+     * 作者中心顶部背景图
+     */
+    @TableField("top_photo")
+    private String topPhoto;
+
+    /**
+     * 用户编辑器代码主题样式
+     */
+    @TableField("editor_code_theme")
+    private String editorCodeTheme;
+
+    /**
+     * 编辑器主题
+     */
+    @TableField("editor_main_theme")
+    private String editorMainTheme;
+
+    /**
+     * 编辑器预览时目录样式
+     */
+    @TableField("editor_anchor_style")
+    private String editorAnchorStyle;
+
+    /**
+     * 编辑器是否开启悬浮快捷工具
+     */
+    @TableField("editor_float_tool_enable")
+    private Boolean editorFloatToolEnable;
 //    @TableLogic
 //    private Integer deleted;
 }

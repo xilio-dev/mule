@@ -81,6 +81,10 @@
         <result property="userInfo.fansCount" column="fans_count"/>
         <result property="userInfo.gotCollectCount" column="got_collect_count"/>
         <result property="userInfo.gotLikeCount" column="got_like_count"/>
+        <result property="userInfo.editorMainTheme" column="editor_main_theme"/>
+        <result property="userInfo.editorAnchorStyle" column="editor_anchor_style"/>
+        <result property="userInfo.editorCodeTheme" column="editor_code_theme"/>
+
         <result property="category.categoryId" column="categoryId"/>
         <result property="category.categoryName" column="categoryName"/>
     </resultMap>
@@ -111,6 +115,9 @@
                m.fans_count,
                m.got_collect_count,
                m.got_like_count,
+               m.editor_main_theme,
+               m.editor_anchor_style,
+               m.editor_code_theme,
                c.id                                              AS categoryId,
                c.name                                            AS categoryName,
 

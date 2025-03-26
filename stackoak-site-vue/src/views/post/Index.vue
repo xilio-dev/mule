@@ -197,8 +197,8 @@ const onToEditEditor = (id: string) => {
           </a-button>
         </a-flex>
         <!--    文章Markdown内容    -->
-        <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="config.codeTheme" :main-theme="config.mainTheme"
-                  :anchor-style="config.anchorStyle" :preview="false" :value="articleInfo.content"/>
+        <Markdown v-if="!isLoading" :md-id="config.userId" :code-theme="userInfo.editorCodeTheme" :main-theme="userInfo.editorMainTheme"
+                  :anchor-style="userInfo.editorAnchorStyle" :preview="false" :value="articleInfo.content"/>
         <a-flex justify="start" align="center" style="margin-top: 20px">
           <span>标签：</span>
           <a-flex justify="start" align="center" gap="small">

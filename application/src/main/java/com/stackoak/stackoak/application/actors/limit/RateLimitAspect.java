@@ -19,6 +19,8 @@ public class RateLimitAspect {
 
     @Before("@annotation(rateLimit)")
     public void beforeMethod(JoinPoint joinPoint, RateLimit rateLimit) throws Throwable {
+        // 获取当前登录用户的IP地址
+
         String ip = StpKit.USER.getLoginIdAsString(); // todo 替换为实际获取IP的代码
         String key = "RateLimit:TokenBucket:" + ip + ":" + joinPoint.getSignature().toShortString(); // 生成Redis Key
 
