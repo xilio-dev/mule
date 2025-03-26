@@ -35,6 +35,12 @@ public class PortalCollectApi {
         return Result.success(collectService.listByPageAndUser(pageQuery));
     }
 
+    @PostMapping(value = "visit_collect", name = "获取访问者用户收藏夹列表")
+    public Result visitCollect(@RequestBody PageQuery pageQuery) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        return Result.success( collectService.listByUser(pageQuery,userId));
+    }
+
     @PostMapping(value = "save", name = "保存收藏夹")
     @SaUserCheckLogin
     public Result save(@RequestBody CollectSaveRequest request) {

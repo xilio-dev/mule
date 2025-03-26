@@ -31,11 +31,16 @@ const commentInputRef = ref()
 const needVisitPass = ref(false)
 //打开登陆
 const openLoginModal = ref(false)
+const openCollectModel = ref(false)/*打开收藏夹模态框*/
+const collectList = reactive([])/*访问者收藏夹列表*/
 const isLoading = ref(true); // 加载状态
 const comments = reactive([]);
 const commentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
 const activeColumnKey = ref('1')
+
+
+const collectLoading = ref(false);
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
   await fetchPostData();
@@ -72,7 +77,19 @@ const loadComments = async () => {
     comments.splice(0, comments.length, ...(res.records ?? []));
   }
 }
-
+//加载访问者的收藏夹列表
+const loadCollects = async (current: number = 1, size: number = 1) => {
+  try {
+    const res = await Https.action(API.COLLECT.visit_collect, {current: current, size: size})
+    //@ts-ignore
+    collectList.splice(0, collectList.length, ...(res.records ?? []))
+    collectPagination.total = res.total
+    //collectList.value=res.records||[]
+    collectLoading.value = false
+  } finally {
+    collectLoading.value = false
+  }
+}
 /*------------------------------------核心业务--------------------------------------------*/
 //文章点赞或取消点赞
 const onDiggOrunDigg = () => {
@@ -166,8 +183,17 @@ const onToggleFollow = async (isFollow: boolean) => {
 const onToEditEditor = (id: string) => {
   router.push({path: '/editor', query: {id: id}});
 }
-
-
+const collectPagination = {
+  onChange: (page: number) => {
+    loadCollects(page, collectPagination.pageSize)
+  },
+  total: 0,
+  pageSize: 6,
+};
+const onOpenCollect = () => {
+  openCollectModel.value = true
+  loadCollects(1, collectPagination.pageSize)
+}
 </script>
 
 <template>
@@ -227,18 +253,14 @@ const onToEditEditor = (id: string) => {
         </a-flex>
       </a-card>
       <a-card style="border: none;margin-top: 15px">
-
         <a-collapse :bordered="false" v-model:activeKey="activeColumnKey">
           <a-collapse-panel key="1" header="共收录到3个专栏">
             <a-empty/>
           </a-collapse-panel>
-
         </a-collapse>
-
       </a-card>
       <a-card style="border: none;margin-top: 15px">
         <h3>评论 {{ comments.length }}</h3>
-
         <a-comment>
           <template #avatar>
             <a-avatar v-if="useUser.isLogin()" :src="ImageUtils.getImgUrl(useUser.userinfo.avatar)" alt="Han Solo"/>
@@ -267,7 +289,6 @@ const onToEditEditor = (id: string) => {
                 @confirm="onDeleteComment(comment.id)">
               <span v-if="useUser.userinfo.userId==comment.userId">删除</span>
             </a-popconfirm>
-
           </template>
           <template #author>
             <a>{{ comment.user.nickname }}</a>
@@ -337,7 +358,7 @@ const onToEditEditor = (id: string) => {
         </svg>
       </template>
     </a-float-button>
-    <a-float-button @click="onSaveArticleToCollect" :style="{marginTop: '25px'}"
+    <a-float-button @click="onOpenCollect" :style="{marginTop: '25px'}"
                     :badge="{ count: articleInfo.collectCount, color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg t="1739882636550" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -411,6 +432,40 @@ const onToEditEditor = (id: string) => {
       </template>
     </a-comment>
   </a-drawer>
+  <!-- 收藏夹模态框 -->
+  <a-modal :footer='null' v-model:open="openCollectModel">
+    <a-card size="small" title="选择收藏夹" :bordered="false" style="box-shadow: none">
+      <a-list
+          :loading="collectLoading"
+          size="small"
+          :split="false"
+          :bordered="false"
+          :pagination="collectPagination"
+          item-layout="horizontal"
+          :data-source="collectList">
+        <template #renderItem="{ item }">
+
+          <a-list-item>
+            <template #actions>
+              <a-checkbox v-model:checked="item.checked"></a-checkbox>
+            </template>
+            <a-skeleton :title="false" :loading="collectLoading" active>
+              <a-list-item-meta
+                  :description="item.description">
+                <template #title>
+                  <div>{{ item.name }}</div>
+                </template>
+              </a-list-item-meta>
+            </a-skeleton>
+          </a-list-item>
+        </template>
+      </a-list>
+      <a-flex justify="space-between" style="margin-top: 10px" align="center">
+        <a-button type="primary" size="small">新建收藏夹</a-button>
+        <a-button type="primary" size="small">保存</a-button>
+      </a-flex>
+    </a-card>
+  </a-modal>
 </template>
 
 <style scoped>

@@ -112,4 +112,13 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         }
         removeById(collectId);
     }
+
+    @Override
+    public Page<Collect> listByUser(PageQuery pageQuery, String userId) {
+        Page<Collect> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
+        LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Collect::getUserId, userId);
+        wrapper.eq(Collect::getStatus, 1);
+        return page(page, wrapper);
+    }
 }

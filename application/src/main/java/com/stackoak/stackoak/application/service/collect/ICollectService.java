@@ -48,4 +48,7 @@ public interface ICollectService extends IService<Collect> {
      * @param collectId 收藏夹编号
      */
     void deleteCollect(String userId, String collectId);
+
+    Page<Collect>  listByUser(PageQuery pageQuery, String userId);
+
 }

@@ -9,8 +9,8 @@ export const API = {
         update: {url: '/article/update', method: 'put'} as ApiConfig,
         postDetail: {url: '/article/detail', method: 'post'} as ApiConfig,
         get: {url: '/article/get/{id}', method: 'get', pathParams: ['id']} as ApiConfig,
-        digg: {url: '/article/digg/{aid}', method: 'post',pathParams: ['aid']} as ApiConfig,
-        unDigg: {url: '/article/undigg/{aid}', method: 'put',pathParams: ['aid']} as ApiConfig,
+        digg: {url: '/article/digg/{aid}', method: 'post', pathParams: ['aid']} as ApiConfig,
+        unDigg: {url: '/article/undigg/{aid}', method: 'put', pathParams: ['aid']} as ApiConfig,
         addToFavor: {url: '/article/addToFavor', method: 'post'} as ApiConfig,
         fromFavorDel: {url: '/article/fromFavorDel', method: 'delete'} as ApiConfig,
         rankList: {url: '/article/rank-list', method: 'post'} as ApiConfig,
@@ -47,6 +47,7 @@ export const API = {
     },
     COLLECT: {
         list: {url: '/collect/list', method: 'post'} as ApiConfig,
+        visit_collect: {url: '/collect/visit_collect', method: 'post'} as ApiConfig,
         get: {url: '/collect/get', method: 'get'} as ApiConfig,
         del: {url: '/collect/del', method: 'delete'} as ApiConfig,
         save: {url: '/collect/save', method: 'post'} as ApiConfig,
