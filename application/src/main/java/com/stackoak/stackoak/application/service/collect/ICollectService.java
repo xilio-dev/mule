@@ -7,6 +7,7 @@ import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
+import com.stackoak.stackoak.common.data.collect.SaveArticleToCollectRequest;
 
 /**
  * <p>
@@ -51,4 +52,7 @@ public interface ICollectService extends IService<Collect> {
 
     Page<Collect>  listByUser(PageQuery pageQuery, String userId);
 
+    void addArticleToCollect(String userId, SaveArticleToCollectRequest request);
+
+    void deleteArticleFromCollect(String userId, SaveArticleToCollectRequest request);
 }

@@ -1,13 +1,11 @@
 package com.stackoak.stackoak.application.controller.portal;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.collect.ICollectService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.collect.Collect;
+import com.stackoak.stackoak.common.data.collect.SaveArticleToCollectRequest;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
 import com.stackoak.stackoak.common.message.Result;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -38,7 +36,7 @@ public class PortalCollectApi {
     @PostMapping(value = "visit_collect", name = "获取访问者用户收藏夹列表")
     public Result visitCollect(@RequestBody PageQuery pageQuery) {
         String userId = StpKit.USER.getLoginIdAsString();
-        return Result.success( collectService.listByUser(pageQuery,userId));
+        return Result.success(collectService.listByUser(pageQuery, userId));
     }
 
     @PostMapping(value = "save", name = "保存收藏夹")
@@ -55,25 +53,23 @@ public class PortalCollectApi {
     }
 
     @DeleteMapping(value = "del", name = "删除收藏夹")
-    @SaUserCheckLogin
     public Result delete(@RequestParam("id") String id) {
         String userId = StpKit.USER.getLoginIdAsString();
         collectService.deleteCollect(userId, id);
         return Result.success();
     }
 
-    @SaUserCheckLogin
     @PostMapping(value = "add-article-to-collect", name = "添加文章到收藏夹")
-    public Result addArticleToCollect() {
-
-        return null;
+    public Result addArticleToCollect(@RequestBody SaveArticleToCollectRequest request) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        collectService.addArticleToCollect(userId, request);
+        return Result.success();
     }
 
-    @SaUserCheckLogin
-    @DeleteMapping(value = "del-article-from-collect", name = "从收藏夹中删除文章")
-    public Result delArticleFromCollect() {
-        return null;
+    @PutMapping(value = "del-article-from-collect", name = "从收藏夹中删除文章")
+    public Result delArticleFromCollect(@RequestBody SaveArticleToCollectRequest request) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        collectService.deleteArticleFromCollect(userId, request);
+        return Result.success();
     }
-
-
 }

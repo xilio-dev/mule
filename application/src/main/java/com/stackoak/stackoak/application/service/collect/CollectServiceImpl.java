@@ -7,14 +7,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
+import com.stackoak.stackoak.common.data.collect.ArticleCollect;
 import com.stackoak.stackoak.common.data.collect.Collect;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
+import com.stackoak.stackoak.common.data.collect.SaveArticleToCollectRequest;
+import com.stackoak.stackoak.repository.collect.ArticleCollectMapper;
 import com.stackoak.stackoak.repository.collect.CollectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +33,9 @@ import java.util.List;
  */
 @Service
 public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> implements ICollectService {
+    @Autowired
+    private ArticleCollectMapper articleCollectMapper;
+
     /**
      * 获取用户当个收藏夹信息
      *
@@ -89,7 +97,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
      * @return 收藏夹列表
      */
     @Override
-    public Page<Collect> listByPageAndUser( CommonPageQuery pageQuery) {
+    public Page<Collect> listByPageAndUser(CommonPageQuery pageQuery) {
         Page<Collect> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collect::getUserId, pageQuery.getId());
@@ -120,5 +128,36 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         wrapper.eq(Collect::getUserId, userId);
         wrapper.eq(Collect::getStatus, 1);
         return page(page, wrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addArticleToCollect(String userId, SaveArticleToCollectRequest request) {
+        /*批量插入*/
+        List<ArticleCollect> batches = new ArrayList<>();
+        request.cIds().forEach(collectId -> {
+            Collect collect = getCollectByUser(collectId, userId);
+            if (ObjectUtils.isEmpty(collect)) {
+                throw new BizException("收藏夹不存在！");
+            }
+            batches.add(new ArticleCollect(request.aid(), collectId));
+        });
+        articleCollectMapper.insert(batches);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteArticleFromCollect(String userId, SaveArticleToCollectRequest request) {
+        LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Collect::getUserId, userId);
+        wrapper.in(Collect::getId, request.cIds());
+        List<Collect> collects = list(wrapper);
+        if (collects.isEmpty() || collects.size() != request.cIds().size()) {
+            throw new BizException("收藏夹不存在！");
+        }
+        LambdaQueryWrapper<ArticleCollect> deleteWrapper = new LambdaQueryWrapper<>();
+        deleteWrapper.eq(ArticleCollect::getArticleId, request.aid());
+        deleteWrapper.in(ArticleCollect::getCollectId, request.cIds());
+        articleCollectMapper.delete(deleteWrapper);
     }
 }
