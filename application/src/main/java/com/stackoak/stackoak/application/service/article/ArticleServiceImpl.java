@@ -4,8 +4,7 @@ package com.stackoak.stackoak.application.service.article;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.alg.ContentHeatCalculator;
 import com.stackoak.stackoak.application.actors.security.StpKit;
-import com.stackoak.stackoak.application.service.user.IUserConfigService;
-import com.stackoak.stackoak.application.util.StringTools;
+
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
@@ -23,7 +22,6 @@ import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.likes.LikeTypeEnum;
 import com.stackoak.stackoak.common.data.likes.Like;
 import com.stackoak.stackoak.common.data.tag.Tag;
-import com.stackoak.stackoak.common.data.user.UserConfig;
 import com.stackoak.stackoak.common.message.ResultEnum;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.repository.article.ArticleMapper;
@@ -72,8 +70,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private ArticleCollectMapper articleCollectMapper;
     @Autowired
     private ISearchService searchService;
-    @Autowired
-    private IUserConfigService userConfigService;
     @Autowired
     private ContentHeatCalculator heatCalculator;
 

@@ -1,10 +1,10 @@
 package com.stackoak.stackoak.common.data.article;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
+
 import com.stackoak.stackoak.common.data.column.Column;
 import com.stackoak.stackoak.common.data.tag.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.stackoak.stackoak.common.data.user.UserConfig;
+
 import lombok.Data;
 
 import java.io.Serializable;

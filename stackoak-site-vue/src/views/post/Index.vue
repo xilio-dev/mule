@@ -49,10 +49,10 @@ onMounted(async () => {
 
 
 /*------------------------------------数据加载--------------------------------------------*/
-const  fetchPostData=async ()=> {
+const fetchPostData = async () => {
   try {
     const res = await postDetail({id: route.params.id})
-    if (res){
+    if (res) {
       articleInfo.value = res.articleInfo || {}
       userInfo.value = res.userInfo || {}
       tags.value = res.tags || []
@@ -82,11 +82,13 @@ const onDiggOrunDigg = () => {
   }
   //如果之前是点赞状态则取消点赞
   if (userInteract.value.isLike) {
-    Https.action(API.ARTICLE.unDigg,  {aid:articleInfo.value.id}).then(res => {
+    Https.action(API.ARTICLE.unDigg, {aid: articleInfo.value.id}).then(res => {
+      articleInfo.value.likeCount -= 1
       message.success("取消点赞")
     })
   } else {
-    Https.action(API.ARTICLE.digg, {aid:articleInfo.value.id}).then(res => {
+    Https.action(API.ARTICLE.digg, {aid: articleInfo.value.id}).then(res => {
+      articleInfo.value.likeCount += 1
       message.success("点赞")
     })
   }
@@ -114,11 +116,13 @@ const onDiggComment = (comment: any) => {
   if (comment.liked === 1) {
     unDiggComment({commentId: comment.id}).then(res => {
       comment['liked'] = 0
+      articleInfo.value.likeCount -= 1
       message.info("取消点赞")
     })
   } else {
     diggComment({commentId: comment.id}).then(res => {
       comment['liked'] = 1
+      articleInfo.value.likeCount += 1
       message.success("点赞")
     })
   }
@@ -181,7 +185,8 @@ const onToEditEditor = (id: string) => {
   <a-row :gutter="20">
     <a-col :span="6">
       <a-card>
-        <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo" :is-follow="userInteract.isFollow"/>
+        <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo"
+                      :is-follow="userInteract.isFollow"/>
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
         <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
@@ -319,8 +324,10 @@ const onToEditEditor = (id: string) => {
       </a-card>
     </a-col>
   </a-row>
-  <a-float-button-group v-if="!needVisitPass" shape="circle" style="position: fixed; right: 6%; bottom: 43%;">
-    <a-float-button @click="onDiggOrunDigg" shape="circle" :badge="{ count: '9', color: 'rgb(194, 200, 209)' }">
+  <a-float-button-group v-if="!needVisitPass&&!isLoading" shape="circle"
+                        style="position: fixed; right: 6%; bottom: 43%;">
+    <a-float-button @click="onDiggOrunDigg" shape="circle"
+                    :badge="{ count: articleInfo.likeCount, color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg :fill="userInteract.isLike?'#1e80ff':'#8a919f'" viewBox="64 64 896 896" focusable="false" data-icon="like"
              width="1em" height="1em"
@@ -331,7 +338,7 @@ const onToEditEditor = (id: string) => {
       </template>
     </a-float-button>
     <a-float-button @click="onSaveArticleToCollect" :style="{marginTop: '25px'}"
-                    :badge="{ count: '5k', color: 'rgb(194, 200, 209)' }">
+                    :badge="{ count: articleInfo.collectCount, color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg t="1739882636550" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="14147" width="20" height="20">
@@ -342,7 +349,7 @@ const onToEditEditor = (id: string) => {
       </template>
     </a-float-button>
     <a-float-button @click="openCommentDrawer=true" :style="{marginTop: '25px'}"
-                    :badge="{ count: '5w', color: 'rgb(194, 200, 209)' }">
+                    :badge="{ count: articleInfo.commentCount, color: 'rgb(194, 200, 209)' }">
       <template #icon>
         <svg viewBox="64 64 896 896" focusable="false" data-icon="message" width="1em"
              height="1em" fill="#8a919f" aria-hidden="true">

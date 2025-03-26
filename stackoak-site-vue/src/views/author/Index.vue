@@ -243,7 +243,7 @@ const openLink = (url: string) => {
                       <span class="no-wrap">{{ item.introduce }}</span>
                     </template>
                     <template #avatar>
-                      <a-avatar :src="item.avatar"/>
+                      <a-avatar :src="ImageUtils.getImgUrl(item.avatar)"/>
                     </template>
                   </a-list-item-meta>
                 </a-list-item>
@@ -265,7 +265,7 @@ const openLink = (url: string) => {
                       <span class="no-wrap">{{ item.introduce }}</span>
                     </template>
                     <template #avatar>
-                      <a-avatar :src="item.avatar"/>
+                      <a-avatar :src="ImageUtils.getImgUrl(item.avatar)"/>
                     </template>
                   </a-list-item-meta>
                 </a-list-item>
