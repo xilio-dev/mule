@@ -8,6 +8,7 @@ const useStore = useUserStore()
 const emit = defineEmits(['toggle-follow', 'on-chat'])
 const props = defineProps<{
   userInfo: UserInfo,
+  isFollow:boolean,
   isLoading: boolean
 }>()
 
@@ -16,7 +17,6 @@ interface UserInfo {
   gotLikeCount: number
   fansCount: number
   gotCollectCount: number
-  isFollow: boolean
   userId: string
   nickname: string
   jobTitle: string
@@ -29,7 +29,7 @@ const isSelf = computed(() => {
 })
 //关注和取消关注
 const onToggleFollow = () => {
-  emit('toggle-follow', props.userInfo.isFollow);
+  emit('toggle-follow', props.isFollow);
 }
 //私信作者
 const toChat = () => {
@@ -81,8 +81,8 @@ const toChat = () => {
       <a-button @click="toChat" type="default" style="width: 100%;">私信</a-button>
     </a-col>
     <a-col :span="12">
-      <a-button @click="onToggleFollow" :type="!userInfo.isFollow?'primary':'default'" style="width: 100%;">
-        {{ userInfo.isFollow ? '已关注' : '关注' }}
+      <a-button @click="onToggleFollow" :type="!isFollow?'primary':'default'" style="width: 100%;">
+        {{isFollow ? '已关注' : '关注' }}
       </a-button>
     </a-col>
   </a-row>

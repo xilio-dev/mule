@@ -146,7 +146,7 @@ const toApply = (comment: string) => {
 }
 //关注和取消关注
 const onToggleFollow = async (isFollow: boolean) => {
-  userInfo.value.isFollow = !isFollow/*切换关注状态*/
+  userInteract.value.isFollow = !isFollow/*切换关注状态*/
   userInfo.value.fansCount = !isFollow ? userInfo.value.fansCount + 1 : userInfo.value.fansCount - 1/*粉丝数变更*/
   //已经关注，取消关注
   if (isFollow) {
@@ -181,7 +181,7 @@ const onToEditEditor = (id: string) => {
   <a-row :gutter="20">
     <a-col :span="6">
       <a-card>
-        <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo"/>
+        <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo" :is-follow="userInteract.isFollow"/>
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
         <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
