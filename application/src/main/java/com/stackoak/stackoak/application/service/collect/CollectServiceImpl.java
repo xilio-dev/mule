@@ -2,15 +2,13 @@ package com.stackoak.stackoak.application.service.collect;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.collect.ArticleCollect;
-import com.stackoak.stackoak.common.data.collect.Collect;
-import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
-import com.stackoak.stackoak.common.data.collect.SaveArticleToCollectRequest;
+import com.stackoak.stackoak.common.data.collect.*;
 import com.stackoak.stackoak.repository.collect.ArticleCollectMapper;
 import com.stackoak.stackoak.repository.collect.CollectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,13 +120,9 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     }
 
     @Override
-    public Page<Collect> listByUser(PageQuery pageQuery, String userId) {
-        //需要获取当前登陆访问者与文章作者收藏夹的关系，文章是否已经收藏到指定的收藏夹
-        Page<Collect> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
-        LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Collect::getUserId, userId);
-        wrapper.eq(Collect::getStatus, 1);
-        return page(page, wrapper);
+    public Page<CollectDTO> listByUser(CommonPageQuery pageQuery, String userId) {
+        String articleId = pageQuery.getId();
+        return baseMapper.selectByUser(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), articleId, userId);
     }
 
     @Override
@@ -136,14 +130,19 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     public void addArticleToCollect(String userId, SaveArticleToCollectRequest request) {
         /*批量插入*/
         List<ArticleCollect> batches = new ArrayList<>();
-        request.cIds().forEach(collectId -> {
+        request.ids().forEach(collectId -> {
             Collect collect = getCollectByUser(collectId, userId);
             if (ObjectUtils.isEmpty(collect)) {
                 throw new BizException("收藏夹不存在！");
             }
             batches.add(new ArticleCollect(request.aid(), collectId));
         });
-        articleCollectMapper.insert(batches);
+        try {
+            articleCollectMapper.insert(batches);
+        } catch (Exception e) {
+            throw new BizException("收藏夹已存在该文章！");
+        }
+
     }
 
     @Override
@@ -151,14 +150,14 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     public void deleteArticleFromCollect(String userId, SaveArticleToCollectRequest request) {
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collect::getUserId, userId);
-        wrapper.in(Collect::getId, request.cIds());
+        wrapper.in(Collect::getId, request.ids());
         List<Collect> collects = list(wrapper);
-        if (collects.isEmpty() || collects.size() != request.cIds().size()) {
+        if (collects.isEmpty() || collects.size() != request.ids().size()) {
             throw new BizException("收藏夹不存在！");
         }
         LambdaQueryWrapper<ArticleCollect> deleteWrapper = new LambdaQueryWrapper<>();
         deleteWrapper.eq(ArticleCollect::getArticleId, request.aid());
-        deleteWrapper.in(ArticleCollect::getCollectId, request.cIds());
+        deleteWrapper.in(ArticleCollect::getCollectId, request.ids());
         articleCollectMapper.delete(deleteWrapper);
     }
 }

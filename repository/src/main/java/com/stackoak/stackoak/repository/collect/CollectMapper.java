@@ -2,7 +2,10 @@ package com.stackoak.stackoak.repository.collect;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.common.data.collect.Collect;
+import com.stackoak.stackoak.common.data.collect.CollectDTO;
+import org.apache.ibatis.annotations.Param;
 
 
 /**
@@ -16,5 +19,6 @@ import com.stackoak.stackoak.common.data.collect.Collect;
  */
 public interface CollectMapper extends BaseMapper<Collect> {
 
+    Page<CollectDTO> selectByUser(@Param("page") Page<CollectDTO> page, @Param("articleId") String articleId, @Param("userId") String userId);
 }
 

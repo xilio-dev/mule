@@ -130,14 +130,14 @@ const onSaveArticleToCollect = (item: object) => {
   if (item.isCollect) {
     Https.action(API.COLLECT.remove_article_from_collect, {
       aid: articleInfo.value.id,
-      collectId: [item.id]
+      ids: [item.id]
     }).then(res => {
-      message.success("取消成功！")
+      message.success("已取消")
       item.isCollect = false
     })
   } else {
-    Https.action(API.COLLECT.add_article_to_collect, {aid: articleInfo.value.id, collectId: [item.id]}).then(res => {
-      message.success("收藏成功！")
+    Https.action(API.COLLECT.add_article_to_collect, {aid: articleInfo.value.id, ids: [item.id]}).then(res => {
+      message.success("已收藏")
       item.isCollect = true
     })
   }

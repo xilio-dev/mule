@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.collect.Collect;
+import com.stackoak.stackoak.common.data.collect.CollectDTO;
 import com.stackoak.stackoak.common.data.collect.CollectSaveRequest;
 import com.stackoak.stackoak.common.data.collect.SaveArticleToCollectRequest;
 
@@ -50,7 +51,7 @@ public interface ICollectService extends IService<Collect> {
      */
     void deleteCollect(String userId, String collectId);
 
-    Page<Collect>  listByUser(PageQuery pageQuery, String userId);
+    Page<CollectDTO>  listByUser(CommonPageQuery pageQuery, String userId);
 
     void addArticleToCollect(String userId, SaveArticleToCollectRequest request);
 
