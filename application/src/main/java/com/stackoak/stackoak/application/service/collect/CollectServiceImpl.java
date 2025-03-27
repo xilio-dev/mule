@@ -134,6 +134,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         });
         try {
             articleCollectMapper.insert(batches);
+            //todo 更新文章被收藏数量
         } catch (Exception e) {
             throw new BizException("收藏夹已存在该文章！");
         }
@@ -153,5 +154,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         deleteWrapper.eq(ArticleCollect::getArticleId, request.aid());
         deleteWrapper.in(ArticleCollect::getCollectId, request.ids());
         articleCollectMapper.delete(deleteWrapper);
+
+        //todo 更新文章被收藏数量
     }
 }

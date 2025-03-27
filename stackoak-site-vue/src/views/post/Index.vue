@@ -29,7 +29,9 @@ const category = ref({})
 const userInteract = reactive({})
 const config = ref({})
 const commentInputRef = ref()
+const parentCommentInputRef = ref()
 const needVisitPass = ref(false)
+const curCommentItem = ref()
 //打开登陆
 const openLoginModal = ref(false)
 const openCollectModel = ref(false)/*打开收藏夹模态框*/
@@ -37,6 +39,7 @@ const collectList = reactive([])/*访问者收藏夹列表*/
 const isLoading = ref(true); // 加载状态
 const comments = reactive([]);
 const commentValue = ref('')
+const parentCommentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
 const activeColumnKey = ref('1')
 const openReportModel = ref(false)/*打开举报模态框*/
@@ -135,7 +138,6 @@ const onSaveArticleToCollect = (item: object) => {
       aid: articleInfo.value.id,
       ids: [item.id]
     }).then(res => {
-      message.success("已取消")
       item.isCollect = false
       //如果文章没有被任何收藏夹收藏才将其悬浮按钮设置为未收藏状态
       userInteract.isCollect = hasCollected
@@ -143,7 +145,6 @@ const onSaveArticleToCollect = (item: object) => {
     })
   } else {
     Https.action(API.COLLECT.add_article_to_collect, {aid: articleInfo.value.id, ids: [item.id]}).then(res => {
-      message.success("已收藏")
       item.isCollect = true
       //如果文章没有被任何收藏夹收藏才将其悬浮按钮设置为未收藏状态
       userInteract.isCollect = hasCollected
@@ -154,7 +155,6 @@ const onSaveArticleToCollect = (item: object) => {
 //删除评论
 const onDeleteComment = (commentId: string) => {
   deleteComment({commentId: commentId}).then(res => {
-    message.success("删除成功！")
     loadComments()
   })
 }
@@ -175,24 +175,50 @@ const onDiggComment = (comment: any) => {
   }
 }
 
-//添加评论
+//添加评论 一级评论
+const onAddParentComment = () => {
+  if (parentCommentValue.value.length > 0) {
+    Https.action(API.COMMENT.add, {
+      aid: articleInfo.value.id,
+      content: parentCommentValue.value,
+      commentPid: '0'
+    }).then(res => {
+      parentCommentValue.value = ''
+      parentCommentInputRef.value.blur()
+      loadComments()
+    })
+  }
+}
+//添加回复的评论
 const onAddComment = () => {
   if (pid.value && commentValue.value.length > 0) {
-    addComment({
+    Https.action(API.COMMENT.add, {
       aid: articleInfo.value.id,
       content: commentValue.value,
       commentPid: pid.value
     }).then(res => {
       commentValue.value = ''
+      curCommentItem.value.isOpen=false
       commentInputRef.value.blur()
       loadComments()
     })
   }
 }
 //去回复时，设置依赖的评论
-const toApply = (comment: string) => {
-  pid.value = comment.id
-  commentValue.value = ''
+const toApply = (item: object) => {
+  //如果当前打开的是上次已经打开的项则关闭
+  if (curCommentItem.value == item && item.isOpen) {
+    item.isOpen = false
+    curCommentItem.value = null
+    return
+  }
+  if (curCommentItem.value) {
+    curCommentItem.value.isOpen = false/*关闭上一个*/
+  }
+  commentValue.value = ''/*清空内容*/
+  item.isOpen = true/* 打开新的评论项*/
+  curCommentItem.value = item
+  pid.value = item.id
   commentInputRef.value.focus()
 }
 //关注和取消关注
@@ -310,9 +336,9 @@ const onOpenCollect = () => {
             <a-avatar v-if="useUser.isLogin()" :src="ImageUtils.getImgUrl(useUser.userinfo.avatar)" alt="Han Solo"/>
           </template>
           <template #content>
-            <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
-                          :disabled="commentValue==''" v-model:value="commentValue"
-                          @onClick="onAddComment"/>
+            <CommentInput class="comment-container" placeholder="说点什么吧" ref="parentCommentInputRef"
+                          :disabled="parentCommentValue==''" v-model:value="parentCommentValue"
+                          @onClick="onAddParentComment"/>
           </template>
         </a-comment>
 
@@ -342,7 +368,8 @@ const onOpenCollect = () => {
           </template>
           <template #content>
             <p>{{ comment.content }}</p>
-            <CommentInput v-if="false" class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+            <CommentInput v-if="comment.isOpen" class="comment-container" placeholder="说点什么吧"
+                          ref="commentInputRef"
                           :disabled="commentValue==''" v-model:value="commentValue"
                           @onClick="onAddComment"/>
           </template>
@@ -374,7 +401,8 @@ const onOpenCollect = () => {
             </template>
             <template #content>
               <p>{{ reply.content }}</p>
-              <CommentInput v-if="false" class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+              <CommentInput v-if="reply.isOpen" class="comment-container" placeholder="说点什么吧"
+                            ref="commentInputRef"
                             :disabled="commentValue==''" v-model:value="commentValue"
                             @onClick="onAddComment"/>
             </template>
@@ -492,7 +520,7 @@ const onOpenCollect = () => {
           <a-list-item>
             <template #actions>
               <a-button @click="onSaveArticleToCollect(item)" :type="item.isCollect?'primary':'default'" size="small">
-                {{ item.isCollect ? '取消收藏' : '收藏' }}
+                {{ item.isCollect ? '取消' : '收藏' }}
               </a-button>
             </template>
             <a-skeleton :title="false" :loading="collectLoading" active>
