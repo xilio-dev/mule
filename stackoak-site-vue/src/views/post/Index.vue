@@ -126,13 +126,22 @@ const onDiggOrunDigg = () => {
   userInteract.value.isLike = !userInteract.value.isLike
 }
 //添加文章到收藏夹或从收藏夹取消收藏
-const onSaveArticleToCollect = () => {
-  if (!useUser.isLogin()) {
-    openLoginModal.value = true
-    return
+const onSaveArticleToCollect = (item: object) => {
+  if (item.isCollect) {
+    Https.action(API.COLLECT.remove_article_from_collect, {
+      aid: articleInfo.value.id,
+      collectId: [item.id]
+    }).then(res => {
+      message.success("取消成功！")
+      item.isCollect = false
+    })
+  } else {
+    Https.action(API.COLLECT.add_article_to_collect, {aid: articleInfo.value.id, collectId: [item.id]}).then(res => {
+      message.success("收藏成功！")
+      item.isCollect = true
+    })
   }
-  //add todo
-  addToFavor({aid: articleInfo.value.id, collectId: '1'})
+  //如果文章没有被任何收藏夹收藏才将其悬浮按钮设置为未收藏状态
   userInteract.value.isCollect = !userInteract.value.isCollect
 }
 //删除评论
@@ -215,6 +224,10 @@ const collectPagination = {
   pageSize: 6,
 };
 const onOpenCollect = () => {
+  if (!useUser.isLogin()) {
+    openLoginModal.value = true
+    return
+  }
   openCollectModel.value = true
   loadCollects(1, collectPagination.pageSize)
 }
@@ -471,7 +484,9 @@ const onOpenCollect = () => {
 
           <a-list-item>
             <template #actions>
-              <a-button type="primary" size="small">收藏</a-button>
+              <a-button @click="onSaveArticleToCollect(item)" :type="item.isCollect?'primary':'default'" size="small">
+                {{ item.isCollect ? '取消收藏' : '收藏' }}
+              </a-button>
             </template>
             <a-skeleton :title="false" :loading="collectLoading" active>
               <a-list-item-meta

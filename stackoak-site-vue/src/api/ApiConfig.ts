@@ -51,6 +51,8 @@ export const API = {
         get: {url: '/collect/get', method: 'get'} as ApiConfig,
         del: {url: '/collect/del', method: 'delete'} as ApiConfig,
         save: {url: '/collect/save', method: 'post'} as ApiConfig,
+        add_article_to_collect: {url: '/collect/add_article_to_collect', method: 'post'} as ApiConfig,
+        remove_article_from_collect: {url: '/collect/remove_article_from_collect', method: 'put'} as ApiConfig,
     },
     RECOMMEND: {
         author: {url: '/recommend/author', method: 'post'} as ApiConfig,

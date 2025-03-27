@@ -59,14 +59,14 @@ public class PortalCollectApi {
         return Result.success();
     }
 
-    @PostMapping(value = "add-article-to-collect", name = "添加文章到收藏夹")
+    @PostMapping(value = "add_article_to_collect", name = "添加文章到收藏夹")
     public Result addArticleToCollect(@RequestBody SaveArticleToCollectRequest request) {
         String userId = StpKit.USER.getLoginIdAsString();
         collectService.addArticleToCollect(userId, request);
         return Result.success();
     }
 
-    @PutMapping(value = "del-article-from-collect", name = "从收藏夹中删除文章")
+    @PutMapping(value = "remove_article_from_collect", name = "从收藏夹中移除文章")
     public Result delArticleFromCollect(@RequestBody SaveArticleToCollectRequest request) {
         String userId = StpKit.USER.getLoginIdAsString();
         collectService.deleteArticleFromCollect(userId, request);
