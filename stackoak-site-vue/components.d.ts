@@ -51,6 +51,7 @@ declare module 'vue' {
     ArticleCenterList: typeof import('./src/components/SoList/index.vue')['default']
     ArticleList: typeof import('./src/components/ArticleList.vue')['default']
     ASelect: typeof import('ant-design-vue/es')['Select']
+    ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
     ASkeleton: typeof import('ant-design-vue/es')['Skeleton']
     AStatistic: typeof import('ant-design-vue/es')['Statistic']
     ASwitch: typeof import('ant-design-vue/es')['Switch']

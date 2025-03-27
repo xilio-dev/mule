@@ -12,9 +12,11 @@ import {followUser, unFollowUser} from "@/api/user.ts";
 
 /*------------------------------------类型定义---------------------------------------------*/
 interface IAnalyse {
-  subTotalCount: string;
-  articleTotalCount: string;
-  viewTotalCount: string;
+  isFollowColumn: boolean,
+  isFollowAuthor: boolean,
+  subTotalCount: number;
+  articleTotalCount: number;
+  viewTotalCount: number;
 }
 
 /*------------------------------------变量定义------------------------------------------*/
@@ -26,9 +28,11 @@ const cid = route.query.cid as string;
 const column = reactive({});
 const userInfo = reactive({});
 const analyse = reactive<IAnalyse>({
-  subTotalCount: '',
-  articleTotalCount: '',
-  viewTotalCount: '',
+  isFollowColumn: false,
+  isFollowAuthor: false,
+  subTotalCount: 0,
+  articleTotalCount: 0,
+  viewTotalCount: 0,
 });
 const articleList = reactive<any[]>([]);
 
@@ -60,6 +64,8 @@ const loadColumnInfo = () => {
     Object.assign(column, res.column);
     Object.assign(userInfo, {...res.userInfo, userId: res.userInfo.id});
     Object.assign(analyse, {
+      isFollowColumn: res.isFollowColumn,
+      isFollowAuthor: res.isFollowAuthor,
       subTotalCount: res.subTotalCount,
       articleTotalCount: res.articleTotalCount,
       viewTotalCount: res.viewTotalCount,
@@ -149,8 +155,8 @@ const onToggleFollow = async (isFollow: boolean) => {
 <template>
   <a-row :gutter="20" style="width: 100%;">
     <a-col :span="6">
-      <a-card >
-        <UserInfoCard :user-info="userInfo" @toggleFollow="onToggleFollow"/>
+      <a-card>
+        <UserInfoCard :is-follow="analyse.isFollowAuthor" :user-info="userInfo" @toggleFollow="onToggleFollow"/>
       </a-card>
     </a-col>
     <a-col :span="18">
@@ -173,7 +179,7 @@ const onToggleFollow = async (isFollow: boolean) => {
                   <div>共{{ analyse.subTotalCount || 0 }}人订阅</div>
                   <div>{{ analyse.viewTotalCount || 0 }}阅读量</div>
                 </a-flex>
-                <div>
+                <div v-if="userInfo.id!==userStore.userinfo.userId">
                   <a-button @click="onSubscribeToColumn" type="primary">订阅专栏</a-button>
                 </div>
               </a-flex>

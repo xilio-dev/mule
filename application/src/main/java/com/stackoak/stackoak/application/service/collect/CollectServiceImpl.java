@@ -123,6 +123,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
 
     @Override
     public Page<Collect> listByUser(PageQuery pageQuery, String userId) {
+        //需要获取当前登陆访问者与文章作者收藏夹的关系，文章是否已经收藏到指定的收藏夹
         Page<Collect> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collect::getUserId, userId);

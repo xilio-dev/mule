@@ -17,6 +17,7 @@ import {CommonUtil} from "@/utils/common.ts";
 import {ImageUtils} from "@/utils/file.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {Https} from "@/api/https.ts";
+import type {Rule} from "ant-design-vue/es/form";
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
@@ -38,9 +39,22 @@ const comments = reactive([]);
 const commentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
 const activeColumnKey = ref('1')
-
+const openReportModel = ref(false)/*打开举报模态框*/
+const openNewCollectModel = ref(false)/*打开举报模态框*/
 
 const collectLoading = ref(false);
+const newCollectFormRef = ref();
+const newCollectForm = reactive({
+  name: '',
+  description: '',
+  status: 1
+});
+const newCollectRules: Record<string, Rule[]> = {
+  name: [
+    {required: true, message: '请输入收藏夹名字', trigger: 'change'},
+    {min: 0, max: 8, message: '不能超过8个字', trigger: 'change'},
+  ]
+}
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
   await fetchPostData();
@@ -177,7 +191,17 @@ const onToggleFollow = async (isFollow: boolean) => {
     await followUser(userInfo.value.userId)
   }
 }
-
+//新建收藏夹
+const onNewCollect = () => {
+  newCollectFormRef.value
+      .validate()
+      .then(() => {
+        Https.action(API.COLLECT.save, newCollectForm).then(res => {
+          loadCollects()
+          openNewCollectModel.value = false
+        })
+      })
+}
 /*-------------------------------------其他函数-------------------------------------------*/
 //如果用户已经登陆，而且是自己的文章，那么可以去编辑
 const onToEditEditor = (id: string) => {
@@ -379,7 +403,7 @@ const onOpenCollect = () => {
         </svg>
       </template>
     </a-float-button>
-    <a-float-button :style="{marginTop: '25px'}">
+    <a-float-button @click="openReportModel=true" :style="{marginTop: '25px'}">
       <template #icon>
         <svg t="1739882171114" class="icon" viewBox="0 0 1127 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="7991" width="20" height="20">
@@ -447,7 +471,7 @@ const onOpenCollect = () => {
 
           <a-list-item>
             <template #actions>
-              <a-checkbox v-model:checked="item.checked"></a-checkbox>
+              <a-button type="primary" size="small">收藏</a-button>
             </template>
             <a-skeleton :title="false" :loading="collectLoading" active>
               <a-list-item-meta
@@ -461,10 +485,36 @@ const onOpenCollect = () => {
         </template>
       </a-list>
       <a-flex justify="space-between" style="margin-top: 10px" align="center">
-        <a-button type="primary" size="small">新建收藏夹</a-button>
-        <a-button type="primary" size="small">保存</a-button>
+        <a-button @click="openNewCollectModel=true" type="primary" size="small">新建收藏夹</a-button>
       </a-flex>
     </a-card>
+  </a-modal>
+  <!-- 举报模态框 -->
+  <a-modal title="举报反馈" :footer='null' v-model:open="openReportModel">
+
+  </a-modal>
+  <!-- 创建收藏夹模态框 -->
+  <a-modal cancel-text="取消" ok-text="保存" v-model:open="openNewCollectModel" title="创建收藏夹" @ok="onNewCollect">
+    <a-form
+        v-bind="{labelCol: { span: 4 },wrapperCol: { span: 20 }}"
+        ref="newCollectFormRef"
+        labelAlign="right"
+        :model="newCollectForm"
+        :rules="newCollectRules"
+    >
+      <a-form-item ref="name" label="名字" name="name">
+        <a-input v-model:value="newCollectForm.name"/>
+      </a-form-item>
+      <a-form-item label="描述" name="description">
+        <a-textarea v-model:value="newCollectForm.description"/>
+      </a-form-item>
+      <a-form-item label="状态" name="status" required>
+        <a-radio-group v-model:value="newCollectForm.status">
+          <a-radio :value="1">公开</a-radio>
+          <a-radio :value="2">私有</a-radio>
+        </a-radio-group>
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 
