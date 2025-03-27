@@ -14,6 +14,7 @@ import com.stackoak.stackoak.application.service.like.ILikesService;
 import com.stackoak.stackoak.application.service.notification.INotificationSettingService;
 import com.stackoak.stackoak.application.service.notification.INotificationsService;
 import com.stackoak.stackoak.application.service.user.IUserService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.comment.*;
@@ -76,15 +77,13 @@ public class CommentsServiceImpl extends ServiceImpl<CommentMapper, Comment> imp
     /**
      * 通过文章编号获取评论列表
      *
-     * @param aid 文章ID
+     * @param pageQuery 文章ID
      * @return 二级评论
      */
     @Override
-    public Page<CommentDTO> getCommentByAid(String aid) {
-        String userId = StpKit.USER.getLoginIdAsString();
-        Page<CommentDTO> page = Page.of(1, 100);
-        Page<CommentDTO> comments = baseMapper.selectCommentByAid(page, aid, userId);
-
+    public Page<CommentDTO> getCommentByAid(CommonPageQuery pageQuery,String userId) {
+        Page<CommentDTO> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
+        Page<CommentDTO> comments = baseMapper.selectCommentByAid(page, pageQuery.getId(), userId);
         //转化为二级评论树 三级回复二级转化为 “三级以及以后评论用户” 回复 “二级评论用户”
         List<CommentDTO> commentDTOS = tran2LevelTree(comments.getRecords());
         comments.setRecords(commentDTOS);

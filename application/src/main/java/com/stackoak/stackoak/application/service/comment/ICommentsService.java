@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.comment;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.comment.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -32,7 +33,7 @@ public interface ICommentsService extends IService<Comment> {
      */
     void cancelDigg(CommentId commentId);
 
-    Page<CommentDTO> getCommentByAid(@NotEmpty String aid);
+    Page<CommentDTO> getCommentByAid(CommonPageQuery pageQuery,String userId);
 
     /**
      * 添加评论

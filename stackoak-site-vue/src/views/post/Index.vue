@@ -93,7 +93,7 @@ const fetchPostData = async () => {
 
 const loadComments = async () => {
   if (articleInfo.value) {
-    const res = await commentList({aid: articleInfo.value.id})
+    const res = await commentList({current: 1, size: 20, id: articleInfo.value.id})
     comments.splice(0, comments.length, ...(res.records ?? []));
   }
 }
@@ -198,7 +198,7 @@ const onAddComment = () => {
       commentPid: pid.value
     }).then(res => {
       commentValue.value = ''
-      curCommentItem.value.isOpen=false
+      curCommentItem.value.isOpen = false
       commentInputRef.value.blur()
       loadComments()
     })
@@ -492,16 +492,85 @@ const onOpenCollect = () => {
   <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak畅享更多权益">
     <Login/>
   </a-modal>
-  <a-drawer :width="500" title="评论9999" placement="right" :open="openCommentDrawer" @close="openCommentDrawer=false">
+  <a-drawer :width="500" :title="`评论${commentList.length}`" placement="right" :open="openCommentDrawer"
+            @close="openCommentDrawer=false">
     <a-comment>
       <template #avatar>
         <a-avatar v-if="useUser.isLogin()" :src="ImageUtils.getImgUrl(useUser.userinfo.avatar)" alt="Han Solo"/>
       </template>
       <template #content>
-        <CommentInput class="comment-container" placeholder="说点什么吧" ref="commentInputRef"
+        <CommentInput class="comment-container" placeholder="说点什么吧" ref="parentCommentInputRef"
+                      :disabled="parentCommentValue==''" v-model:value="parentCommentValue"
+                      @onClick="onAddParentComment"/>
+      </template>
+    </a-comment>
+    <!-- 遍历顶级评论 -->
+    <a-comment
+        v-if="useUser.isLogin()"
+        v-for="comment in comments"
+        :key="comment.id"
+        class="comment-item">
+      <template #actions>
+        <span @click="toApply(comment)">回复</span>
+        <span :style="{color:comment.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(comment)">点赞</span>
+        <a-popconfirm
+            title="您确定删除该条评论?"
+            ok-text="确定"
+            cancel-text="取消"
+            @confirm="onDeleteComment(comment.id)">
+          <span v-if="useUser.userinfo.userId==comment.userId">删除</span>
+        </a-popconfirm>
+      </template>
+      <template #author>
+        <a>{{ comment.user.nickname }}</a>
+      </template>
+      <template #avatar>
+        <a-avatar :src="ImageUtils.getImgUrl(comment.user.avatar)" alt="Avatar"/>
+      </template>
+      <template #content>
+        <p>{{ comment.content }}</p>
+        <CommentInput v-if="comment.isOpen" class="comment-container" placeholder="说点什么吧"
+                      ref="commentInputRef"
                       :disabled="commentValue==''" v-model:value="commentValue"
                       @onClick="onAddComment"/>
       </template>
+      <template #datetime>
+        <span>{{ comment.createdAt }}</span>
+      </template>
+
+      <!-- 遍历二级评论 -->
+      <a-comment
+          v-for="reply in comment.replies"
+          :key="reply.id"
+          class="reply-item">
+        <template #actions>
+          <span :style="{color:reply.liked?'#1171ee':'#8a919f'}" @click="onDiggComment(reply)">点赞</span>
+          <span @click="toApply(reply)">回复</span>
+          <a-popconfirm
+              title="您确定删除该条评论?"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm="onDeleteComment(reply.id)">
+            <span v-if="useUser.userinfo.userId==reply.userId">删除</span>
+          </a-popconfirm>
+        </template>
+        <template #author>
+          <a>{{ reply.user.nickname }} 回复 {{ reply.toUser ? reply.toUser.nickname : '' }}</a>
+        </template>
+        <template #avatar>
+          <a-avatar :src="ImageUtils.getImgUrl(reply.user.avatar)" alt="Avatar"/>
+        </template>
+        <template #content>
+          <p>{{ reply.content }}</p>
+          <CommentInput v-if="reply.isOpen" class="comment-container" placeholder="说点什么吧"
+                        ref="commentInputRef"
+                        :disabled="commentValue==''" v-model:value="commentValue"
+                        @onClick="onAddComment"/>
+        </template>
+        <template #datetime>
+          <span>{{ comment.createdAt }}</span>
+        </template>
+      </a-comment>
     </a-comment>
   </a-drawer>
   <!-- 收藏夹模态框 -->
