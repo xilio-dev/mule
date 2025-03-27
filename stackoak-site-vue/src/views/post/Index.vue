@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {QuestionCircleOutlined, CustomerServiceOutlined} from "@ant-design/icons-vue";
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue';
 import Markdown from "@/components/Markdown/index.vue";
 import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
@@ -26,7 +26,7 @@ const articleInfo = ref({})
 const userInfo = ref({})
 const tags = ref({})
 const category = ref({})
-const userInteract = ref({})
+const userInteract = reactive({})
 const config = ref({})
 const commentInputRef = ref()
 const needVisitPass = ref(false)
@@ -41,7 +41,10 @@ const pid = ref("0")/*依赖的评论，0表示根评论*/
 const activeColumnKey = ref('1')
 const openReportModel = ref(false)/*打开举报模态框*/
 const openNewCollectModel = ref(false)/*打开举报模态框*/
-
+//判断文章是否至少被收藏到一个收藏夹
+const hasCollected = computed(() => {
+  return collectList.filter(item => item.isCollect).length > 0;
+});
 const collectLoading = ref(false);
 const newCollectFormRef = ref();
 const newCollectForm = reactive({
@@ -76,7 +79,7 @@ const fetchPostData = async () => {
       userInfo.value = res.userInfo || {}
       tags.value = res.tags || []
       category.value = res.category || {}
-      userInteract.value = res.userInteract || {}
+      Object.assign(userInteract, res.userInteract || {})
       config.value = res.config || {}
       isLoading.value = false
     }
@@ -94,7 +97,7 @@ const loadComments = async () => {
 //加载访问者的收藏夹列表
 const loadCollects = async (current: number = 1, size: number = 1) => {
   try {
-    const res = await Https.action(API.COLLECT.visit_collect, {current: current, size: size,id:articleInfo.value.id})
+    const res = await Https.action(API.COLLECT.visit_collect, {current: current, size: size, id: articleInfo.value.id})
     //@ts-ignore
     collectList.splice(0, collectList.length, ...(res.records ?? []))
     collectPagination.total = res.total
@@ -112,7 +115,7 @@ const onDiggOrunDigg = () => {
     return
   }
   //如果之前是点赞状态则取消点赞
-  if (userInteract.value.isLike) {
+  if (userInteract.isLike) {
     Https.action(API.ARTICLE.unDigg, {aid: articleInfo.value.id}).then(res => {
       articleInfo.value.likeCount -= 1
       message.success("取消点赞")
@@ -123,7 +126,7 @@ const onDiggOrunDigg = () => {
       message.success("点赞")
     })
   }
-  userInteract.value.isLike = !userInteract.value.isLike
+  userInteract.isLike = !userInteract.isLike
 }
 //添加文章到收藏夹或从收藏夹取消收藏
 const onSaveArticleToCollect = (item: object) => {
@@ -134,15 +137,19 @@ const onSaveArticleToCollect = (item: object) => {
     }).then(res => {
       message.success("已取消")
       item.isCollect = false
+      //如果文章没有被任何收藏夹收藏才将其悬浮按钮设置为未收藏状态
+      userInteract.isCollect = hasCollected
+
     })
   } else {
     Https.action(API.COLLECT.add_article_to_collect, {aid: articleInfo.value.id, ids: [item.id]}).then(res => {
       message.success("已收藏")
       item.isCollect = true
+      //如果文章没有被任何收藏夹收藏才将其悬浮按钮设置为未收藏状态
+      userInteract.isCollect = hasCollected
     })
   }
-  //如果文章没有被任何收藏夹收藏才将其悬浮按钮设置为未收藏状态
-  userInteract.value.isCollect = !userInteract.value.isCollect
+
 }
 //删除评论
 const onDeleteComment = (commentId: string) => {
@@ -190,7 +197,7 @@ const toApply = (comment: string) => {
 }
 //关注和取消关注
 const onToggleFollow = async (isFollow: boolean) => {
-  userInteract.value.isFollow = !isFollow/*切换关注状态*/
+  userInteract.isFollow = !isFollow/*切换关注状态*/
   userInfo.value.fansCount = !isFollow ? userInfo.value.fansCount + 1 : userInfo.value.fansCount - 1/*粉丝数变更*/
   //已经关注，取消关注
   if (isFollow) {
