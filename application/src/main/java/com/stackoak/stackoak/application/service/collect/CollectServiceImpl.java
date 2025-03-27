@@ -70,9 +70,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
                                 collect.setName(request.name());
                                 collect.setDescription(request.description());
                                 collect.setStatus(request.status());
-                                if (!updateById(collect)) {
-                                    throw new BizException("更新收藏夹失败！");
-                                }
+                                BizException.exprNull(!updateById(collect), "更新收藏夹失败！");
                             },
                             () -> {
                                 throw new BizException("收藏夹不存在！");
@@ -113,15 +111,14 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
     @Transactional(rollbackFor = Exception.class)
     public void deleteCollect(String userId, String collectId) {
         Collect collect = getCollectByUser(collectId, userId);
-        if (ObjectUtils.isEmpty(collect)) {
-            throw new BizException("收藏夹不存在！");
-        }
+        BizException.noNull(collect, "收藏夹不存在!");
         removeById(collectId);
     }
 
     @Override
     public Page<CollectDTO> listByUser(CommonPageQuery pageQuery, String userId) {
         String articleId = pageQuery.getId();
+        BizException.noEmpty(articleId, "文章编号不能为空!");
         return baseMapper.selectByUser(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), articleId, userId);
     }
 
@@ -132,9 +129,7 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         List<ArticleCollect> batches = new ArrayList<>();
         request.ids().forEach(collectId -> {
             Collect collect = getCollectByUser(collectId, userId);
-            if (ObjectUtils.isEmpty(collect)) {
-                throw new BizException("收藏夹不存在！");
-            }
+            BizException.noNull(collect, "收藏夹不存在!");
             batches.add(new ArticleCollect(request.aid(), collectId));
         });
         try {
@@ -152,9 +147,8 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         wrapper.eq(Collect::getUserId, userId);
         wrapper.in(Collect::getId, request.ids());
         List<Collect> collects = list(wrapper);
-        if (collects.isEmpty() || collects.size() != request.ids().size()) {
-            throw new BizException("收藏夹不存在！");
-        }
+        BizException.exprNull(collects.isEmpty() || collects.size() != request.ids().size(), "收藏夹不存在！");
+
         LambdaQueryWrapper<ArticleCollect> deleteWrapper = new LambdaQueryWrapper<>();
         deleteWrapper.eq(ArticleCollect::getArticleId, request.aid());
         deleteWrapper.in(ArticleCollect::getCollectId, request.ids());

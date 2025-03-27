@@ -94,7 +94,7 @@ const loadComments = async () => {
 //加载访问者的收藏夹列表
 const loadCollects = async (current: number = 1, size: number = 1) => {
   try {
-    const res = await Https.action(API.COLLECT.visit_collect, {current: current, size: size})
+    const res = await Https.action(API.COLLECT.visit_collect, {current: current, size: size,id:articleInfo.value.id})
     //@ts-ignore
     collectList.splice(0, collectList.length, ...(res.records ?? []))
     collectPagination.total = res.total
