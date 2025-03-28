@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.article;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.alg.ContentHeatCalculator;
+import com.stackoak.stackoak.application.actors.security.SecureManager;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 
 import com.stackoak.stackoak.common.data.CommonPageQuery;
@@ -29,6 +30,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.repository.collect.ArticleCollectMapper;
 import com.stackoak.stackoak.repository.column.ArticleColumnMapper;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +39,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -72,6 +74,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private ISearchService searchService;
     @Autowired
     private ContentHeatCalculator heatCalculator;
+    @Autowired
+    private SecureManager secureManager;
 
     @Override
     public Page<ArticleBriefVO> listByCategory(ArticleListDTO articleListDTO) {
@@ -109,6 +113,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public ArticleDetailVO detail(ArticleDetailDTO dto) {
         ArticleDetailVO articleDetail = baseMapper.selectArticleDetail(dto.getId());
         if (!ObjectUtils.isEmpty(articleDetail)) {
+            //校验文章是否是受保护状态
+            boolean protect = Objects.equals(articleDetail.getArticleInfo().getVisibleStatus(), ArticleStatus.PASSWORD_PROTECTED.getCode());
+            //不需要密码直接返回数据
+            if (protect) {
+                String visitPassword = articleDetail.getArticleInfo().getVisitPassword();
+                //如果是受保护需要看是否携带了密码,密码为空返回没有访问权限，通知客户端输入密码
+                BizException.noEmpty(dto.getPass(), ResultEnum.NO_VISIT_PERMISSION);
+                //如果携带了密码验证密码是否正确则返回数据
+                boolean success = secureManager.decrypt(visitPassword).equals(dto.getPass());
+                //验证密码错误，返回错误码
+                BizException.exprNull(!success, ResultEnum.PWD_ERROR);
+            }
             String tagIdStr = articleDetail.getTagIds();
             if (StringUtils.hasText(tagIdStr)) {
                 String[] tagIds = tagIdStr.split(",");
@@ -150,14 +166,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
             return articleDetail;
         }
-
         throw new BizException("文章不存在或已删除！");
     }
-
-    private UserInteractDTO getUserInteract(String aid) {
-        return new UserInteractDTO();
-    }
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String saveArticle(SaveArticleDTO dto) {

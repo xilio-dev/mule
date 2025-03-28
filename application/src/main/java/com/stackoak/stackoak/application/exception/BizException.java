@@ -38,6 +38,11 @@ public class BizException extends RuntimeException {
             throw new BizException(msg);
         }
     }
+    public static void noEmpty(String value,ResultEnum resultEnum) {
+        if (!StringUtils.hasText(value)){
+            throw new BizException(resultEnum);
+        }
+    }
     public static void noNull(Object value,String msg) {
         if (ObjectUtils.isEmpty(value)){
             throw new BizException(msg);
@@ -46,6 +51,11 @@ public class BizException extends RuntimeException {
     public static void exprNull(boolean expr,String msg) {
         if (expr){
             throw new BizException(msg);
+        }
+    }
+    public static void exprNull(boolean expr,ResultEnum resultEnum) {
+        if (expr){
+            throw new BizException(resultEnum);
         }
     }
 

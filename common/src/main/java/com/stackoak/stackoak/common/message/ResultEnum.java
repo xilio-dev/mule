@@ -24,6 +24,7 @@ public enum ResultEnum {
     CONFLICT_ERROR(1007, "用户名已存在"),
 
     ILLEGAL_JSON_ARR(1008, "非法的json数组"),
+    NO_VISIT_PERMISSION(1009, "没有访问权限"),
 
     TIME_RANGE_LARGE(1022, "查询时间过大");
 
