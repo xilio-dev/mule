@@ -26,7 +26,7 @@ interface ReportRequest {
 }
 
 // 举报响应
-interface ReportResponse {
+export interface ReportResponse {
     reportId: string;
     status: ReportStatus;
     createdAt: string;

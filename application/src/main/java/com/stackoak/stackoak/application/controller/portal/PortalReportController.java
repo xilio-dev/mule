@@ -27,7 +27,7 @@ public class PortalReportController {
     private IReportService reportService;
 
     // 提交举报
-    @PostMapping
+    @PostMapping("createReport")
     public Result createReport(@RequestBody ReportRequest request) {
         String userId = StpKit.USER.getLoginIdAsString();
         ReportResponse response = reportService.createReport(request,userId);

@@ -56,6 +56,9 @@ export const API = {
     },
     RECOMMEND: {
         author: {url: '/recommend/author', method: 'post'} as ApiConfig,
+    },
+    REPORT:{
+        createReport: {url: '/report/createReport', method: 'post'} as ApiConfig,
     }
 } as const;
 

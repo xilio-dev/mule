@@ -42,7 +42,14 @@
 import { reactive, ref, toRaw } from 'vue';
 import type { UnwrapRef } from 'vue';
 import type { Rule } from 'ant-design-vue/es/form';
-
+import {Https} from "@/utils/request/https.ts";
+import {API} from "@/api/ApiConfig.ts";
+import {ReportResponse,ReportReasonType,ReportRequest} from '@/types/report'
+import {message} from "ant-design-vue";
+const props=defineProps<{
+  targetType: ReportReasonType;
+  targetId: string;
+}>();
 // 举报原因类型
 const reasonTypeList = reactive([
   { label: '内容色情', value: '1' },
@@ -55,13 +62,9 @@ const reasonTypeList = reactive([
   { label: '其他侵权', value: '8' },
 ]);
 
-interface FormState {
-  reasonType: string;
-  reasonText: string;
-}
 
 const formRef = ref();
-const formState: UnwrapRef<FormState> = reactive({
+const formState: UnwrapRef<ReportRequest> = reactive({
   reasonType: '',
   reasonText: '',
 });
@@ -81,10 +84,19 @@ const onSubmit = () => {
   formRef.value
       .validate()
       .then(() => {
-        console.log('values', formState, toRaw(formState));
-        // 这里可以添加提交逻辑，比如调用 API
+        const reportData = {
+          targetType: props.targetType, // 假设目标类型为文章
+          targetId: props.targetId, // 假设目标ID
+          reasonType: Number(formState.reasonType),
+          reasonText: formState.reasonText,
+        };
+        return Https.action<ReportResponse>(API.REPORT.createReport, reportData);
       })
-      .catch((error) => {
+      .then((response:ReportResponse) => {
+        message.info('举报已提交，我们会尽快审核！');
+        resetForm();
+      })
+      .catch((error:any) => {
         console.log('error', error);
       });
 };

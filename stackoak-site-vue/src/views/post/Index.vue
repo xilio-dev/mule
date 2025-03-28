@@ -648,7 +648,7 @@ const onOpenCollect = () => {
   </a-modal>
   <!-- 举报模态框 -->
   <a-modal title="举报反馈" :footer='null' v-model:open="openReportModel">
-    <ReportView  />
+    <ReportView :target-type="1" target-id="1001"/>
   </a-modal>
   <!-- 创建收藏夹模态框 -->
   <a-modal cancel-text="取消" ok-text="保存" v-model:open="openNewCollectModel" title="创建收藏夹" @ok="onNewCollect">
