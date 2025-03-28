@@ -99,7 +99,7 @@
           <template #renderItem="{ item }">
             <a-list-item>
               <template #actions>
-                <a>关注</a>
+                <a @click="onFollowUser(item)">{{ item.isFollow ? '已关注' : '关注' }}</a>
               </template>
               <a-list-item-meta>
                 <template #title>
@@ -254,6 +254,7 @@ import {getArticleRecommend} from "@/api/recommend.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {Https} from "@/api/https.ts";
 import {ImageUtils} from "@/utils/file.ts";
+import {followUser, unFollowUser} from "@/api/user.ts";
 /*------------------------------------变量定义------------------------------------------*/
 const userStore = useUserStore()
 const categoryTree = ref([])
@@ -468,6 +469,23 @@ const onSearch = () => {
     return;
   }
   router.push({path: '/search', query: {keyword: search_key.value}})
+}
+//关注推荐的作者
+const onFollowUser = async (user: object) => {
+  //检查用户是否登陆了
+  if (!userStore.isLogin()) {
+    //打开登陆框
+    openLoginModal.value = true
+    return;
+  }
+  //已经关注，取消关注
+  if (user.isFollow) {
+    await unFollowUser(user.id)
+  } else {
+    //如果未关注，执行关注
+    await followUser(user.id)
+  }
+  user.isFollow = !user.isFollow/*切换关注状态*/
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 

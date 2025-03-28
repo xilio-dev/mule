@@ -84,7 +84,10 @@ public class PortalArticleApi {
     @PostMapping("detail")
     @RateLimit(limit = 1)
     @BehaviorLog(businessId = "#dto.id", type = BehaviorType.ViEW)
-    @FieldFilters(value = {@FieldFilter(type = ArticleDetailVO.class, exclude = {"columnNames", "columnIds"})})
+    @FieldFilters(value = {
+            @FieldFilter(type = ArticleDetailVO.class, exclude = {"columnNames", "columnIds"}),
+            @FieldFilter(type = ArticleInfoDTO.class, exclude = {"visitPassword"})}
+    )
     public Result detail(@RequestBody @Valid ArticleDetailDTO dto) {
         return Result.success(articleService.detail(dto));
     }

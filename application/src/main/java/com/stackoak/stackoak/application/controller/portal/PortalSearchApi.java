@@ -23,6 +23,7 @@ public class PortalSearchApi {
 
     @PostMapping("search")
     public Result search(@RequestBody @Valid SearchRequest request) throws IOException {
+        Integer type = request.getType();
         IPage page = searchService.fullTextSearch(request.getKeyword(), request);
         return Result.success(page);
     }

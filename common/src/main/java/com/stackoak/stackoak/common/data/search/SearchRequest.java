@@ -20,7 +20,6 @@ public class SearchRequest implements Serializable {
      * 分页
      */
     @Range(min = 1, max = 100, message = "页数范围是[1,100]")
-
     private int page;
     /**
      * 页数限制

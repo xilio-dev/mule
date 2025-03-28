@@ -227,6 +227,7 @@ const onPublishArticle = () => {
           //更新文章
           updateArticle(body).then(articleId => {
             publishFinish.value = true
+            localStorage.removeItem(`article_visit_status_${articleId}`)
             router.push({path: `/post/${articleId}`})
           })
         }
@@ -234,6 +235,7 @@ const onPublishArticle = () => {
       })
 };
 /*-------------------------------------------其他函数---------------------------------------------*/
+
 //发布对话框
 const showModal = () => {
   if (!validateFieldAndLength(articleDetailForm.value.title, 4, '文章标题')) return;
