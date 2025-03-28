@@ -1,6 +1,6 @@
 # StackOak
 
-## Technical Architecture
+## 技术架构
 - Spring Boot
 - MyBatis-Plus
 - Baidu UID
