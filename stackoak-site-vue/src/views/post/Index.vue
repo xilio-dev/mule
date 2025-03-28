@@ -330,7 +330,6 @@ const onOpenCollect = () => {
         <a-card title="精选内容" style="height: 260px; margin-top: 8px">
 
         </a-card>
-        <a-card style="height: 120px; margin-top: 8px;background-color: #3eaabd">广告位置</a-card>
       </a-affix>
     </a-col>
     <a-col :span="18" style=" float: left">

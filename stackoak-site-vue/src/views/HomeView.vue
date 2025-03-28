@@ -118,13 +118,6 @@
           </template>
         </a-list>
       </a-card>
-      <!--广告位-->
-      <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
-        <template #cover>
-          <img style="height: 120px;border-radius: 4px" alt="example"
-               src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
-        </template>
-      </a-card>
 
       <a-card title="热门榜单" :bordered="false" style="margin-top: 12px;min-height: 150px">
         <template #extra>
@@ -167,14 +160,6 @@
               <a-button type="dashed">{{ item.name }}</a-button>
             </template>
           </a-flex>
-        </a-card>
-
-        <!--广告位-->
-        <a-card v-for="i in 1" v-if="true" :bordered="false" style="margin-top: 12px;cursor: pointer  ">
-          <template #cover>
-            <img style="height: 120px;border-radius: 4px" alt="example"
-                 src="http://localhost:9856/profile/upload/2024_06_13_00_13_IMG_8743.JPG"/>
-          </template>
         </a-card>
         <a-card :bordered="false" style="margin-top: 12px;width: 100%;background-color: transparent;box-shadow: none">
           <a-flex gap="small" vertical style="color: #9aa3ab;">

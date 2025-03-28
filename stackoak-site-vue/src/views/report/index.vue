@@ -30,9 +30,9 @@
       />
     </a-form-item>
     <a-form-item>
-      <a-flex justify="flex-end">
-        <a-button type="primary" @click="onSubmit">立刻举报</a-button>
-        <a-button  style="margin-left: 10px" @click="cancel">取消</a-button>
+      <a-flex justify="flex-end" gap="15">
+        <a-button @click="cancel">取消</a-button>
+        <a-button type="primary" @click="onSubmit">举报</a-button>
       </a-flex>
     </a-form-item>
   </a-form>
@@ -45,7 +45,8 @@ import {Https} from "@/utils/request/https.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {type ReportRequest, ReportTargetType} from '@/types/report';
 import {message} from "ant-design-vue";
-const emit = defineEmits(['report-success','cancel'])
+
+const emit = defineEmits(['report-success', 'cancel'])
 const props = defineProps<{
   targetType: ReportTargetType;
   targetId: string;
