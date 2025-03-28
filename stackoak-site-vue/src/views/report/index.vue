@@ -39,13 +39,13 @@
 </template>
 
 <script lang="ts" setup>
-import {reactive, ref, toRaw} from 'vue';
+import {reactive, ref} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import {Https} from "@/utils/request/https.ts";
 import {API} from "@/api/ApiConfig.ts";
-import {type ReportResponse, type ReportRequest, ReportTargetType} from '@/types/report';
+import {type ReportRequest, ReportTargetType} from '@/types/report';
 import {message} from "ant-design-vue";
-
+const emit = defineEmits(['report-success'])
 const props = defineProps<{
   targetType: ReportTargetType;
   targetId: string;
@@ -89,6 +89,7 @@ const onSubmit = () => {
       .then((res: any) => {
         message.info('举报已提交，我们会尽快审核！');
         resetForm();
+        emit('report-success')
       })
       .catch((error: any) => {
         console.log('error', error);

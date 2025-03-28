@@ -8,7 +8,7 @@ import router from "@/router";
 import {NumberUtils} from "@/utils/number-util.ts";
 import {message} from "ant-design-vue";
 import Login from "@/components/Login.vue";
-import {addComment, commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
+import {commentList, deleteComment, diggComment, unDiggComment} from "@/api/comment.ts";
 import CommentInput from '@/components/CommentInput/index.vue'
 import UserInfoCard from '@/components/UserInfoCard/index.vue'
 import {followUser, unFollowUser} from "@/api/user.ts";
@@ -302,6 +302,7 @@ const onOpenCollect = () => {
   openCollectModel.value = true
   loadCollects(1, collectPagination.pageSize)
 }
+
 </script>
 
 <template>
@@ -648,7 +649,7 @@ const onOpenCollect = () => {
   </a-modal>
   <!-- 举报模态框 -->
   <a-modal title="举报反馈" :footer='null' v-model:open="openReportModel">
-    <ReportView :target-type="1" target-id="1001"/>
+    <ReportView @reportSuccess="openReportModel=false" :target-type="1" :target-id="articleInfo.id"/>
   </a-modal>
   <!-- 创建收藏夹模态框 -->
   <a-modal cancel-text="取消" ok-text="保存" v-model:open="openNewCollectModel" title="创建收藏夹" @ok="onNewCollect">

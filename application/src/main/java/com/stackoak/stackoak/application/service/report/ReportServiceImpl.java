@@ -28,6 +28,7 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, Report> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createReport(ReportRequest request, String userId) {
+        //todo 还需要检查举报对象是否存在，避免恶意提交
         LambdaQueryWrapper<Report> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Report::getTargetId,request.targetId())
                 .eq(Report::getTargetType,request.targetType())
