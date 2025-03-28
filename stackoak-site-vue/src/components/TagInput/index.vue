@@ -19,24 +19,29 @@
         @click="showInput"
     >
       <template #content>
-        <div style="width: 400px;min-height: 200px">
-          <a-input
-              ref="inputRef"
-              v-model:value="tagState.inputValue"
-              type="text"
-              size="medium"
-              @blur="handleInputConfirm"
-              @keyup.enter="handleInputConfirm"
-              :placeholder="`请输入${label}，按回车键确认`"
-          />
-          <a-checkable-tag
-              style="margin-top: 8px"
-              v-for="item in selectItems"
-              :key="item.name"
-              v-model:checked="item.checked"
-              @change="() => handleChanges(item)">
-            {{ item.name }}
-          </a-checkable-tag>
+        <div style="width: 400px;height: 150px;overflow-y: auto">
+          <a-flex vertical :gap="2" style="margin: 0 15px"  >
+            <a-input
+                ref="inputRef"
+                v-model:value="tagState.inputValue"
+                type="text"
+                size="medium"
+                @blur="handleInputConfirm"
+                @keyup.enter="handleInputConfirm"
+                :placeholder="`请输入${label}，按回车键确认添加`"
+            />
+            <div>
+              <a-checkable-tag
+                  style="margin-top: 8px;"
+                  v-for="item in selectItems"
+                  :key="item.name"
+                  v-model:checked="item.checked"
+                  @change="() => handleChanges(item)">
+                {{ item.name }}
+              </a-checkable-tag>
+            </div>
+          </a-flex>
+
         </div>
 
 

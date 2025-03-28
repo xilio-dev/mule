@@ -2,6 +2,7 @@ package com.stackoak.stackoak.application.controller.portal;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.column.IColumnService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
@@ -29,13 +30,14 @@ public class PortalColumnApi {
     private IColumnService columnService;
 
     @PostMapping("list")
-    public Result getUserColumns(@RequestBody ColumnQuery query) {
-        return Result.success(columnService.getUserColumns(query));
+    public Result getUserColumns(@RequestBody PageQuery query) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        return Result.success(columnService.getUserColumns(query,userId));
     }
 
     @PostMapping("lists")
     public Result getAuthorColumns(@RequestBody ColumnQuery query) {
-        return Result.success(columnService.getUserColumns(query));
+        return Result.success(columnService.getUserColumns(query,query.getUserId()));
     }
 
     @PostMapping("list_by_user")

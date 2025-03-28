@@ -30,7 +30,7 @@ const userInteract = reactive({})
 const config = ref({})
 const commentInputRef = ref()
 const parentCommentInputRef = ref()
-const needVisitPass = ref(false)
+const needVisitPass = ref(true)
 const curCommentItem = ref()
 //打开登陆
 const openLoginModal = ref(false)
@@ -278,7 +278,7 @@ const onOpenCollect = () => {
       </a-flex>
     </a-flex>
   </a-flex>
-  <a-row :gutter="20">
+  <a-row :gutter="20" v-if="!needVisitPass">
     <a-col :span="6">
       <a-card>
         <UserInfoCard :isLoading="isLoading" @toggleFollow="onToggleFollow" :user-info="userInfo"

@@ -147,7 +147,7 @@ const unread = ref({})
 const messages = ref([]);
 const eventSource = ref();
 onMounted(() => {
-  if (userStore.isLogin()) {
+   if (userStore.isLogin()) {
 
     eventSource.value = new EventSource(`${import.meta.env.VITE_APP_BASE_API}/notification/createSse/${userStore.userinfo.userId}`);
     eventSource.value.onmessage = (event: any) => {

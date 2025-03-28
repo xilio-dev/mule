@@ -31,7 +31,7 @@ public interface IColumnService extends IService<Column> {
      *
      * @return 专栏列表
      */
-    IPage<Column> getUserColumns(ColumnQuery pageQuery);
+    IPage<Column> getUserColumns(PageQuery pageQuery,String userId);
 
     Page<Column> listByUser(ListColumnByUserQuery query);
 
