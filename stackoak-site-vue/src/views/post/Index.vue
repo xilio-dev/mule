@@ -2,7 +2,6 @@
 import {QuestionCircleOutlined, CustomerServiceOutlined} from "@ant-design/icons-vue";
 import {ref, onMounted, reactive, computed} from 'vue';
 import Markdown from "@/components/Markdown/index.vue";
-import {addToFavor, diggArticle, postDetail} from "@/api/post.ts";
 import {useRoute} from "vue-router";
 import {useUserStore} from '@/store';
 import router from "@/router";
@@ -18,6 +17,7 @@ import {ImageUtils} from "@/utils/file.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {Https} from "@/api/https.ts";
 import type {Rule} from "ant-design-vue/es/form";
+import ReportView from "@/views/report/index.vue";
 /*------------------------------------变量定义------------------------------------------*/
 const openCommentDrawer = ref(false)
 const useUser = useUserStore()
@@ -648,7 +648,7 @@ const onOpenCollect = () => {
   </a-modal>
   <!-- 举报模态框 -->
   <a-modal title="举报反馈" :footer='null' v-model:open="openReportModel">
-
+    <ReportView  />
   </a-modal>
   <!-- 创建收藏夹模态框 -->
   <a-modal cancel-text="取消" ok-text="保存" v-model:open="openNewCollectModel" title="创建收藏夹" @ok="onNewCollect">
