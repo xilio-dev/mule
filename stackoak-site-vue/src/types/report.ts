@@ -1,27 +1,27 @@
 // 类型定义
-enum ReportTargetType {
+export enum ReportTargetType {
     ARTICLE = 1,
     COMMENT = 2,
 }
 
-enum ReportReasonType {
+export enum ReportReasonType {
     PORN = 1,
     VIOLENCE = 2,
     AD = 3,
     OTHER = 4,
 }
 
-enum ReportStatus {
+export enum ReportStatus {
     PENDING = 0,
     PROCESSED = 1,
     REJECTED = 2,
 }
 
 // 举报请求参数
-interface ReportRequest {
+export interface ReportRequest {
     targetType: ReportTargetType;
     targetId: string;
-    reasonType: ReportReasonType;
+    reasonType?: ReportReasonType;
     reasonText?: string;
 }
 

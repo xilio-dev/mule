@@ -2,16 +2,16 @@
   <a-form
       layout="vertical"
       ref="formRef"
-      :model="formState"
+      :model="reportFormState"
       :rules="rules"
   >
     <a-form-item ref="reasonType" label="举报类型" name="reasonType">
-      <div class="reason-container" >
+      <div class="reason-container">
         <a-button
             class="reason-item"
             v-for="item in reasonTypeList"
             :key="item.value"
-            :type="formState.reasonType === item.value ? 'primary' : 'dashed'"
+            :type="reportFormState.reasonType === item.value ? 'primary' : 'dashed'"
             size="large"
             @click="selectReason(item.value)"
         >
@@ -26,7 +26,7 @@
           :rows="4"
           placeholder="请详细描述违规内容，方便审核人员审核！"
           :maxlength="200"
-          v-model:value="formState.reasonText"
+          v-model:value="reportFormState.reasonText"
       />
     </a-form-item>
     <a-form-item>
@@ -39,64 +39,60 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, toRaw } from 'vue';
-import type { UnwrapRef } from 'vue';
-import type { Rule } from 'ant-design-vue/es/form';
+import {reactive, ref, toRaw} from 'vue';
+import type {UnwrapRef} from 'vue';
+import type {Rule} from 'ant-design-vue/es/form';
 import {Https} from "@/utils/request/https.ts";
 import {API} from "@/api/ApiConfig.ts";
-import {ReportResponse,ReportReasonType,ReportRequest} from '@/types/report'
+import {type ReportResponse, type ReportReasonType, type ReportRequest, ReportTargetType} from '@/types/report';
 import {message} from "ant-design-vue";
-const props=defineProps<{
-  targetType: ReportReasonType;
+
+const props = defineProps<{
+  targetType: ReportTargetType;
   targetId: string;
 }>();
 // 举报原因类型
 const reasonTypeList = reactive([
-  { label: '内容色情', value: '1' },
-  { label: '过于暴力', value: '2' },
-  { label: '侵犯名誉', value: '3' },
-  { label: '内容抄袭', value: '4' },
-  { label: '谈论政治', value: '5' },
-  { label: '肖像侵权', value: '6' },
-  { label: '著作侵权', value: '7' },
-  { label: '其他侵权', value: '8' },
+  {label: '内容色情', value: '1'},
+  {label: '过于暴力', value: '2'},
+  {label: '侵犯名誉', value: '3'},
+  {label: '内容抄袭', value: '4'},
+  {label: '谈论政治', value: '5'},
+  {label: '肖像侵权', value: '6'},
+  {label: '著作侵权', value: '7'},
+  {label: '其他侵权', value: '8'},
 ]);
-
-
 const formRef = ref();
-const formState: UnwrapRef<ReportRequest> = reactive({
-  reasonType: '',
+const reportFormState = reactive<ReportRequest>({
+  targetType: props.targetType,
+  targetId: props.targetId,
+  reasonType: undefined,
   reasonText: '',
 });
 
 const rules: Record<string, Rule[]> = {
   reasonType: [
-    { required: true, message: '必须选择举报的原因！', trigger: 'change' },
+    {required: true, message: '必须选择举报的原因！', trigger: 'change'},
   ],
 };
 
 // 选择举报类型
-const selectReason = (value: string) => {
-  formState.reasonType = value;
+const selectReason = (value: number) => {
+  reportFormState.reasonType = value;
 };
 
 const onSubmit = () => {
   formRef.value
       .validate()
       .then(() => {
-        const reportData = {
-          targetType: props.targetType, // 假设目标类型为文章
-          targetId: props.targetId, // 假设目标ID
-          reasonType: Number(formState.reasonType),
-          reasonText: formState.reasonText,
-        };
+
         return Https.action<ReportResponse>(API.REPORT.createReport, reportData);
       })
-      .then((response:ReportResponse) => {
+      .then((response: ReportResponse) => {
         message.info('举报已提交，我们会尽快审核！');
         resetForm();
       })
-      .catch((error:any) => {
+      .catch((error: any) => {
         console.log('error', error);
       });
 };
