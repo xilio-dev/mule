@@ -114,9 +114,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleDetailVO articleDetail = baseMapper.selectArticleDetail(dto.getId());
         if (!ObjectUtils.isEmpty(articleDetail)) {
             //校验文章是否是受保护状态
-            boolean protect = Objects.equals(articleDetail.getArticleInfo().getVisibleStatus(),4);
-            //不需要密码直接返回数据
-            if (protect) {
+            boolean protect = Objects.equals(articleDetail.getArticleInfo().getVisibleStatus(), 4);
+            //检查访问者是否是作者本人
+            boolean isAuthor = false;
+            if (StpKit.USER.isLogin()) {
+                String userId = StpKit.USER.getLoginIdAsString();
+                isAuthor = Objects.equals(articleDetail.getUserInfo().getUserId(), userId);
+            }
+            //如果是受保护且不是作者本人的文章的时候
+            if (protect && !isAuthor) {
                 String visitPassword = articleDetail.getArticleInfo().getVisitPassword();
                 //如果是受保护需要看是否携带了密码,密码为空返回没有访问权限，通知客户端输入密码
                 BizException.noEmpty(dto.getPass(), ResultEnum.NO_VISIT_PERMISSION);
@@ -168,6 +174,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
         throw new BizException("文章不存在或已删除！");
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String saveArticle(SaveArticleDTO dto) {
