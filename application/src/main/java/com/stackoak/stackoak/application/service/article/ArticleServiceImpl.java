@@ -114,7 +114,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         ArticleDetailVO articleDetail = baseMapper.selectArticleDetail(dto.getId());
         if (!ObjectUtils.isEmpty(articleDetail)) {
             //校验文章是否是受保护状态
-            boolean protect = Objects.equals(articleDetail.getArticleInfo().getVisibleStatus(), ArticleStatus.PASSWORD_PROTECTED.getCode());
+            boolean protect = Objects.equals(articleDetail.getArticleInfo().getVisibleStatus(),4);
             //不需要密码直接返回数据
             if (protect) {
                 String visitPassword = articleDetail.getArticleInfo().getVisitPassword();
@@ -211,7 +211,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             if (!StringUtils.hasLength(dto.getVisitPassword())) {
                 throw new BizException("文章可见状态为密码访问，必须输入密码！");
             }
-            saveArticle.setVisitPassword(dto.getVisitPassword());
+            saveArticle.setVisitPassword(secureManager.encrypt(dto.getVisitPassword()));
         }
         saveArticle.setStatus(1);//todo 临时测试
         saveArticle.setPublishStatus(dto.getPublishStatus());

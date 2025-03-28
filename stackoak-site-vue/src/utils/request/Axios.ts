@@ -32,7 +32,10 @@ instance.interceptors.response.use(function (response) {
         localStorage.removeItem('token')
         localStorage.removeItem('userinfo');
         //window.location.href = "/login"
-    } else {
+    } else if (code===1002||code==1009){
+        return {code:code,msg:msg};
+    }
+    else {
         message.error(msg);
     }
 }, function (error) {

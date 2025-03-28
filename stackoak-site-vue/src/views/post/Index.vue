@@ -30,7 +30,8 @@ const userInteract = reactive({})
 const config = ref({})
 const commentInputRef = ref()
 const parentCommentInputRef = ref()
-const needVisitPass = ref(true)
+const needVisitPass = ref(false)
+const visitPass = ref('')
 const curCommentItem = ref()
 //打开登陆
 const openLoginModal = ref(false)
@@ -63,7 +64,7 @@ const newCollectRules: Record<string, Rule[]> = {
 }
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(async () => {
-  await fetchPostData();
+  await loadArticleDetail()
   await loadComments()
 });
 
@@ -74,23 +75,50 @@ onMounted(async () => {
 
 
 /*------------------------------------数据加载--------------------------------------------*/
-const fetchPostData = async () => {
+const loadArticleDetail = async () => {
+  //从本地缓存获取该篇文章的状态
+  const protect = localStorage.getItem(`article_visit_status_${route.params.id}`)
+  if (protect == 'true') {
+    needVisitPass.value = true
+  } else {
+    await fetchPostData({});
+  }
+}
+const fetchPostData = async (pass: object) => {
   try {
-    const res = await postDetail({id: route.params.id})
+    //如果不需要密码直接发请求，否则展示密码输入框，请求时携带访问密码
+    const res = await Https.action(API.ARTICLE.detail, {id: route.params.id, ...pass})
     if (res) {
+      //返回结果是1009表示文章是受保护状态，需要输入密码
+      if (res.code == 1009) {
+        needVisitPass.value = true
+        return;
+      }
+      if (res.code == 1002) {
+        message.error("访问密码错误！")
+        clearVisitPassStore()/*清空密码缓存*/
+        return;
+      }
+      needVisitPass.value = false
       articleInfo.value = res.articleInfo || {}
       userInfo.value = res.userInfo || {}
       tags.value = res.tags || []
       category.value = res.category || {}
       Object.assign(userInteract, res.userInteract || {})
       config.value = res.config || {}
-      isLoading.value = false
+      isLoading.value = false;
+      //缓存状态
+      if (articleInfo.value.visibleStatus == 4) {
+        localStorage.setItem(`article_visit_status_${route.params.id}`, 'true')
+      } else {
+        //清空访问状态缓存
+        clearVisitPassStore()
+      }
     }
   } catch (err) {
     isLoading.value = false
   }
 }
-
 const loadComments = async () => {
   if (articleInfo.value) {
     const res = await commentList({current: 1, size: 20, id: articleInfo.value.id})
@@ -111,6 +139,16 @@ const loadCollects = async (current: number = 1, size: number = 1) => {
   }
 }
 /*------------------------------------核心业务--------------------------------------------*/
+const clearVisitPassStore = () => {
+  localStorage.removeItem(`article_visit_status_${route.params.id}`)
+}
+const onVisitCheck = () => {
+  if (visitPass.value == '') {
+    message.warning("请输入访问密码！")
+    return;
+  }
+  fetchPostData({pass: visitPass.value})
+}
 //文章点赞或取消点赞
 const onDiggOrunDigg = () => {
   if (!useUser.isLogin()) {
@@ -273,8 +311,8 @@ const onOpenCollect = () => {
       <a-image src="/suo.svg" style="width: 100px;height: 100px;" :preview="false"/>
       <div style="font-size: 18px;color: gray">请输入访问密码</div>
       <a-flex vertical>
-        <a-input style="width: 220px" v-model:value="visitPass" placeholder="请输入密码"></a-input>
-        <a-button @click="needVisitPass=false" style="width: 220px;margin-top: 10px">确定</a-button>
+        <a-input style="width: 220px" v-model:value="visitPass" placeholder="请输入密码"/>
+        <a-button @click="onVisitCheck" style="width: 220px;margin-top: 10px">确定</a-button>
       </a-flex>
     </a-flex>
   </a-flex>

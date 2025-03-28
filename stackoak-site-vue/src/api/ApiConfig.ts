@@ -7,7 +7,7 @@ export const API = {
         postAdd: {url: '/article/add', method: 'post'} as ApiConfig,
         delete: {url: '/article/del', method: 'post'} as ApiConfig,
         update: {url: '/article/update', method: 'put'} as ApiConfig,
-        postDetail: {url: '/article/detail', method: 'post'} as ApiConfig,
+        detail: {url: '/article/detail', method: 'post'} as ApiConfig,
         get: {url: '/article/get/{id}', method: 'get', pathParams: ['id']} as ApiConfig,
         digg: {url: '/article/digg/{aid}', method: 'post', pathParams: ['aid']} as ApiConfig,
         unDigg: {url: '/article/undigg/{aid}', method: 'put', pathParams: ['aid']} as ApiConfig,
