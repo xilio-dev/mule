@@ -29,6 +29,7 @@ public class ReportServiceImpl extends ServiceImpl<ReportMapper, Report> impleme
     @Transactional(rollbackFor = Exception.class)
     public void createReport(ReportRequest request, String userId) {
         //todo 还需要检查举报对象是否存在，避免恶意提交
+        //todo 可以发一个受理通知 【系统通知】
         LambdaQueryWrapper<Report> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Report::getTargetId,request.targetId())
                 .eq(Report::getTargetType,request.targetType())

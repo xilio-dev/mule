@@ -32,7 +32,7 @@
     <a-form-item>
       <a-flex justify="flex-end">
         <a-button type="primary" @click="onSubmit">立刻举报</a-button>
-        <a-button style="margin-left: 10px" @click="resetForm">取消</a-button>
+        <a-button  style="margin-left: 10px" @click="cancel">取消</a-button>
       </a-flex>
     </a-form-item>
   </a-form>
@@ -45,7 +45,7 @@ import {Https} from "@/utils/request/https.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {type ReportRequest, ReportTargetType} from '@/types/report';
 import {message} from "ant-design-vue";
-const emit = defineEmits(['report-success'])
+const emit = defineEmits(['report-success','cancel'])
 const props = defineProps<{
   targetType: ReportTargetType;
   targetId: string;
@@ -88,7 +88,7 @@ const onSubmit = () => {
       })
       .then((res: any) => {
         message.info('举报已提交，我们会尽快审核！');
-        resetForm();
+        cancel();
         emit('report-success')
       })
       .catch((error: any) => {
@@ -96,8 +96,9 @@ const onSubmit = () => {
       });
 };
 
-const resetForm = () => {
+const cancel = () => {
   formRef.value.resetFields();
+  emit('cancel')
 };
 </script>
 
