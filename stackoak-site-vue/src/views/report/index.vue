@@ -40,11 +40,10 @@
 
 <script lang="ts" setup>
 import {reactive, ref, toRaw} from 'vue';
-import type {UnwrapRef} from 'vue';
 import type {Rule} from 'ant-design-vue/es/form';
 import {Https} from "@/utils/request/https.ts";
 import {API} from "@/api/ApiConfig.ts";
-import {type ReportResponse, type ReportReasonType, type ReportRequest, ReportTargetType} from '@/types/report';
+import {type ReportResponse, type ReportRequest, ReportTargetType} from '@/types/report';
 import {message} from "ant-design-vue";
 
 const props = defineProps<{
@@ -85,10 +84,9 @@ const onSubmit = () => {
   formRef.value
       .validate()
       .then(() => {
-
-        return Https.action<ReportResponse>(API.REPORT.createReport, reportData);
+        return Https.action<any>(API.REPORT.createReport, reportFormState);
       })
-      .then((response: ReportResponse) => {
+      .then((res: any) => {
         message.info('举报已提交，我们会尽快审核！');
         resetForm();
       })

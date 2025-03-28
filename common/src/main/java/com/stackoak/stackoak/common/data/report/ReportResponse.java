@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.common.data.report;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  *
@@ -8,5 +9,5 @@ import java.time.LocalDate;
  * @param status
  * @param createdAt
  */
-public record ReportResponse(String reportId, ReportStatus status, LocalDate createdAt) {
+public record ReportResponse(String reportId, Integer status, LocalDateTime createdAt) {
 }

@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author stackoak.com
@@ -30,17 +30,17 @@ public class PortalReportController {
     @PostMapping("createReport")
     public Result createReport(@RequestBody ReportRequest request) {
         String userId = StpKit.USER.getLoginIdAsString();
-        ReportResponse response = reportService.createReport(request,userId);
-        return Result.success(response);
+        reportService.createReport(request, userId);
+        return Result.success();
     }
 
 
     // 获取用户自己的举报记录
     @GetMapping("/user")
-    public  Result getUserReports(@RequestBody PageQuery pageQuery) {
+    public Result getUserReports(@RequestBody PageQuery pageQuery) {
         String userId = StpKit.USER.getLoginIdAsString();
-        Page<ReportResponse> reports = reportService.getUserReports( pageQuery,userId);
-        return  Result.success(reports);
+        Page<ReportResponse> reports = reportService.getUserReports(pageQuery, userId);
+        return Result.success(reports);
     }
 
 }

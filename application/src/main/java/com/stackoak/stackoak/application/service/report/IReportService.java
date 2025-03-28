@@ -21,7 +21,7 @@ import java.util.List;
  */
 public interface IReportService extends IService<Report> {
     // 提交举报
-    ReportResponse createReport(ReportRequest request, String userId);
+    void createReport(ReportRequest request, String userId);
 
     // 处理举报（管理员）
     void handleReport(String reportId, String handlerId, ReportStatus status, String handleRemark);
