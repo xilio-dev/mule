@@ -71,7 +71,7 @@ const loadFans = async () => {
 const loadAuthorInfo = async () => {
   const res = await Https.action(API.USER.getUserDetail, {userId: authorId})
   authorInfo.value = res || {}
-  useTheme.setAuthorBackground('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0')
+  useTheme.setAuthorBackground(authorInfo.value.bgPhoto)
   // @ts-ignore
 }
 //加载作者的专栏
@@ -124,16 +124,16 @@ const onChangeHotArticle = () => {
   authorHotArticleQuery.current = authorHotArticleQuery.current + 1
   loadAuthorHotArticles()
 }
-const onCheckCover = async (photo: object,type:number) => {
-   if (type == 2) {
-     //保存顶部封面
-     await Https.action(API.USER.updateCover, {cover: photo.limg}).then(res => {
-       authorInfo.value.topPhoto = photo.limg;
-     })
-   }else if (type == 1) {
-     //保存背景
-
-   }
+const onCheckCover = async (photo: object, type: number) => {
+  if (type == 2) {
+    //保存顶部封面
+    await Https.action(API.USER.updateCover, {cover: photo.limg}).then(res => {
+      authorInfo.value.topPhoto = photo.limg;
+    })
+  } else if (type == 1) {
+    //保存背景
+    useTheme.setAuthorBackground(photo.limg)
+  }
 
 }
 /*-------------------------------------其他函数-------------------------------------------*/

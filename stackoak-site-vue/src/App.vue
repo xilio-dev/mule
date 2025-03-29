@@ -28,10 +28,13 @@ const pathName = computed(() => {
   }
 })
 // 计算背景样式
-const bg = computed(() => {
+const background = computed(() => {
   if (currentPath.value.startsWith('/author')) {
-    const backgroundUrl = useTheme.getAuthorBackground(); // 调用 useTheme 获取背景图
-    return backgroundUrl ? backgroundUrl : '';
+    const bg = useTheme.getAuthorBackground(); // 调用 useTheme 获取背景图
+    return bg ? {
+      backgroundImage:`url(${bg})`,
+      backgroundSize: 'contain',
+    } : {};
   }
   return ''; // 始终返回对象，避免类型不一致
 });
@@ -43,12 +46,13 @@ const bg = computed(() => {
     <Navbar style="position: fixed;z-index: 90"/>
   </header>
 
-  <main :style="{backgroundImage:`url(${bg})`}" style="padding: 60px 10% 0" v-if="pathName==='base'">
+  <main :style="background" style="padding: 60px 10% 0" v-if="pathName==='base'">
     <RouterView/>
   </main>
 
-  <RouterView :style="{backgroundImage:`url(${bg})`}" v-if="pathName!=='base'"/>
+  <RouterView :style="background" v-if="pathName!=='base'"/>
 </template>
 
 <style scoped>
+
 </style>

@@ -64,5 +64,4 @@ public class PortalUserApi {
         userService.updateCover(request,userId);
         return Result.success();
     }
-
 }

@@ -92,8 +92,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCover(UpdateCoverRequest request, String userId) {
+        Integer type = request.type();
         User user = new User();
-        user.setTopPhoto(request.cover());
+        if (type == 1) {
+            user.setTopPhoto(request.cover());
+        }
+        if (type == 2) {
+            user.setBgPhoto(request.cover());
+        }
         user.setId(userId);/*更新当前登陆用户作者主页顶部封面*/
         updateById(user);
     }
