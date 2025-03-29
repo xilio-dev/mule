@@ -2,6 +2,7 @@
 import {PlusOutlined} from '@ant-design/icons-vue';
 import {ImageUtils} from "@/utils/file.ts";
 const props = defineProps<{
+  isSelf: boolean;
   columnList: [];
 }>();
 const emit = defineEmits(['toggle-subscribe'])
@@ -26,7 +27,7 @@ const onOpenColumn = (id: string) => {
           style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;margin-left: 10px; margin-right: 15px">
         <a-flex justify="space-between" align="center">
           <div class="column-title">{{ item.name }}</div>
-          <div>
+          <div v-if="!isSelf">
             <a-button @click="emit('toggle-subscribe',item)" type="primary" size="small">
               <template #icon>
                 <PlusOutlined/>
