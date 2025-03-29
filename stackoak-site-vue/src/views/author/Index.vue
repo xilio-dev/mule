@@ -184,7 +184,7 @@ const openLink = (url: string) => {
       </a-row>
     </a-row>
   </a-row>
-  <a-row style=" width: 100%;  padding-top: 15px;">
+  <a-row style=" width: 100%;  padding: 15px 0;">
     <a-col :span="6" style="padding-right: 15px">
       <a-card :bordered=false style=" box-shadow: none;margin-bottom: 15px">
         <a-flex wrap="wrap" gap="small" align="center" justify="space-around">

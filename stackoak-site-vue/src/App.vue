@@ -34,6 +34,7 @@ const background = computed(() => {
     return bg ? {
       backgroundImage:`url(${bg})`,
       backgroundSize: 'contain',
+      minHeight:'1000px'
     } : {};
   }
   return ''; // 始终返回对象，避免类型不一致
