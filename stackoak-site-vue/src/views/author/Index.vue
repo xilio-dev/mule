@@ -13,7 +13,7 @@ import {CommonUtil} from "@/utils/common.ts";
 import {Https} from "@/api/https.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {ImageUtils} from "@/utils/file.ts";
-import Background from './background/index.vue'
+ import CreateCollect from "@/views/collect/create/index.vue";
 import Cover from './cover/index.vue'
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
@@ -28,10 +28,12 @@ const articleRank = ref([])
 const authorFansList = ref([])
 const authorFollowList = ref([])
 const openDrawer = ref(false)
+const openNewCollectModel = ref(false)
 const authorArticles = reactive([])
 const authorHotArticles = reactive([])/*作者热门文章*/
 const authorCollects = reactive([])/*作者收藏夹*/
 const authorFollowCollect = reactive([])/*作者关注的收藏夹*/
+
 const useTheme = useThemeStore()
 //判断是否是自己本人
 const isSelf = computed(() => {
@@ -142,6 +144,11 @@ const onCheckCover = async (photo: object, type: number) => {
 //切换专栏订阅
 const onToggleSubscribe=(item:object)=>{
 
+}
+//收藏夹创建成功事件
+const onCreateCollectSuccess=()=>{
+  openNewCollectModel.value=false
+  loadAuthorCollect()
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 
@@ -309,7 +316,7 @@ const openLink = (url: string) => {
               </a-tab-pane>
               <template #rightExtra>
                 <div style="margin-right: 10px">
-                  <a-button type="primary" size="small">新建收藏夹</a-button>
+                  <a-button @click="openNewCollectModel=true" type="primary" size="small">新建收藏夹</a-button>
                 </div>
               </template>
             </a-tabs>
@@ -329,6 +336,10 @@ const openLink = (url: string) => {
       </a-tab-pane>
     </a-tabs>
   </a-drawer>
+<!-- 新建收藏夹模态框-->
+  <a-modal :footer="null" v-model:open="openNewCollectModel" title="新建收藏夹"  >
+   <CreateCollect @createOk="onCreateCollectSuccess" @cancelCreate="openNewCollectModel=false"/>
+  </a-modal>
 </template>
 
 <style scoped>

@@ -21,8 +21,6 @@ onMounted(() => {
 /*------------------------------------数据加载--------------------------------------------*/
 import { Https } from "@/utils/request/https.ts";
 import { API } from "@/api/ApiConfig.ts";
-import {ReportTargetType} from "@/types/report.ts";
-
 const loadThemePhoto = async () => {
   const res = await Https.action(API.THEME_PHOTO.list, pageQuery);
   // @ts-ignore
