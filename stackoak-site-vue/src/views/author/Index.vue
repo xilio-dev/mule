@@ -13,8 +13,11 @@ import {CommonUtil} from "@/utils/common.ts";
 import {Https} from "@/api/https.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {ImageUtils} from "@/utils/file.ts";
+import Background from './background/index.vue'
+import Cover from './cover/index.vue'
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
+const themeActiveKey = ref('1')
 const collectActiveKey = ref('1')
 const route = useRoute()
 const userStore = useUserStore()
@@ -296,12 +299,12 @@ const openLink = (url: string) => {
   </a-row>
   <!-- 顶部封面选择器 -->
   <a-drawer :closable="false" placement="bottom" v-model:open="openDrawer">
-    <a-tabs v-model:activeKey="activeKey">
+    <a-tabs v-model:activeKey="themeActiveKey">
       <a-tab-pane key="1" tab="封面">
-        封面设置
+         <Cover/>
       </a-tab-pane>
       <a-tab-pane key="2" tab="背景" force-render>
-        背景设置
+        <Background/>
       </a-tab-pane>
     </a-tabs>
   </a-drawer>

@@ -1,7 +1,9 @@
 package com.stackoak.stackoak.application.service.material;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.material.ThemePhoto;
 
 /**
@@ -14,4 +16,5 @@ import com.stackoak.stackoak.common.data.material.ThemePhoto;
  */
 public interface IThemePhotoService extends IService<ThemePhoto> {
 
+    Page<ThemePhoto> listByType(CommonPageQuery request);
 }
