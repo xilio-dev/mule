@@ -3,10 +3,7 @@ package com.stackoak.stackoak.application.service.user;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import com.stackoak.stackoak.common.data.user.LoginUser;
-import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
-import com.stackoak.stackoak.common.data.user.User;
-import com.stackoak.stackoak.common.data.user.UserDetailVo;
+import com.stackoak.stackoak.common.data.user.*;
 import jakarta.validation.constraints.Email;
 
 /**
@@ -39,5 +36,5 @@ public interface IUserService extends IService<User> {
      */
     UserDetailVo getUserDetail(String userId);
 
-    void updateCover(String topPhoto, String userId);
+    void updateCover(UpdateCoverRequest request, String userId);
 }

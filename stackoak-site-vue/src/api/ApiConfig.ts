@@ -41,6 +41,7 @@ export const API = {
         getUserProfile: {url: '/user/get-profile', method: 'get'} as ApiConfig,
         followUser: {url: '/user/follow', method: 'post'} as ApiConfig,
         unFollowUser: {url: '/user/unfollow', method: 'put'} as ApiConfig,
+        updateCover: {url: '/user/update_cover', method: 'put'} as ApiConfig,
     },
     FILE: {
         uploadImage: {url: '/file/upload', method: 'post'} as ApiConfig
@@ -62,7 +63,6 @@ export const API = {
     },
     THEME_PHOTO:{
         list: {url: '/theme_photo/list', method: 'post'} as ApiConfig,
-        topPhoto: {url: '/theme_photo/top_photo', method: 'put',pathParams: ['topPhoto']} as ApiConfig,
 
     }
 } as const;

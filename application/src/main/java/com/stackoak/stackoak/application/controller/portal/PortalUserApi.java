@@ -6,6 +6,7 @@ import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserService;
 
+import com.stackoak.stackoak.common.data.user.UpdateCoverRequest;
 import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
 import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.common.message.Result;
@@ -58,9 +59,9 @@ public class PortalUserApi {
     }
 
     @PutMapping(value = "update_cover", name = "更新作者主页封面")
-    public Result updateCover(@RequestParam String  topPhoto) {
+    public Result updateCover(@RequestBody @Valid UpdateCoverRequest request) {
         String userId = StpKit.USER.getLoginIdAsString();
-        userService.updateCover(topPhoto,userId);
+        userService.updateCover(request,userId);
         return Result.success();
     }
 

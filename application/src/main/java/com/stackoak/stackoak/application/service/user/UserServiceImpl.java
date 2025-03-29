@@ -4,10 +4,7 @@ package com.stackoak.stackoak.application.service.user;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 
-import com.stackoak.stackoak.common.data.user.LoginUser;
-import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
-import com.stackoak.stackoak.common.data.user.User;
-import com.stackoak.stackoak.common.data.user.UserDetailVo;
+import com.stackoak.stackoak.common.data.user.*;
 import com.stackoak.stackoak.repository.user.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -94,9 +91,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateCover(String topPhoto, String userId) {
+    public void updateCover(UpdateCoverRequest request, String userId) {
         User user = new User();
-        user.setTopPhoto(topPhoto);
+        user.setTopPhoto(request.cover());
         user.setId(userId);/*更新当前登陆用户作者主页顶部封面*/
         updateById(user);
     }

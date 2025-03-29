@@ -122,9 +122,9 @@ const onChangeHotArticle = () => {
   authorHotArticleQuery.current = authorHotArticleQuery.current + 1
   loadAuthorHotArticles()
 }
-const onCheckCover = (photo: object) => {
+const onCheckCover = async (photo: object) => {
   //保存选择结果
-  Https.action(API.USER.updateUser, {topPhoto: photo.limg}).then(res => {
+ await Https.action(API.USER.updateCover, {cover: photo.limg}).then(res => {
     authorInfo.value.topPhoto = photo.limg;
   })
 }
