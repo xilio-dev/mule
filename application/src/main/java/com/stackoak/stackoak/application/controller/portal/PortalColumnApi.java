@@ -54,6 +54,18 @@ public class PortalColumnApi {
     public Result getSubscribeFromMe(@RequestBody CommonPageQuery query) {
         return Result.success(columnService.subscribeFromMe(query));
     }
+    @PostMapping(value = "subscribe", name = "订阅专栏")
+    public Result subscribe(@RequestBody SubscribeRequest request) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        columnService.subscribe(request,userId);
+        return Result.success();
+    }
+    @PutMapping(value = "cancel_subscribe", name = "取消订阅")
+    public Result cancelSubscribe (@RequestBody SubscribeRequest request) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        columnService.cancelSubscribe(request,userId);
+        return Result.success();
+    }
 
     @DeleteMapping(value = "del", name = "删除专栏")
     public Result del(@RequestParam String columnId) {

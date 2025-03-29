@@ -44,4 +44,8 @@ public interface IColumnService extends IService<Column> {
     void addOrUpdate(ColumnSaveRequest body);
 
     ColumnDetailVo detail(String cid);
+
+    void subscribe(SubscribeRequest request, String userId);
+
+    void cancelSubscribe(SubscribeRequest request, String userId);
 }

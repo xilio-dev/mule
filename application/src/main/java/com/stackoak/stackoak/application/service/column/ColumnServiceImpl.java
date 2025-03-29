@@ -11,6 +11,7 @@ import com.stackoak.stackoak.common.data.user.User;
 import com.stackoak.stackoak.repository.column.ArticleColumnMapper;
 import com.stackoak.stackoak.repository.column.ColumnMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stackoak.stackoak.repository.column.ColumnSubscriptionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     private ColumnMapper columnMapper;
     @Autowired
     private ArticleColumnMapper articleColumnMapper;
+    @Autowired
+    private ColumnSubscriptionMapper columnSubscribeMapper;
 
     @Override
     public List<Column> getColumnsByArticleId(String id, String userId) {
@@ -130,5 +133,28 @@ public class ColumnServiceImpl extends ServiceImpl<ColumnMapper, Column> impleme
     @Override
     public ColumnDetailVo detail(String  cid) {
         return baseMapper.selectColumnDetailByUserId(cid);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void subscribe(SubscribeRequest request, String userId) {
+        //检查被订阅的专栏是否存在
+        Column column = getById(request.columnId());
+        BizException.noNull(column, "专栏不存在！");
+        //检查是否已经订阅过
+        LambdaQueryWrapper<ColumnSubscription> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ColumnSubscription::getColumnId, request.columnId());
+        wrapper.eq(ColumnSubscription::getUserId, userId);
+        ColumnSubscription columnSubscription = columnSubscribeMapper.selectOne(wrapper);
+        BizException.exprNull(!ObjectUtils.isEmpty(columnSubscription), "已经订阅过了！");
+        ColumnSubscription newSub = ColumnSubscription.builder().columnId(request.columnId()).userId(userId).build();
+        columnSubscribeMapper.insert(newSub);
+    }
+    @Override
+    public void cancelSubscribe(SubscribeRequest request, String userId) {
+        LambdaQueryWrapper<ColumnSubscription> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ColumnSubscription::getColumnId, request.columnId());
+        wrapper.eq(ColumnSubscription::getUserId, userId);
+        columnSubscribeMapper.delete(wrapper);
     }
 }

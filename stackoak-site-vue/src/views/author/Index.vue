@@ -407,7 +407,11 @@ const openLink = (url: string) => {
   background-color: rgba(255, 255, 255, .14);
   transition: all .3s;
 }
-
+.change-theme::after {
+  font-family: 'freshspace-kzimajpr1';
+  content: '\e038';
+  text-rendering: geometricPrecision;
+}
 /* 卡片修改*/
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;

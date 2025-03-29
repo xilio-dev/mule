@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+
+import lombok.*;
+
 /**
  * <p>
  * 专栏订阅表
@@ -21,15 +21,10 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("column_subscription")
+ @Builder
 public class ColumnSubscription implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * 主键
-     */
-    @TableId(value = "id",type = IdType.ASSIGN_UUID)
-    private String id;
 
     /**
      * 专栏ID
@@ -49,9 +44,4 @@ public class ColumnSubscription implements Serializable {
     @TableField("subscribed_at")
     private LocalDateTime subscribedAt;
 
-    /**
-     * 订阅状态（1=正常，0=取消）
-     */
-    @TableField("status")
-    private Integer status;
 }
