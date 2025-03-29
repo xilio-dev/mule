@@ -4,6 +4,7 @@ import {ImageUtils} from "@/utils/file.ts";
 const props = defineProps<{
   columnList: [];
 }>();
+const emit = defineEmits(['toggle-subscribe'])
 const onOpenColumn = (id: string) => {
   window.open(`/column?cid=${id}`, '_blank')
 }
@@ -26,11 +27,11 @@ const onOpenColumn = (id: string) => {
         <a-flex justify="space-between" align="center">
           <div class="column-title">{{ item.name }}</div>
           <div>
-            <a-button type="primary" size="small">
+            <a-button @click="emit('toggle-subscribe',item)" type="primary" size="small">
               <template #icon>
                 <PlusOutlined/>
               </template>
-              已订阅
+             {{item.isSubscribe ? '已订阅' : '订阅专栏'}}
             </a-button>
           </div>
         </a-flex>

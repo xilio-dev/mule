@@ -124,6 +124,7 @@ const onChangeHotArticle = () => {
   authorHotArticleQuery.current = authorHotArticleQuery.current + 1
   loadAuthorHotArticles()
 }
+//切换封面和背景
 const onCheckCover = async (photo: object, type: number) => {
   if (type == 2) {
     //保存顶部封面
@@ -137,6 +138,10 @@ const onCheckCover = async (photo: object, type: number) => {
       authorInfo.value.bgPhoto = photo.limg;
     })
   }
+}
+//切换专栏订阅
+const onToggleSubscribe=(item:object)=>{
+
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 
@@ -245,7 +250,7 @@ const openLink = (url: string) => {
             <ArticleList v-if="userStore.isLogin()&&authorArticles.length>0" :article-list="authorArticles"/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="合集" force-render>
-            <ColumnList v-model:column-list="columns" :user-id="authorId"/>
+            <ColumnList @toggleSubscribe="onToggleSubscribe" v-model:column-list="columns" :user-id="authorId"/>
           </a-tab-pane>
           <a-tab-pane key="3" tab="粉丝">
             <a-list item-layout="horizontal" :data-source="authorFansList" :split="false">
