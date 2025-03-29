@@ -2,11 +2,14 @@
 
 /*------------------------------------变量定义------------------------------------------*/
 import { onMounted, reactive } from "vue";
+const props = defineProps<{
+  type: number
+}>();
 const emit = defineEmits(['checkCover'])
 const pageQuery = reactive({
-  type: 2,
+  type: props.type,
   current: 1,
-  size: 10
+  size: 100
 });
 const photos = reactive<any[]>([]); // 添加类型注解，避免TS报错
 
@@ -18,6 +21,7 @@ onMounted(() => {
 /*------------------------------------数据加载--------------------------------------------*/
 import { Https } from "@/utils/request/https.ts";
 import { API } from "@/api/ApiConfig.ts";
+import {ReportTargetType} from "@/types/report.ts";
 
 const loadThemePhoto = async () => {
   const res = await Https.action(API.THEME_PHOTO.list, pageQuery);
@@ -36,7 +40,7 @@ const loadThemePhoto = async () => {
       <img :src="item.limg" :alt="item.name" />
       <div class="overlay">
         <span class="photo-name">{{ item.name }}</span>
-        <a-button type="primary" size="small" @click="emit('checkCover',item)" >使用</a-button>
+        <a-button type="primary" size="small" @click="emit('checkCover',item,type)" >使用</a-button>
       </div>
     </div>
   </div>

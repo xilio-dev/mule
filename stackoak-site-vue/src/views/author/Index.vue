@@ -4,7 +4,7 @@ import ColumnList from "@/components/ColumnList.vue";
 import {computed, onMounted, reactive, ref} from "vue";
 import {getFans, getFollows, getUserDetailInfo, unFollowUser} from "@/api/user.ts";
 import {useRoute} from "vue-router";
-import {useUserStore} from "@/store";
+import {useThemeStore, useUserStore} from "@/store";
 import {message} from "ant-design-vue";
 import {columnLists} from "@/api/column.ts";
 import {authorArticleList, authorArticleRank, getAuthorHotArticleList} from "@/api/post.ts";
@@ -32,6 +32,7 @@ const authorArticles = reactive([])
 const authorHotArticles = reactive([])/*作者热门文章*/
 const authorCollects = reactive([])/*作者收藏夹*/
 const authorFollowCollect = reactive([])/*作者关注的收藏夹*/
+const useTheme = useThemeStore()
 //判断是否是自己本人
 const isSelf = computed(() => {
   return userStore.userinfo.userId == authorId
@@ -70,6 +71,7 @@ const loadFans = async () => {
 const loadAuthorInfo = async () => {
   const res = await Https.action(API.USER.getUserDetail, {userId: authorId})
   authorInfo.value = res || {}
+  useTheme.setAuthorBackground('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0')
   // @ts-ignore
 }
 //加载作者的专栏
@@ -122,11 +124,17 @@ const onChangeHotArticle = () => {
   authorHotArticleQuery.current = authorHotArticleQuery.current + 1
   loadAuthorHotArticles()
 }
-const onCheckCover = async (photo: object) => {
-  //保存选择结果
- await Https.action(API.USER.updateCover, {cover: photo.limg}).then(res => {
-    authorInfo.value.topPhoto = photo.limg;
-  })
+const onCheckCover = async (photo: object,type:number) => {
+   if (type == 2) {
+     //保存顶部封面
+     await Https.action(API.USER.updateCover, {cover: photo.limg}).then(res => {
+       authorInfo.value.topPhoto = photo.limg;
+     })
+   }else if (type == 1) {
+     //保存背景
+
+   }
+
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 
@@ -304,13 +312,13 @@ const openLink = (url: string) => {
     </a-col>
   </a-row>
   <!-- 顶部封面选择器 -->
-  <a-drawer :closable="false" placement="bottom" v-model:open="openDrawer">
+  <a-drawer height="60%" :closable="false" placement="bottom" v-model:open="openDrawer">
     <a-tabs v-model:activeKey="themeActiveKey">
       <a-tab-pane key="1" tab="封面">
-        <Cover @checkCover="onCheckCover"/>
+        <Cover :type="2" @checkCover="onCheckCover"/>
       </a-tab-pane>
       <a-tab-pane key="2" tab="背景" force-render>
-        <Background/>
+        <Cover :type="1" @checkCover="onCheckCover"/>
       </a-tab-pane>
     </a-tabs>
   </a-drawer>
@@ -321,7 +329,6 @@ const openLink = (url: string) => {
   height: 200px;
   width: 100%;
   background-size: cover;
-  background-image: url("/bg5.jpg");
   background-position: center; /* 背景图片居中 */
   position: relative; /* 为绝对定位的子元素提供参照 */
 }
