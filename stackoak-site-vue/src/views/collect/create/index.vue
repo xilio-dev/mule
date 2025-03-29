@@ -55,6 +55,7 @@ const onNewCollect = () => {
       .validate()
       .then(() => {
         Https.action(API.COLLECT.save, newCollectForm).then(res => {
+          newCollectFormRef.value.resetFields();
           emit('createOk')
         })
       })
