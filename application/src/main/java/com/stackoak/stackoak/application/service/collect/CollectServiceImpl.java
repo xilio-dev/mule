@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
@@ -97,7 +98,13 @@ public class CollectServiceImpl extends ServiceImpl<CollectMapper, Collect> impl
         Page<Collect> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         LambdaQueryWrapper<Collect> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Collect::getUserId, pageQuery.getId());
-        wrapper.eq(Collect::getStatus, 1);
+       if (StpKit.USER.isLogin()){
+           //如果当前用户已经登陆且是作者本人的时候则查询所有的收藏夹
+           String userId = StpKit.USER.getLoginIdAsString();
+           wrapper.eq(!pageQuery.getId().equals(userId), Collect::getStatus, 1);
+       }else {
+           wrapper.eq(Collect::getStatus, 1);
+       }
         return page(page, wrapper);
     }
 
