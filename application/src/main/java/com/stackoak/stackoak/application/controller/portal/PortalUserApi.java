@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.controller.portal;
 
 import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserService;
 
 import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
@@ -54,6 +55,13 @@ public class PortalUserApi {
     public Result getProfile() {
         UpdateProfileRequest info = userService.getProfile();
         return Result.success(info);
+    }
+
+    @PutMapping(value = "update_cover", name = "更新作者主页封面")
+    public Result updateCover(@RequestParam String  topPhoto) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        userService.updateCover(topPhoto,userId);
+        return Result.success();
     }
 
 }

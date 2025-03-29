@@ -38,4 +38,6 @@ public interface IUserService extends IService<User> {
      * @return 用户详细信息
      */
     UserDetailVo getUserDetail(String userId);
+
+    void updateCover(String topPhoto, String userId);
 }

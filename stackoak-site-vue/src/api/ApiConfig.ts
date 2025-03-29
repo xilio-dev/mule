@@ -59,6 +59,11 @@ export const API = {
     },
     REPORT:{
         createReport: {url: '/report/createReport', method: 'post'} as ApiConfig,
+    },
+    THEME_PHOTO:{
+        list: {url: '/theme_photo/list', method: 'post'} as ApiConfig,
+        topPhoto: {url: '/theme_photo/top_photo', method: 'put',pathParams: ['topPhoto']} as ApiConfig,
+
     }
 } as const;
 

@@ -91,4 +91,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         BeanUtils.copyProperties(byId, vo);
         return vo;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCover(String topPhoto, String userId) {
+        User user = new User();
+        user.setTopPhoto(topPhoto);
+        user.setId(userId);/*更新当前登陆用户作者主页顶部封面*/
+        updateById(user);
+    }
 }

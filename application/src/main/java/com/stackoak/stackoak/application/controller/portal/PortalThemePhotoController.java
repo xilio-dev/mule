@@ -5,6 +5,7 @@ import com.stackoak.stackoak.application.service.material.IThemePhotoService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.material.ThemePhoto;
 import com.stackoak.stackoak.common.message.Result;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ public class PortalThemePhotoController {
     private IThemePhotoService themePhotoService;
 
     @PostMapping("list")
-    public Result list(@RequestBody CommonPageQuery request) {
+    public Result list(@RequestBody @Valid CommonPageQuery request) {
         return Result.success(themePhotoService.listByType(request));
     }
 }

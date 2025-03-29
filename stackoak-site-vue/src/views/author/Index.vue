@@ -70,6 +70,7 @@ const loadFans = async () => {
 const loadAuthorInfo = async () => {
   const res = await Https.action(API.USER.getUserDetail, {userId: authorId})
   authorInfo.value = res || {}
+  // @ts-ignore
 }
 //加载作者的专栏
 const loadUserColumns = async () => {
@@ -95,7 +96,7 @@ const loadAuthorHotArticles = async () => {
 }
 //加载作者公开的收藏夹
 const loadAuthorCollect = async () => {
-  const res = await Https.action(API.COLLECT.list, {current: 1, size: 10,id:authorId})
+  const res = await Https.action(API.COLLECT.list, {current: 1, size: 10, id: authorId})
   //@ts-ignore
   authorCollects.splice(0, authorCollects.length, ...(res.records ?? []))
 }
@@ -121,7 +122,12 @@ const onChangeHotArticle = () => {
   authorHotArticleQuery.current = authorHotArticleQuery.current + 1
   loadAuthorHotArticles()
 }
-
+const onCheckCover = (photo: object) => {
+  //保存选择结果
+  Https.action(API.USER.updateUser, {topPhoto: photo.limg}).then(res => {
+    authorInfo.value.topPhoto = photo.limg;
+  })
+}
 /*-------------------------------------其他函数-------------------------------------------*/
 
 const openLink = (url: string) => {
@@ -130,7 +136,7 @@ const openLink = (url: string) => {
 </script>
 
 <template>
-  <a-row class="header-container">
+  <a-row class="header-container" :style="{backgroundImage:`url(${authorInfo.topPhoto})`}">
     <a-row class="author-info">
       <a-row align="bottom" style="margin-bottom: 30px;width: 100%" :gutter="8">
         <a-col :span="20">
@@ -279,9 +285,9 @@ const openLink = (url: string) => {
           <a-tab-pane key="5" tab="收藏" force-render>
             <a-tabs v-model:activeKey="collectActiveKey">
               <a-tab-pane key="1" tab="我创建的">
-                 <div v-for="item in authorCollects" :key="item.id">
-                   {{item.name}}
-                 </div>
+                <div v-for="item in authorCollects" :key="item.id">
+                  {{ item.name }}
+                </div>
               </a-tab-pane>
               <a-tab-pane key="2" tab="我关注的">
 
@@ -301,7 +307,7 @@ const openLink = (url: string) => {
   <a-drawer :closable="false" placement="bottom" v-model:open="openDrawer">
     <a-tabs v-model:activeKey="themeActiveKey">
       <a-tab-pane key="1" tab="封面">
-         <Cover/>
+        <Cover @checkCover="onCheckCover"/>
       </a-tab-pane>
       <a-tab-pane key="2" tab="背景" force-render>
         <Background/>
