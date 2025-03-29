@@ -94,10 +94,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void updateCover(UpdateCoverRequest request, String userId) {
         Integer type = request.type();
         User user = new User();
-        if (type == 1) {
+        if (type == 2) {
             user.setTopPhoto(request.cover());
         }
-        if (type == 2) {
+        if (type == 1) {
             user.setBgPhoto(request.cover());
         }
         user.setId(userId);/*更新当前登陆用户作者主页顶部封面*/

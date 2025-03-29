@@ -127,14 +127,16 @@ const onChangeHotArticle = () => {
 const onCheckCover = async (photo: object, type: number) => {
   if (type == 2) {
     //保存顶部封面
-    await Https.action(API.USER.updateCover, {cover: photo.limg}).then(res => {
+    await Https.action(API.USER.updateCover, {cover: photo.limg,type:type}).then(res => {
       authorInfo.value.topPhoto = photo.limg;
     })
   } else if (type == 1) {
     //保存背景
-    useTheme.setAuthorBackground(photo.limg)
+    await Https.action(API.USER.updateCover, {cover: photo.limg,type:type}).then(res => {
+      useTheme.setAuthorBackground(photo.limg)
+      authorInfo.value.bgPhoto = photo.limg;
+    })
   }
-
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 
