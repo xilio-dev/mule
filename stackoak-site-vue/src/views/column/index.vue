@@ -9,6 +9,8 @@ import {getColumnPublishArticle} from '@/api/post';
 import {ImageUtils} from '@/utils/file';
 import {message} from 'ant-design-vue';
 import {followUser, unFollowUser} from "@/api/user.ts";
+import {Https} from "@/utils/request/https.ts";
+import {API} from "@/api/ApiConfig.ts";
 
 /*------------------------------------类型定义---------------------------------------------*/
 interface IAnalyse {
@@ -137,6 +139,20 @@ const onSubscribeToColumn = () => {
   if (!userStore.isLogin()) {
     router.push({path: '/login'});
   }
+  //订阅状态 取消订阅
+  if (analyse.isFollowColumn) {
+    Https.action(API.COLUMN.subscribe,{columnId:column.id}).then((res)=>{
+      analyse.isFollowColumn = false
+      analyse.subTotalCount = analyse.subTotalCount - 1
+    })
+  }else {
+    //非订阅状态 订阅
+    Https.action(API.COLUMN.cancelSubscribe,{columnId:column.id}).then((res)=>{
+      analyse.isFollowColumn = true
+      analyse.subTotalCount = analyse.subTotalCount + 1
+    })
+  }
+
 };
 //关注和取消关注
 const onToggleFollow = async (isFollow: boolean) => {
@@ -180,7 +196,7 @@ const onToggleFollow = async (isFollow: boolean) => {
                   <div>{{ analyse.viewTotalCount || 0 }}阅读量</div>
                 </a-flex>
                 <div v-if="userInfo.id!==userStore.userinfo.userId">
-                  <a-button @click="onSubscribeToColumn" type="primary">订阅专栏</a-button>
+                  <a-button @click="onSubscribeToColumn" type="primary">{{analyse.isFollowColumn?'已订阅':'订阅专栏'}}</a-button>
                 </div>
               </a-flex>
             </a-flex>

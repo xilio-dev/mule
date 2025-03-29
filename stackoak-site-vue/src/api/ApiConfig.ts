@@ -58,12 +58,15 @@ export const API = {
     RECOMMEND: {
         author: {url: '/recommend/author', method: 'post'} as ApiConfig,
     },
-    REPORT:{
+    REPORT: {
         createReport: {url: '/report/createReport', method: 'post'} as ApiConfig,
     },
-    THEME_PHOTO:{
+    THEME_PHOTO: {
         list: {url: '/theme_photo/list', method: 'post'} as ApiConfig,
-
+    },
+    COLUMN: {
+        subscribe: {url: '/column/subscribe', method: 'post'} as ApiConfig,
+        cancelSubscribe: {url: '/column/cancel_subscribe', method: 'put'} as ApiConfig,
     }
 } as const;
 

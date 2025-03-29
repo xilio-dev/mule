@@ -408,7 +408,6 @@ const openLink = (url: string) => {
   transition: all .3s;
 }
 .change-theme::after {
-  font-family: 'freshspace-kzimajpr1';
   content: '\e038';
   text-rendering: geometricPrecision;
 }
