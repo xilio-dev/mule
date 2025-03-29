@@ -306,15 +306,15 @@ const openLink = (url: string) => {
 
           <a-tab-pane key="5" tab="收藏" force-render>
             <a-tabs v-model:activeKey="collectActiveKey">
-              <a-tab-pane key="1" tab="我创建的">
+              <a-tab-pane key="1" :tab="`${isSelf?'我':'Ta'}创建的`">
                 <div v-for="item in authorCollects" :key="item.id">
                   {{ item.name }}
                 </div>
               </a-tab-pane>
-              <a-tab-pane key="2" tab="我关注的">
+              <a-tab-pane key="2" :tab="`${isSelf?'我':'Ta'}关注的`">
 
               </a-tab-pane>
-              <template #rightExtra>
+              <template #rightExtra v-if="isSelf">
                 <div style="margin-right: 10px">
                   <a-button @click="openNewCollectModel=true" type="primary" size="small">新建收藏夹</a-button>
                 </div>
