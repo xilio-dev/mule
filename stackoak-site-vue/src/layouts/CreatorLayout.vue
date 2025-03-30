@@ -24,10 +24,12 @@
     </a-col>
     <a-col :span="6">
       <a-affix offset-bottom="bottom" :offset-top="60">
-        <a-card :bordered="false" title="公告栏" style="min-height: 150px;">
-         <a-flex>
-
-         </a-flex>
+        <a-card class="announcement-card" :bordered="false" title="公告栏" style="min-height: 150px;">
+          <a-flex vertical :gap="10">
+            <div class="announcement-item" v-for="(item, index) in announcementList" :key="item.id">
+              {{ index + 1 }}. {{ item.title }}
+            </div>
+          </a-flex>
         </a-card>
       </a-affix>
     </a-col>
@@ -89,22 +91,22 @@ const items: ItemType[] = reactive([
     getItem('博客设置', 'config-blog'),
   ]),
 ]);
-const announcementQuery=reactive({
-  current:1,
-  size:6
+const announcementQuery = reactive({
+  current: 1,
+  size: 5
 })
-const announcementList=reactive([])
+const announcementList = ref([])
 /*------------------------------------生命周期-------------------------------------------*/
 watch(openKeys, val => {
   console.log('openKeys', val);
 });
-onMounted(()=>{
+onMounted(() => {
   loadAnnouncement()
 })
 /*------------------------------------数据加载--------------------------------------------*/
-const loadAnnouncement=async ()=>{
-  const res=Https.action(API.ANNOUNCEMENT.list,announcementQuery)
-  Object.assign(announcementList,res.records)
+const loadAnnouncement = async () => {
+  const res =await Https.action(API.ANNOUNCEMENT.list, announcementQuery)
+  announcementList.value=res.records
 }
 
 /*------------------------------------核心业务--------------------------------------------*/
@@ -116,8 +118,6 @@ const handleClick: MenuProps['onClick'] = e => {
     router.push({path: `/creator/${path}`})
   }
 };
-
-
 
 
 </script>
@@ -142,5 +142,17 @@ a-card {
 
 :deep(.ant-card .ant-card-body ) {
   padding: 8px 20px;
+}
+.announcement-card{
+  box-shadow: none;
+}
+.announcement-item{
+  cursor: pointer;
+  color: #8491a5;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.announcement-item:first-child{
+  color: #303133;
 }
 </style>

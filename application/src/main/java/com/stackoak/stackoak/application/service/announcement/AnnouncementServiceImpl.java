@@ -28,6 +28,7 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         Page<Announcement> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
         LambdaQueryWrapper<Announcement> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Announcement::getIsPublished, true);
+        wrapper.orderByDesc(Announcement::getCreatedAt);
         return page(page, wrapper);
     }
 
@@ -40,6 +41,7 @@ public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Ann
         LambdaQueryWrapper<Announcement> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Announcement::getIsPublished, true);
         wrapper.eq(Announcement::getType, announcementType.getCode());
+        wrapper.orderByDesc(Announcement::getCreatedAt);
         return page(page, wrapper);
     }
 

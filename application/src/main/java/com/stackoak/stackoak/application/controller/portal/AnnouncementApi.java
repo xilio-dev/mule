@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.application.controller.portal;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.service.announcement.IAnnouncementService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
@@ -23,15 +24,16 @@ public class AnnouncementApi {
     @Autowired
     private IAnnouncementService announcementService;
     @PostMapping("list")
+    @FieldFilter(type = Announcement.class,exclude = {"createdBy","updatedBy"})
     public Result getAnnouncements(@RequestBody PageQuery pageQuery) {
       return Result.success(announcementService.getAnnouncements(pageQuery));
     }
-
+    @FieldFilter(type = Announcement.class,exclude = {"createdBy","updatedBy"})
     @PostMapping("type/{typeCode}")
     public Result getAnnouncementsByType(@RequestBody CommonPageQuery pageQuery) {
         return Result.success(announcementService.getAnnouncementsByType(pageQuery));
     }
-
+    @FieldFilter(type = Announcement.class,exclude = {"createdBy","updatedBy"})
     @GetMapping(value = "detail/{id}",name = "公告详情")
     public Result detail(@PathVariable String id) {
         return Result.success(announcementService.getAnnouncementById(id)) ;
