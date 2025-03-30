@@ -10,3 +10,10 @@
 body {
   background-color: #f4f6f9;
 }
+.so-no-wrap {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word; /* 处理特殊字符换行 */
+}

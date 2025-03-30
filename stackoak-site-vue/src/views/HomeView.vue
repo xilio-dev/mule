@@ -41,7 +41,7 @@
                   <a-flex :gap="4" vertical style="font-size: 15px">
                     <div
                         v-if="searchHistory.length >0"
-                        class="no-wrap search-his-item"
+                        class="so-no-wrap search-his-item"
                         v-for="item in searchHistory"
                         @click="onHisSearch(item)">
                       <a-flex align="center" :gap="8">
@@ -667,13 +667,7 @@ a-card {
   margin-inline-start: 2px;
 }
 
-.no-wrap {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word; /* 处理特殊字符换行 */
-}
+
 
 .search-his-item {
   cursor: pointer;

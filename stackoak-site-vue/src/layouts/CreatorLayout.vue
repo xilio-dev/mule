@@ -26,7 +26,7 @@
       <a-affix offset-bottom="bottom" :offset-top="60">
         <a-card class="announcement-card" :bordered="false" title="公告栏" style="min-height: 150px;">
           <a-flex vertical :gap="10">
-            <div class="announcement-item" v-for="(item, index) in announcementList" :key="item.id">
+            <div class="announcement-item so-no-wrap" v-for="(item, index) in announcementList" :key="item.id">
               {{ index + 1 }}. {{ item.title }}
             </div>
           </a-flex>
