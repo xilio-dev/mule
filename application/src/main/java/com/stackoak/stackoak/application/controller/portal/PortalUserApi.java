@@ -1,11 +1,13 @@
 package com.stackoak.stackoak.application.controller.portal;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.actors.security.SaUserCheckLogin;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.user.IUserService;
 
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.user.UpdateCoverRequest;
 import com.stackoak.stackoak.common.data.user.UpdateProfileRequest;
 import com.stackoak.stackoak.common.data.user.User;
@@ -35,14 +37,14 @@ public class PortalUserApi {
     @GetMapping("get")
     @FieldFilter(
             type = User.class,
-            exclude = {"password" })
+            exclude = {"password"})
     public Result get() {
         return Result.success(userService.getCurrentUser());
     }
 
     @GetMapping("detail/{userId}")
-    @FieldFilter(type = User.class,exclude = {"password"})
-    public Result detail(@PathVariable("userId")@Valid @NotEmpty(message = "用户编号不能为空") String userId) {
+    @FieldFilter(type = User.class, exclude = {"password"})
+    public Result detail(@PathVariable("userId") @Valid @NotEmpty(message = "用户编号不能为空") String userId) {
         return Result.success(userService.getUserDetail(userId));
     }
 
@@ -61,7 +63,14 @@ public class PortalUserApi {
     @PutMapping(value = "update_cover", name = "更新作者主页封面")
     public Result updateCover(@RequestBody @Valid UpdateCoverRequest request) {
         String userId = StpKit.USER.getLoginIdAsString();
-        userService.updateCover(request,userId);
+        userService.updateCover(request, userId);
         return Result.success();
+    }
+
+    @PostMapping(value = "dislike", name = "获取黑名单作者")
+    public Result dislike(@RequestBody @Valid PageQuery request) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        Page<User> users = userService.dislike(request, userId);
+        return Result.success(users);
     }
 }

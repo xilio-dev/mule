@@ -2,8 +2,10 @@ package com.stackoak.stackoak.application.service.user;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.user.*;
 import com.stackoak.stackoak.repository.user.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -102,5 +104,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         user.setId(userId);/*更新当前登陆用户作者主页顶部封面*/
         updateById(user);
+    }
+
+    /**
+     * 获取我拉黑的作者列表
+     *
+     * @param request 分页请求
+     * @param userId  当前登陆用户
+     * @return 黑名单列表
+     */
+    @Override
+    public Page<User> dislike(PageQuery request, String userId) {
+        return null;
     }
 }

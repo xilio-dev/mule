@@ -1,9 +1,12 @@
 package com.stackoak.stackoak.application.service.user;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.user.*;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 
 /**
@@ -37,4 +40,12 @@ public interface IUserService extends IService<User> {
     UserDetailVo getUserDetail(String userId);
 
     void updateCover(UpdateCoverRequest request, String userId);
+
+    /**
+     * 获取我拉黑的作者列表
+     * @param request 分页请求
+     * @param userId 当前登陆用户
+     * @return 黑名单列表
+     */
+    Page<User> dislike(@Valid PageQuery request, String userId);
 }
