@@ -327,7 +327,7 @@ const openLink = (url: string) => {
     </a-col>
   </a-row>
   <!-- 顶部封面选择器 -->
-  <a-drawer  class="no-scroll-drawer" height="60%"  :closable="false" placement="bottom" v-model:open="openDrawer">
+  <a-drawer height="60%" :closable="false" placement="bottom" v-model:open="openDrawer">
     <a-tabs v-model:activeKey="themeActiveKey">
       <a-tab-pane key="1" tab="封面">
         <Cover :type="2" @checkCover="onCheckCover"/>
@@ -473,28 +473,4 @@ a-card {
   color: #4c4ce6;
 }
 
-/* 提高优先级，针对抽屉的根元素和内部容器 */
-.no-scroll-drawer {
-  overflow: hidden !important;
-}
-
-/* 针对 Ant Design 的抽屉内容区域 */
-:deep(.ant-drawer-content-wrapper) {
-  overflow: hidden !important;
-}
-
-:deep(.ant-drawer-content) {
-  overflow: hidden !important;
-}
-
-:deep(.ant-drawer-body) {
-  overflow: hidden !important;
-  padding: 0; /* 移除默认内边距，确保内容紧贴边界 */
-}
-
-/* 确保 tabs 内容区域也不滚动 */
-:deep(.ant-tabs-content) {
-  overflow: hidden !important;
-  height: 100%; /* 填充抽屉高度 */
-}
 </style>
