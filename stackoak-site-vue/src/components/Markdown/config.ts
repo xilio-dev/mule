@@ -1,6 +1,5 @@
-import {Callbacks} from "./callbacks";
-import type Cherry from "cherry-markdown";
 //@ts-nocheck
+import {Callbacks} from "./callbacks";
 export const getConfig = ({
                               id = '3721',
                               value = '',

@@ -13,10 +13,7 @@ public class Solution {
         for (int i = 0; i < n; ++i) {
             for (int j = i + 1; j < n; ++j) {
                 if (nums[i] + nums[j] == target) {
-                    return new int[]{i, j};
-                }
-            }
-        }
+                    return new int[]{i, j};}} }
         return new int[0];
     }
 }
@@ -118,7 +115,7 @@ const loadUser = async () => {
       </a-flex>
 
       <a-flex :gap="12">
-        <div style="width: 100px">目录样式：</div>
+        <div style="width: 100px">预览目录样式：</div>
         <a-flex vertical :gap="4">
           <a-radio-group v-model:value="userInfo.editorAnchorStyle">
             <a-radio v-for="item in anchorStyleOptions" :key="item.value" :value="item.value">
