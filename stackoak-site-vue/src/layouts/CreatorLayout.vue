@@ -3,7 +3,8 @@
   <a-row :gutter="12">
     <a-col :span="4">
       <div style="text-align: center;background-color: white;padding-top: 30px;padding-bottom: 12px">
-        <img style="width: 100px;height: 100px;border-radius: 4px;margin-bottom: 5px" :src="ImageUtils.getImgUrl(userStore.userinfo.avatar||'')"/>
+        <img style="width: 100px;height: 100px;border-radius: 4px;margin-bottom: 5px"
+             :src="ImageUtils.getImgUrl(userStore.userinfo.avatar||'')"/>
         <div>{{ userStore.userinfo.nickname }}</div>
       </div>
       <a-affix offset-bottom="bottom" :offset-top="60">
@@ -24,7 +25,9 @@
     <a-col :span="6">
       <a-affix offset-bottom="bottom" :offset-top="60">
         <a-card :bordered="false" title="公告栏" style="min-height: 150px;">
+         <a-flex>
 
+         </a-flex>
         </a-card>
       </a-affix>
     </a-col>
@@ -33,25 +36,17 @@
 </template>
 <script lang="ts" setup>
 import router from "@/router";
-import {useUserStore } from '@/store';
+import {useUserStore} from '@/store';
+import {reactive, ref, watch, VueElement, h, onMounted} from 'vue';
+import {MailOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
+import {type MenuProps, type ItemType} from 'ant-design-vue';
+import {ImageUtils} from "@/utils/file.ts";
+import {Https} from "@/utils/request/https.ts";
+import {API} from "@/api/ApiConfig.ts";
 
 const userStore = useUserStore()
-const listData: Record<string, string>[] = [];
 
-for (let i = 0; i < 23; i++) {
-  listData.push({
-    href: 'https://www.antdv.com/',
-    title: `我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章我的第一篇文章 ${i}`,
-  });
-}
-
-
-import {reactive, ref, watch, VueElement, h} from 'vue';
-import {MailOutlined, AppstoreOutlined, SettingOutlined} from '@ant-design/icons-vue';
-import {type MenuProps, type ItemType, message} from 'ant-design-vue';
-import {ImageUtils} from "@/utils/file.ts";
-
-
+/*------------------------------------变量定义------------------------------------------*/
 const selectedKeys = ref<string[]>(['index']);
 const openKeys = ref<string[]>(['index', 'content', 'analysis']);
 
@@ -94,7 +89,25 @@ const items: ItemType[] = reactive([
     getItem('博客设置', 'config-blog'),
   ]),
 ]);
+const announcementQuery=reactive({
+  current:1,
+  size:6
+})
+const announcementList=reactive([])
+/*------------------------------------生命周期-------------------------------------------*/
+watch(openKeys, val => {
+  console.log('openKeys', val);
+});
+onMounted(()=>{
+  loadAnnouncement()
+})
+/*------------------------------------数据加载--------------------------------------------*/
+const loadAnnouncement=async ()=>{
+  const res=Https.action(API.ANNOUNCEMENT.list,announcementQuery)
+  Object.assign(announcementList,res.records)
+}
 
+/*------------------------------------核心业务--------------------------------------------*/
 const handleClick: MenuProps['onClick'] = e => {
   console.log(e)
   if (e.keyPath) {
@@ -104,9 +117,9 @@ const handleClick: MenuProps['onClick'] = e => {
   }
 };
 
-watch(openKeys, val => {
-  console.log('openKeys', val);
-});
+
+
+
 </script>
 
 <style scoped>

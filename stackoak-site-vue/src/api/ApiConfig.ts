@@ -68,8 +68,13 @@ export const API = {
         subscribe: {url: '/column/subscribe', method: 'post'} as ApiConfig,
         cancelSubscribe: {url: '/column/cancel_subscribe', method: 'put'} as ApiConfig,
     },
-    SEARCH_HISTORY:{
+    SEARCH_HISTORY: {
         delSearchHis: {url: '/del_search_his', method: 'delete'} as ApiConfig,
+    },
+    ANNOUNCEMENT: {
+        list: {url: '/announcement/list', method: 'post'} as ApiConfig,
+        type: {url: '/announcement/type', method: 'post'} as ApiConfig,
+        detail: {url: '/announcement/detail/{type}', method: 'get', pathParams: ['type']} as ApiConfig,
     }
 } as const;
 

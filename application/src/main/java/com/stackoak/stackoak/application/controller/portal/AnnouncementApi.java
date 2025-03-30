@@ -5,6 +5,7 @@ import com.stackoak.stackoak.application.service.announcement.IAnnouncementServi
 import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.announcement.Announcement;
+import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,17 +23,17 @@ public class AnnouncementApi {
     @Autowired
     private IAnnouncementService announcementService;
     @PostMapping("list")
-    public Page<Announcement> getAnnouncements(@RequestBody PageQuery pageQuery) {
-        return announcementService.getAnnouncements(pageQuery);
+    public Result getAnnouncements(@RequestBody PageQuery pageQuery) {
+      return Result.success(announcementService.getAnnouncements(pageQuery));
     }
 
     @PostMapping("type/{typeCode}")
-    public Page<Announcement> getAnnouncementsByType(@RequestBody CommonPageQuery pageQuery) {
-        return announcementService.getAnnouncementsByType(pageQuery);
+    public Result getAnnouncementsByType(@RequestBody CommonPageQuery pageQuery) {
+        return Result.success(announcementService.getAnnouncementsByType(pageQuery));
     }
 
     @GetMapping(value = "detail/{id}",name = "公告详情")
-    public Announcement detail(@PathVariable String id) {
-        return announcementService.getAnnouncementById(id);
+    public Result detail(@PathVariable String id) {
+        return Result.success(announcementService.getAnnouncementById(id)) ;
     }
 }
