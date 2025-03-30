@@ -20,6 +20,7 @@ public interface ISearchHistoryService extends IService<SearchHistory> {
      * @return 搜索历史关键字
      */
     List<String> getUserSearchHistory(String userId);
+    SearchHistory getSearchHistory(String userId,String keyword);
 
     /**
      * 清空用户搜索历史

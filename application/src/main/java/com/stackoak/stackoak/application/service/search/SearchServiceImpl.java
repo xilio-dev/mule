@@ -1,5 +1,6 @@
 package com.stackoak.stackoak.application.service.search;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.StpKit;
@@ -8,6 +9,7 @@ import com.stackoak.stackoak.common.data.article.ArticleId;
 import com.stackoak.stackoak.common.data.search.SearchHistory;
 import com.stackoak.stackoak.common.data.search.SearchRequest;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -205,11 +207,14 @@ public class SearchServiceImpl implements ISearchService {
             pageData.setTotal(totalHits);
             pageData.setRecords(searchList);
 
-            // 记录搜索历史
+            // 记录搜索历史 异步记录
             if (StpKit.USER.isLogin()) {
                 String userId = StpKit.USER.getLoginIdAsString();
                 if (StringUtils.isNotBlank(userId) && !sanitizedKeyword.equals("*:*")) {
-                    searchHistoryService.save(new SearchHistory(userId, sanitizedKeyword));
+                    SearchHistory searchHistory = searchHistoryService.getSearchHistory(userId, keyword);
+                    if (ObjectUtils.isEmpty(searchHistory)) {
+                        searchHistoryService.save(new SearchHistory(userId, sanitizedKeyword));
+                    }
                 }
             }
             return pageData;

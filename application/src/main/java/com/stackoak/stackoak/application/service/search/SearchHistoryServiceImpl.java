@@ -39,6 +39,14 @@ public class SearchHistoryServiceImpl extends ServiceImpl<SearchHistoryMapper, S
                 .toList();
     }
 
+    @Override
+    public SearchHistory getSearchHistory(String userId, String keyword) {
+        LambdaQueryWrapper<SearchHistory> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SearchHistory::getUserId, userId);
+        wrapper.eq(SearchHistory::getKeyword, keyword);
+        return getOne(wrapper);
+    }
+
     /**
      * 清空用户搜索历史
      *
