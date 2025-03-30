@@ -1,7 +1,5 @@
 package com.stackoak.stackoak.application.controller.portal;
 
-import com.stackoak.stackoak.application.actors.bean.DynamicBeanManager;
-
 import com.stackoak.stackoak.application.service.user.IScanCodeLogingService;
 import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("scan")
-public class ScanLoginApi {
+public class PortalScanLoginApi {
     @Autowired
     private IScanCodeLogingService scanCodeService;
 

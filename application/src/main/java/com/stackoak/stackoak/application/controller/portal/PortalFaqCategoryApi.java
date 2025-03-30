@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/faqCategory")
-public class FaqCategoryController {
+public class PortalFaqCategoryApi {
 
 }

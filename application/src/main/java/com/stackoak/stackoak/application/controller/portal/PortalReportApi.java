@@ -10,8 +10,6 @@ import com.stackoak.stackoak.common.message.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * <p>
  * 前端控制器
@@ -22,7 +20,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/report")
-public class PortalReportController {
+public class PortalReportApi {
     @Autowired
     private IReportService reportService;
 
