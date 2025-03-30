@@ -122,7 +122,7 @@
                   <a :href="`/author/${item.id}`" target="_blank">{{ item.nickname }}</a>
                 </template>
                 <template #description>
-                  <span class="no-wrap">{{ item.introduce }}</span>
+                  <span class="so-no-wrap">{{ item.introduce }}</span>
                 </template>
                 <template #avatar>
                   <router-link :to="`/author/${item.id}`" target="_blank">
@@ -144,7 +144,7 @@
             <a-list-item>
               <a-list-item-meta>
                 <template #title>
-                  <span @click="CommonUtil.openNewPage(`/post/${item.id}`)" class="no-wrap rank-title">{{
+                  <span @click="CommonUtil.openNewPage(`/post/${item.id}`)" class="so-no-wrap rank-title">{{
                       item.title
                     }}</span>
                 </template>
@@ -163,7 +163,7 @@
               <a-list-item>
                 <a-list-item-meta>
                   <template #title>
-                    <span class="no-wrap rank-title">{{ item.title }}</span>
+                    <span class="so-no-wrap rank-title">{{ item.title }}</span>
                   </template>
                 </a-list-item-meta>
               </a-list-item>

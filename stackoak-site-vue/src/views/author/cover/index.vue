@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 /*------------------------------------变量定义------------------------------------------*/
 import { onMounted, reactive } from "vue";
 const props = defineProps<{
@@ -28,17 +27,15 @@ const loadThemePhoto = async () => {
 };
 
 /*------------------------------------核心业务--------------------------------------------*/
-
-
 </script>
 
 <template>
-  <div class="grid-container">
-    <div class="grid-item" v-for="item in photos" :key="item.id">
+  <div class="so-grid-container">
+    <div class="so-grid-item" v-for="item in photos" :key="item.id">
       <img :src="item.limg" :alt="item.name" />
       <div class="overlay">
         <span class="photo-name">{{ item.name }}</span>
-        <a-button type="primary" size="small" @click="emit('checkCover',item,type)" >使用</a-button>
+        <a-button type="primary" size="small" @click="emit('checkCover', item, type)">使用</a-button>
       </div>
     </div>
   </div>
@@ -46,17 +43,20 @@ const loadThemePhoto = async () => {
 
 <style scoped>
 /* 容器样式 */
-.grid-container {
+.so-grid-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3列，每列等宽 */
+  width: 100%;
+  grid-template-columns: repeat(4, 1fr); /* 3列，每列等宽 */
   gap: 20px; /* 图片之间的间隔 */
   padding: 20px; /* 容器内边距 */
   max-width: 1200px; /* 最大宽度，可根据需要调整 */
   margin: 0 auto; /* 居中 */
+  max-height: 400px; /* 限制最大高度，可根据需要调整 */
+  overflow-y: auto; /* 启用垂直滚动 */
 }
 
 /* 图片项样式 */
-.grid-item {
+.so-grid-item {
   width: 100%; /* 占满网格单元 */
   height: 150px; /* 固定高度，与img一致 */
   position: relative; /* 为overlay定位 */
@@ -66,7 +66,7 @@ const loadThemePhoto = async () => {
 }
 
 /* 图片样式 */
-.grid-item img {
+.so-grid-item img {
   width: 100%;
   height: 150px;
   object-fit: cover;
@@ -91,7 +91,7 @@ const loadThemePhoto = async () => {
 }
 
 /* 鼠标悬浮时显示 */
-.grid-item:hover .overlay {
+.so-grid-item:hover .overlay {
   opacity: 1;
 }
 
@@ -103,6 +103,7 @@ const loadThemePhoto = async () => {
   text-overflow: ellipsis; /* 超长部分显示省略号 */
   max-width: 70%; /* 限制宽度，避免与按钮重叠 */
 }
+
 /* 响应式调整 */
 @media (max-width: 768px) {
   .grid-container {

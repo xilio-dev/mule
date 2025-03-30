@@ -13,7 +13,7 @@ import {CommonUtil} from "@/utils/common.ts";
 import {Https} from "@/api/https.ts";
 import {API} from "@/api/ApiConfig.ts";
 import {ImageUtils} from "@/utils/file.ts";
- import CreateCollect from "@/views/collect/create/index.vue";
+import CreateCollect from "@/views/collect/create/index.vue";
 import Cover from './cover/index.vue'
 /*------------------------------------变量定义------------------------------------------*/
 const activeKey = ref('1')
@@ -130,24 +130,24 @@ const onChangeHotArticle = () => {
 const onCheckCover = async (photo: object, type: number) => {
   if (type == 2) {
     //保存顶部封面
-    await Https.action(API.USER.updateCover, {cover: photo.limg,type:type}).then(res => {
+    await Https.action(API.USER.updateCover, {cover: photo.limg, type: type}).then(res => {
       authorInfo.value.topPhoto = photo.limg;
     })
   } else if (type == 1) {
     //保存背景
-    await Https.action(API.USER.updateCover, {cover: photo.limg,type:type}).then(res => {
+    await Https.action(API.USER.updateCover, {cover: photo.limg, type: type}).then(res => {
       useTheme.setAuthorBackground(photo.limg)
       authorInfo.value.bgPhoto = photo.limg;
     })
   }
 }
 //切换专栏订阅
-const onToggleSubscribe=(item:object)=>{
+const onToggleSubscribe = (item: object) => {
 
 }
 //收藏夹创建成功事件
-const onCreateCollectSuccess=()=>{
-  openNewCollectModel.value=false
+const onCreateCollectSuccess = () => {
+  openNewCollectModel.value = false
   loadAuthorCollect()
 }
 /*-------------------------------------其他函数-------------------------------------------*/
@@ -257,7 +257,8 @@ const openLink = (url: string) => {
             <ArticleList v-if="userStore.isLogin()&&authorArticles.length>0" :article-list="authorArticles"/>
           </a-tab-pane>
           <a-tab-pane key="2" tab="合集" force-render>
-            <ColumnList :isSelf="isSelf" @toggleSubscribe="onToggleSubscribe" v-model:column-list="columns" :user-id="authorId"/>
+            <ColumnList :isSelf="isSelf" @toggleSubscribe="onToggleSubscribe" v-model:column-list="columns"
+                        :user-id="authorId"/>
           </a-tab-pane>
           <a-tab-pane key="3" tab="粉丝">
             <a-list item-layout="horizontal" :data-source="authorFansList" :split="false">
@@ -326,7 +327,7 @@ const openLink = (url: string) => {
     </a-col>
   </a-row>
   <!-- 顶部封面选择器 -->
-  <a-drawer height="60%" :closable="false" placement="bottom" v-model:open="openDrawer">
+  <a-drawer  class="no-scroll-drawer" height="60%"  :closable="false" placement="bottom" v-model:open="openDrawer">
     <a-tabs v-model:activeKey="themeActiveKey">
       <a-tab-pane key="1" tab="封面">
         <Cover :type="2" @checkCover="onCheckCover"/>
@@ -336,9 +337,9 @@ const openLink = (url: string) => {
       </a-tab-pane>
     </a-tabs>
   </a-drawer>
-<!-- 新建收藏夹模态框-->
-  <a-modal :footer="null" v-model:open="openNewCollectModel" title="新建收藏夹"  >
-   <CreateCollect @createOk="onCreateCollectSuccess" @cancelCreate="openNewCollectModel=false"/>
+  <!-- 新建收藏夹模态框-->
+  <a-modal :footer="null" v-model:open="openNewCollectModel" title="新建收藏夹">
+    <CreateCollect @createOk="onCreateCollectSuccess" @cancelCreate="openNewCollectModel=false"/>
   </a-modal>
 </template>
 
@@ -423,10 +424,12 @@ const openLink = (url: string) => {
   background-color: rgba(255, 255, 255, .14);
   transition: all .3s;
 }
+
 .change-theme::after {
   content: '\e038';
   text-rendering: geometricPrecision;
 }
+
 /* 卡片修改*/
 :deep(.ant-card .ant-card-head ) {
   min-height: 40px;
@@ -470,4 +473,28 @@ a-card {
   color: #4c4ce6;
 }
 
+/* 提高优先级，针对抽屉的根元素和内部容器 */
+.no-scroll-drawer {
+  overflow: hidden !important;
+}
+
+/* 针对 Ant Design 的抽屉内容区域 */
+:deep(.ant-drawer-content-wrapper) {
+  overflow: hidden !important;
+}
+
+:deep(.ant-drawer-content) {
+  overflow: hidden !important;
+}
+
+:deep(.ant-drawer-body) {
+  overflow: hidden !important;
+  padding: 0; /* 移除默认内边距，确保内容紧贴边界 */
+}
+
+/* 确保 tabs 内容区域也不滚动 */
+:deep(.ant-tabs-content) {
+  overflow: hidden !important;
+  height: 100%; /* 填充抽屉高度 */
+}
 </style>
