@@ -17,7 +17,7 @@
         </div>
       </a-col>
     </a-row>
-    <Markdown main-theme="default" @markdown-change="onMarkdownChange" v-if="!isLoading" :height="95" :md-id="10086" :preview="true"
+    <Markdown float="true" main-theme="default" @markdown-change="onMarkdownChange" v-if="!isLoading" :height="95" :md-id="10086" :preview="true"
               :value="articleDetailForm.content"/>
   </div>
   <a-modal style="top: 20px" width="50%" ok-text="立即发布" cancel-text="取消" v-model:open="openPublish"
