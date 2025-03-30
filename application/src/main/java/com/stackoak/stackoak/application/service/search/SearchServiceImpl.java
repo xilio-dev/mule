@@ -2,6 +2,7 @@ package com.stackoak.stackoak.application.service.search;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleId;
 import com.stackoak.stackoak.common.data.search.SearchHistory;
@@ -37,8 +38,9 @@ public class SearchServiceImpl implements ISearchService {
     private static final String[] SEARCH_FIELDS = {"title", "description", "content"};
     private static final int MAX_FRAGMENT_SIZE = 200;
     private static final int MAX_PAGE_SIZE = 100; // 最大分页大小限制
-@Autowired
-private ISearchHistoryService searchHistoryService;
+    @Autowired
+    private ISearchHistoryService searchHistoryService;
+
     /**
      * 保存文章索引
      *
@@ -166,6 +168,7 @@ private ISearchHistoryService searchHistoryService;
         }
         return 0;
     }
+
     /**
      * 全文搜索文章
      *
@@ -175,7 +178,7 @@ private ISearchHistoryService searchHistoryService;
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public IPage<Article> fullTextSearch(String keyword, SearchRequest request) throws IOException {
+    public Page<Article> fullTextSearch(String keyword, SearchRequest request) throws IOException {
         // 参数校验
         int page = Math.max(1, request.getPage());
         int limit = Math.min(Math.max(1, request.getSize()), MAX_PAGE_SIZE);
@@ -203,12 +206,12 @@ private ISearchHistoryService searchHistoryService;
             pageData.setRecords(searchList);
 
             // 记录搜索历史
-            String userId = getCurrentUserId();
-            if (StringUtils.isNotBlank(userId) && !sanitizedKeyword.equals("*:*")) {
-                searchHistoryService.save(new SearchHistory(userId, sanitizedKeyword));
+            if (StpKit.USER.isLogin()) {
+                String userId = StpKit.USER.getLoginIdAsString();
+                if (StringUtils.isNotBlank(userId) && !sanitizedKeyword.equals("*:*")) {
+                    searchHistoryService.save(new SearchHistory(userId, sanitizedKeyword));
+                }
             }
-
-
             return pageData;
 
         } catch (Exception e) {
@@ -223,12 +226,12 @@ private ISearchHistoryService searchHistoryService;
     /**
      * 执行搜索并分页
      *
-     * @param searcher    索引搜索器
-     * @param query       查询对象
-     * @param page        当前页码
-     * @param limit       每页大小
-     * @param searchList  结果列表
-     * @param analyzer    分词器
+     * @param searcher   索引搜索器
+     * @param query      查询对象
+     * @param page       当前页码
+     * @param limit      每页大小
+     * @param searchList 结果列表
+     * @param analyzer   分词器
      * @return 总记录数
      * @throws IOException IO异常
      */
@@ -268,6 +271,7 @@ private ISearchHistoryService searchHistoryService;
 
         return totalHits;
     }
+
     /**
      * 从 Lucene Document 构建 Article 对象
      */
@@ -311,10 +315,7 @@ private ISearchHistoryService searchHistoryService;
         }
     }
 
-    private String getCurrentUserId() {
-        // TODO: 替换为实际用户认证逻辑
-        return "1";
-    }
+
 //    public IPage<Article> fullTextSearch(String keyword, SearchRequest request) {
 //        int page = request.getPage();
 //        int limit = request.getSize();

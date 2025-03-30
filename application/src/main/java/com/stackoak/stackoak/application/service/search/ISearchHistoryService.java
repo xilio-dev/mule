@@ -19,6 +19,12 @@ public interface ISearchHistoryService extends IService<SearchHistory> {
      * 获取用户搜索历史
      * @return 搜索历史关键字
      */
-    List<String> getUserSearchHistory();
+    List<String> getUserSearchHistory(String userId);
+
+    /**
+     * 清空用户搜索历史
+     * @param userId 用户ID
+     */
+    void deleteSearchHistory(String userId);
 
 }

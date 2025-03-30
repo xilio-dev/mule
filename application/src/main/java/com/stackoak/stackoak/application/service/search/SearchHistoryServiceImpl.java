@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.stackoak.stackoak.common.data.search.SearchHistory;
 import com.stackoak.stackoak.repository.search.SearchHistoryMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,15 +28,27 @@ public class SearchHistoryServiceImpl extends ServiceImpl<SearchHistoryMapper, S
      * @return 搜索历史关键字
      */
     @Override
-    public List<String> getUserSearchHistory() {
-        String userId = "1";
+    public List<String> getUserSearchHistory(String userId) {
         LambdaQueryWrapper<SearchHistory> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SearchHistory::getUserId, userId);
         wrapper.orderByDesc(SearchHistory::getCreatedAt);
-        Page<SearchHistory> page = Page.of(1, 10);
+        Page<SearchHistory> page = Page.of(1, 20);
         List<SearchHistory> searchHistoryList = page(page, wrapper).getRecords();
         return searchHistoryList.stream()
                 .map(SearchHistory::getKeyword)
                 .toList();
+    }
+
+    /**
+     * 清空用户搜索历史
+     *
+     * @param userId 用户ID
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteSearchHistory(String userId) {
+        LambdaQueryWrapper<SearchHistory> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SearchHistory::getUserId, userId);
+        remove(wrapper);
     }
 }

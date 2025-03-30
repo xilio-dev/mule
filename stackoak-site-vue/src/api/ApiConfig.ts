@@ -67,6 +67,9 @@ export const API = {
     COLUMN: {
         subscribe: {url: '/column/subscribe', method: 'post'} as ApiConfig,
         cancelSubscribe: {url: '/column/cancel_subscribe', method: 'put'} as ApiConfig,
+    },
+    SEARCH_HISTORY:{
+        delSearchHis: {url: '/del_search_his', method: 'delete'} as ApiConfig,
     }
 } as const;
 

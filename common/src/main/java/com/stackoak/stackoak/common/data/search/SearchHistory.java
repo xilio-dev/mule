@@ -50,6 +50,14 @@ public class SearchHistory implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "created_at",fill = FieldFill.INSERT)
+    @TableField(value = "created_at", fill = FieldFill.INSERT)
     private LocalDateTime createdAt;
+    /**
+     * 逻辑删除
+     */
+    @TableField("deleted")
+    @TableLogic
+    private String deleted;
+
+
 }

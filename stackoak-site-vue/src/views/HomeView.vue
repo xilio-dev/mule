@@ -27,9 +27,24 @@
         <div class="search-container">
           <a-popover trigger="click" placement="bottom">
             <template #content>
-              <div class="centered-search " style="z-index: 10;height: 200px;width: 600px">
-                <div style="cursor: pointer" class="no-wrap" v-for="item in searchHistory" @click="onHisSearch(item)">
-                  {{ item }}
+              <div
+                  class="centered-search"
+                  :style="{zIndex: 10,width: '600px'}">
+                <a-flex
+                    justify="space-between"
+                    style="padding: 8px 0;">
+                  <h4>搜索历史</h4>
+                  <span class="search-his-clear" @click="onClearSearchHistory">清空</span>
+                </a-flex>
+                <div :style="{height: '160px',overflowY: searchHistory.length > 10 ? 'auto' : 'hidden'}">
+                  <a-flex :gap="4" vertical style="font-size: 15px">
+                    <div
+                        class="no-wrap search-his-item"
+                        v-for="item in searchHistory"
+                        @click="onHisSearch(item)">
+                      {{ item }}
+                    </div>
+                  </a-flex>
                 </div>
               </div>
             </template>
@@ -197,7 +212,7 @@
     <a-float-button/>
     <a-back-top/>
   </a-float-button-group>
-  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak畅享更多权益">
+  <a-modal width="40%" :footer="null" v-model:open="openLoginModal" title="登陆StackOak">
     <Login/>
   </a-modal>
 
@@ -472,6 +487,11 @@ const onFollowUser = async (user: object) => {
   }
   user.isFollow = !user.isFollow/*切换关注状态*/
 }
+//清空搜索历史
+const onClearSearchHistory = async () => {
+  await Https.action(API.SEARCH_HISTORY.delSearchHis)
+  searchHistory.value = []
+}
 /*-------------------------------------其他函数-------------------------------------------*/
 
 </script>
@@ -647,12 +667,31 @@ a-card {
 }
 
 .no-wrap {
-  display: -webkit-box;
+  display: block;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  font-weight: 400;
+  word-break: break-word; /* 处理特殊字符换行 */
+}
+
+.search-his-clear {
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.search-his-clear:hover {
+  background-color: #F0F2F5;
+  color: #409EFF;
+}
+
+.search-his-item {
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.search-his-item:hover {
+  background-color: #F0F2F5;
+  border-radius: 4px;
 }
 
 .rank-title {

@@ -66,7 +66,7 @@
           </a-menu>
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          <slot/>
+         <slot/>
         </a-layout-content>
       </a-layout>
     </a-layout-content>

@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.application.service.search;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.common.data.article.Article;
 import com.stackoak.stackoak.common.data.article.ArticleId;
 import com.stackoak.stackoak.common.data.search.SearchRequest;
@@ -18,5 +19,5 @@ public interface ISearchService {
 
     public int deleteIndex(ArticleId articleId);
 
-    public IPage fullTextSearch(String keyword, SearchRequest request) throws IOException;
+    public Page fullTextSearch(String keyword, SearchRequest request) throws IOException;
 }
