@@ -34,16 +34,23 @@
                     justify="space-between"
                     style="padding: 8px 0;">
                   <h4>搜索历史</h4>
-                  <span class="search-his-clear" @click="onClearSearchHistory">清空</span>
+                  <a-button :disabled="searchHistory.length<1" size="small" @click="onClearSearchHistory">清空
+                  </a-button>
                 </a-flex>
-                <div :style="{height: '160px',overflowY: searchHistory.length > 10 ? 'auto' : 'hidden'}">
+                <div :style="{maxHeight: '160px',overflowY: searchHistory.length > 10 ? 'auto' : 'hidden'}">
                   <a-flex :gap="4" vertical style="font-size: 15px">
                     <div
+                        v-if="searchHistory.length >0"
                         class="no-wrap search-his-item"
                         v-for="item in searchHistory"
                         @click="onHisSearch(item)">
                       {{ item }}
                     </div>
+                    <a-empty v-else>
+                      <template #description>
+                        <span>暂无搜索历史</span>
+                      </template>
+                    </a-empty>
                   </a-flex>
                 </div>
               </div>
@@ -99,15 +106,6 @@
             进入创作中心 >
           </a-button>
         </div>
-      </a-card>
-      <a-card v-if="false" title="实时交流" :bordered="false" style="margin-top: 8px">
-        <div style="text-align: center">
-          <a-qrcode
-              error-level="H"
-              value="https://www.antdv.com"
-              icon="https://www.antdv.com/assets/logo.1ef800a8.svg"/>
-        </div>
-
       </a-card>
       <a-card title="推荐关注" :bordered="false" style="margin-top: 12px;min-height: 150px">
         <a-list item-layout="horizontal" :data-source="recommendAuthors" :split="false">
@@ -672,16 +670,6 @@ a-card {
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word; /* 处理特殊字符换行 */
-}
-
-.search-his-clear {
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.search-his-clear:hover {
-  background-color: #F0F2F5;
-  color: #409EFF;
 }
 
 .search-his-item {
