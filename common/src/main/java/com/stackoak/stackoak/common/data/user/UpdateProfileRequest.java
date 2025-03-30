@@ -1,6 +1,7 @@
 package com.stackoak.stackoak.common.data.user;
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -133,4 +134,23 @@ public class UpdateProfileRequest implements Serializable {
      * 用户标签列表
      */
     private List<String>tagIds;
+    /**
+     * 用户编辑器代码主题样式
+     */
+    private String editorCodeTheme;
+
+    /**
+     * 编辑器主题
+     */
+    private String editorMainTheme;
+
+    /**
+     * 编辑器预览时目录样式
+     */
+    private String editorAnchorStyle;
+
+    /**
+     * 编辑器是否开启悬浮快捷工具
+     */
+    private Boolean editorFloatToolEnable;
 }

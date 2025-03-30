@@ -1,43 +1,147 @@
 <script setup lang="ts">
+import {onMounted, reactive, ref, watch} from "vue";
+import Markdown from "@/components/Markdown/index.vue";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/utils/request/https.ts";
+
+/*------------------------------------变量定义------------------------------------------*/
+// 测试代码
+const testCode = ref(`
+\`\`\`java
+public class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        int n = nums.length;
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (nums[i] + nums[j] == target) {
+                    return new int[]{i, j};}}}
+        return new int[0];
+    }
+}
+\`\`\`
+`);
+
+// 代码主题选项
+const codeStyleOptions = ref([
+  {value: 'dark', label: 'Dark'},
+  {value: 'one-light', label: 'One Light'},
+  {value: 'one-dark', label: 'One Dark'},
+  {value: 'vs', label: 'VS Light'},
+  {value: 'vs-dark', label: 'VS Dark'},
+  {value: 'solarized-light', label: 'Solarized Light'},
+  {value: 'tomorrow-night', label: 'Tomorrow Night'},
+  {value: 'okaidia', label: 'Okaidia'},
+  {value: 'twilight', label: 'Twilight'},
+  {value: 'coy', label: 'Coy'},
+]);
+
+// 内容主题选项
+const themeOptions = ref([
+  {value: 'default', label: '默认'},
+  {value: 'dark', label: '暗黑'},
+  {value: 'light', label: '明亮'},
+  {value: 'green', label: '清新'},
+]);
+const anchorStyleOptions = ref([
+  {value: 'default', label: '带锚点'},
+  {value: 'autonumber', label: '自增序号'},
+  {value: 'none', label: '无锚点'},
+])
+const selectedCode = ref('dark');
+
+// 用于强制刷新 Markdown 组件的 key
+const markdownKey = ref(0);
+const userInfo = reactive({})
+/*------------------------------------生命周期-------------------------------------------*/
+// 监听代码主题变化，强制刷新 Markdown
+watch(userInfo, () => {
+  markdownKey.value += 1; // 改变 key，触发组件重新渲染
+});
+onMounted(() => {
+  loadUser()
+})
+/*------------------------------------数据加载--------------------------------------------*/
+//加载用户信息
+const loadUser = async () => {
+  const res =await Https.action(API.USER.getUserProfile)
+ if (res){
+   Object.assign(userInfo, res)
+ }
+}
+
+/*------------------------------------核心业务--------------------------------------------*/
 
 </script>
 
 <template>
-<a-card title="博客设置" :bordered="false" style="box-shadow: none">
-  <a-flex :gap="12" vertical>
-    <a-flex>
-      <div>图片水印：</div>
-      <a-flex vertical :gap="4">
-        <div>作品配图自动添加水印</div>
-        <div>
-         <a-image style="width: 150px;height: 100px" src="/avatar.jpeg"/>
-        </div>
+  <a-card title="博客设置" :bordered="false" style="box-shadow: none">
+    <a-flex :gap="12" vertical>
+      <!-- 内容主题设置 -->
+      <a-flex :gap="12">
+        <div>代码主题：</div>
+        <a-flex vertical :gap="4">
+          <a-radio-group v-model:value="userInfo.editorMainTheme">
+            <a-radio v-for="item in themeOptions" :value="item.value">{{ item.label }}</a-radio>
+          </a-radio-group>
+        </a-flex>
+      </a-flex>
+      <a-flex :gap="12">
+        <div>开启悬浮工具：</div>
+        <a-flex vertical :gap="4">
+          <a-radio-group v-model:value="userInfo.editorFloatToolEnable">
+            <a-radio :value="true">开启</a-radio>
+            <a-radio :value="false">关闭</a-radio>
+          </a-radio-group>
+
+        </a-flex>
+      </a-flex>
+
+      <a-flex :gap="12">
+        <div>目录样式：</div>
+        <a-flex vertical :gap="4">
+          <a-radio-group v-model:value="userInfo.editorAnchorStyle">
+            <a-radio v-for="item in anchorStyleOptions" :value="item.value">{{item.label}}</a-radio>
+          </a-radio-group>
+
+        </a-flex>
+      </a-flex>
+
+      <!-- 代码主题设置 -->
+      <a-flex :gap="12">
+        <div>代码主题：</div>
+        <a-flex vertical :gap="4">
+          <a-select
+              v-model:value="userInfo.editorCodeTheme"
+              size="small"
+              style="width: 150px"
+              :options="codeStyleOptions"
+              placeholder="请选择代码主题"
+          />
+          <div>
+            <Markdown
+                :key="markdownKey"
+                md-id="code-style-setting"
+                :code-theme="userInfo.editorCodeTheme"
+                main-theme="default"
+                anchor-style="none"
+                :preview="false"
+                :value="testCode"
+            />
+          </div>
+        </a-flex>
       </a-flex>
     </a-flex>
-    <a-flex>
-      <div>内容主题：</div>
-      <a-flex vertical :gap="4">
-        <div>选择主题</div>
-        <div>
-          <a-image style="width: 150px;height: 100px" src="/avatar.jpeg"/>
-        </div>
-      </a-flex>
-    </a-flex>
-    <a-divider/>
-    <a-flex>
-      <div>代码主题：</div>
-      <a-flex vertical :gap="4">
-        <div>选择代码片</div>
-        <div>
-          <a-image style="width: 150px;height: 100px" src="/avatar.jpeg"/>
-        </div>
-      </a-flex>
-    </a-flex>
-    <a-divider/>
-  </a-flex>
-</a-card>
+  </a-card>
 </template>
 
 <style scoped>
+:deep(.cherry-previewer) {
+  border-left: none;
+  padding: 0;
+}
 
+.ant-flex > div:first-child {
+  font-weight: 500;
+  color: #555;
+}
 </style>

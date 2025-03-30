@@ -61,7 +61,7 @@ export const getConfig = ({
                     selfClosing: false, // 自动闭合，为true时，当输入第一行table内容时，cherry会自动按表格进行解析
                 },
                 codeBlock: {
-                    wrap: true, // 超出长度是否换行，false则显示滚动条
+                    wrap: false, // 超出长度是否换行，false则显示滚动条
                     lineNumber: true, // 默认显示行号
                     copyCode: true, // 是否显示“复制”按钮
                     editCode: true, // 是否显示“编辑”按钮
