@@ -44,7 +44,10 @@
                         class="no-wrap search-his-item"
                         v-for="item in searchHistory"
                         @click="onHisSearch(item)">
-                      {{ item }}
+                      <a-flex align="center" :gap="8">
+                        <SearchOutlined />
+                        <span> {{ item }}</span>
+                      </a-flex>
                     </div>
                     <a-empty v-else>
                       <template #description>
@@ -241,7 +244,7 @@ import {categoryList, twoLevelCategoryTree} from "@/api/category.ts";
 import {articleList, getFollowAuthorArticles} from "@/api/post.ts";
 import ArticleList from "@/components/ArticleList.vue";
 import {useUserStore} from '@/store';
-
+import {SearchOutlined} from '@ant-design/icons-vue';
 import router from "@/router";
 import Login from "@/components/Login.vue";
 import {friendLinkList} from "@/api/friendlink.ts";
