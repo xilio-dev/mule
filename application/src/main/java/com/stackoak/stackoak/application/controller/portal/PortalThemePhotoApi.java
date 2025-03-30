@@ -1,9 +1,7 @@
 package com.stackoak.stackoak.application.controller.portal;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.service.material.IThemePhotoService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
-import com.stackoak.stackoak.common.data.material.ThemePhoto;
 import com.stackoak.stackoak.common.message.Result;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/theme_photo")
-public class PortalThemePhotoController {
+public class PortalThemePhotoApi {
     @Autowired
     private IThemePhotoService themePhotoService;
 
