@@ -1,7 +1,10 @@
 package com.stackoak.stackoak.application.service.announcement;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.announcement.Announcement;
 
 /**
@@ -14,4 +17,9 @@ import com.stackoak.stackoak.common.data.announcement.Announcement;
  */
 public interface IAnnouncementService extends IService<Announcement> {
 
+    Page<Announcement> getAnnouncements(PageQuery pageQuery);
+
+    Page<Announcement> getAnnouncementsByType(CommonPageQuery pageQuery);
+
+    Announcement getAnnouncementById(String id);
 }
