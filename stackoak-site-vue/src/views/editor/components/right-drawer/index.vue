@@ -1,63 +1,118 @@
 <script setup lang="ts">
 
 import ImageUpload from "@/components/ImageUpload/index.vue";
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {bindMaterial, materialList} from "@/api/material.ts";
 import ImageSelect from "@/components/ImageSelect/index.vue";
 import {ImageUtils} from "@/utils/file.ts";
 import {Https} from "@/utils/request/https.ts";
 import {API} from "@/api/ApiConfig.ts";
-/*------------------------------------类型定义---------------------------------------------*/
-
-
-/*------------------------------------变量定义------------------------------------------*/
-const systemMaterialList=ref([])
-const userMaterialQuery=reactive({
-  current:1,
-  size:10
-})
-const sysMaterialQuery=reactive({
-  current:1,
-  size:10
-})
-/*------------------------------------生命周期-------------------------------------------*/
-
-
-/*------------------------------------数据加载--------------------------------------------*/
-
-
-/*------------------------------------核心业务--------------------------------------------*/
-
-
-/*------------------------------------ 工具函数 -------------------------------------------*/
-
+/*------------------------------------交互---------------------------------------------*/
 const emit = defineEmits(['confirm-select', 'close-drawer'])
 defineProps(['openDrawer'])
 
+/*------------------------------------变量定义------------------------------------------*/
+const systemMaterialList = ref([])
+const userMaterialList = ref([]);
 const spice = ref(false)
 const activeKey = ref('1');
 const uploadInfo = ref({})
-const uploadSuccessCallback = (info: any) => {
-  uploadInfo.value = info
-}
-const hasImg = computed(() => {
-  return uploadInfo.value.imgUrl !== null && uploadInfo.value.imgUrl !== undefined
-})
 const uploadImgRef = ref()
 const imageSelectRef = ref()
+const userMaterialQuery = reactive({
+  current: 1,
+  size: 10
+})
+const sysMaterialQuery = reactive({
+  current: 1,
+  size: 10
+})
+/*------------------------------------生命周期-------------------------------------------*/
+
+onMounted(() => {
+
+})
+watch(activeKey, async (newKey, oldKey) => {
+  try {
+    if (newKey === '2') {
+      await loadUserMaterialList();
+    } else if (newKey === '3') {
+      await loadSystemMaterialList()
+    }
+  } finally {
+  }
+})
+/*------------------------------------核心业务--------------------------------------------*/
+const onConfirmSelectImg = (imgUrl: string) => {
+  uploadInfo.value.imgUrl = imgUrl
+}
+const onConfirmSelectUserImg = (imgUrl: string) => {
+  uploadInfo.value.imgUrl = imgUrl
+}
+const bindMaterial = async (params: any) => {
+  try {
+    await Https.action(API.MATERIAL.bind, params)
+  } catch (err) {
+
+  }
+}
+/*------------------------------------
+})
+
+/*------------------------------------数据加载--------------------------------------------*/
+// 加载用户素材
+const loadUserMaterialList = async () => {
+  try {
+    const res = await Https.action(API.MATERIAL.user, userMaterialQuery)
+    if (res.records) {
+      userMaterialList.value = res.records.map(item => ({
+        ...item,
+        imgUrl: ImageUtils.getImgUrl(item.imgUrl)
+      }));
+    } else {
+      userMaterialList.value = [];
+    }
+  } catch (err) {
+
+  }
+};
+// 加载系统素材
+const loadSystemMaterialList = async () => {
+  try {
+    const res = await Https.action(API.MATERIAL.list, sysMaterialQuery)
+    if (res.records) {
+      systemMaterialList.value = res.records.map(item => ({
+        ...item,
+        imgUrl: ImageUtils.getImgUrl(item.imgUrl)
+      }));
+    } else {
+      systemMaterialList.value = [];
+    }
+  } catch (err) {
+
+  }
+};
+/*------------------------------------核心业务--------------------------------------------*/
 const onConfirmSelect = () => {
   //保存到我的素材
   if (spice.value && uploadInfo.value.imgUrl !== '' && activeKey.value === '1') {
     //调用接口保存
     bindMaterial({id: uploadInfo.value.id});
     //刷新素材
-    loadMaterialList();
+    loadUserMaterialList();
   }
   emit('confirm-select', uploadInfo.value.imgUrl)
   emit('close-drawer'); // 通知父组件抽屉已关闭
   clearAll()
-
 };
+
+/*------------------------------------ 工具函数 -------------------------------------------*/
+const uploadSuccessCallback = (info: any) => {
+  uploadInfo.value = info
+}
+const hasImg = computed(() => {
+  return uploadInfo.value.imgUrl !== null && uploadInfo.value.imgUrl !== undefined
+})
 const clearAll = () => {
   uploadImgRef.value.clear()
   uploadInfo.value = {}
@@ -76,31 +131,6 @@ const onCancel = () => {
   emit('close-drawer')
   clearAll()
 }
-// 初始化 materials
-const materials = ref([]);
-
-// 加载用户素材
-const loadMaterialList = async () => {
-  try {
-    // 调用 API 获取素材列表
-   const res= await Https.action(API.MATERIAL.user,userMaterialQuery)
-   // const rawMaterials = await materialList() || [];
-    if (res.records) {
-      materials.value = res.records.map(item => ({
-        ...item,
-        imgUrl: ImageUtils.getImgUrl(item.imgUrl)
-      }));
-    } else {
-      materials.value = [];
-    }
-  } catch (err) {
-
-  }
-};
-onMounted(() => {
-  loadMaterialList();
-})
-
 const selectChange = (items: Array) => {
   if (items && items.length > 0) {
     uploadInfo.value.imgUrl = items[0].imgUrl;
@@ -121,11 +151,11 @@ const selectChange = (items: Array) => {
           <ImageUpload ref="uploadImgRef" @uploadSuccess="uploadSuccessCallback"/>
         </a-flex>
       </a-tab-pane>
-      <a-tab-pane key="3" tab="我的素材">
-        <ImageSelect ref="imageSelectRef" @select-change="selectChange" :items="materials" :multi="false"/>
+      <a-tab-pane key="2" tab="我的素材">
+        <ImageSelect ref="imageSelectRef" @select-change="selectChange" :items="userMaterialList" :multi="false"/>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="免费图片" force-render>
-        即将上线
+      <a-tab-pane key="3" tab="免费图片" force-render>
+        <ImageSelect ref="imageSelectRef" @select-change="selectChange" :items="systemMaterialList" :multi="false"/>
       </a-tab-pane>
     </a-tabs>
     <template v-if="hasImg" #footer>
