@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import {onActivated, onBeforeUnmount, onMounted, onUpdated, reactive, ref} from "vue";
+import {onBeforeUnmount, onMounted, onUpdated, reactive, ref} from "vue";
 import * as echarts from 'echarts';
 
 const chartInstance = ref()
-//const emit = defineEmits(['toggle-follow', 'on-chat'])
 const props = defineProps<{
   dateList: string[],
-  chartData: object,
-
+  chartData: {
+    like: number[],
+    comment: number[],
+    collect: number[],
+    view: number[]
+  },
 }>()
 const init = () => {
-  var chartDom = document.getElementById('stacked-line-main');
+  const chartDom = document.getElementById('stacked-line-main');
   chartInstance.value = echarts.init(chartDom);
-  var option;
-
-  option = {
+  const option = {
     title: {
       text: '数据分析'
     },
@@ -31,9 +32,7 @@ const init = () => {
       containLabel: true
     },
     toolbox: {
-      feature: {
-
-      }
+      feature: {}
     },
     xAxis: {
       type: 'category',
@@ -70,7 +69,6 @@ const init = () => {
       },
     ]
   };
-
   option && chartInstance.value.setOption(option);
 }
 //不要在 updated 钩子中更改组件的状态，这可能会导致无限的更新循环！
@@ -80,10 +78,8 @@ onUpdated(() => {
 onMounted(() => {
   init()
 })
-
-
 onBeforeUnmount(() => {
-  if (chartInstance.value){
+  if (chartInstance.value) {
     chartInstance.value.dispose()
   }
 })
