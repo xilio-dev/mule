@@ -1,4 +1,5 @@
 package com.stackoak.stackoak.application.controller.portal;
+
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.material.IMaterialService;
 import com.stackoak.stackoak.common.data.CommonPageQuery;
@@ -25,21 +26,27 @@ public class PortalMaterialApi {
     @Autowired
     private IMaterialService materialService;
 
-    @GetMapping("list")
-    public Result list(@RequestBody CommonPageQuery pageQuery){
-        String userId = StpKit.USER.getLoginIdAsString();
-        return Result.success(this.materialService.getMaterialListByUser(userId,pageQuery));
+    @GetMapping(value = "list", name = "获取系统素材列表")
+    public Result list(@RequestBody CommonPageQuery pageQuery) {
+        return Result.success(this.materialService.getSystemMaterialList(pageQuery));
     }
-    @PutMapping("bind")
-    public Result bind(@RequestBody MaterialId materialId){
+
+    @GetMapping(value = "user", name = "获取用户素材列表")
+    public Result getMaterialListByUser(@RequestBody CommonPageQuery pageQuery) {
         String userId = StpKit.USER.getLoginIdAsString();
-        materialService.bindAsMaterial(materialId.getId(),userId);
+        return Result.success(this.materialService.getMaterialListByUser(userId, pageQuery));
+    }
+
+    @PutMapping(value = "bind", name = "绑定素材")
+    public Result bind(@RequestBody MaterialId materialId) {
+        String userId = StpKit.USER.getLoginIdAsString();
+        materialService.bindAsMaterial(materialId.getId(), userId);
         return Result.success();
     }
 
-    @PostMapping("image/upload")
+    @PostMapping(value = "image/upload", name = "上传图片素材")
     public Result uploadImage(@RequestParam("file") MultipartFile file) throws Exception {
-      UploadResultDTO dto= materialService.uploadImage(file);
+        UploadResultDTO dto = materialService.uploadImage(file);
         return Result.success(dto);
     }
 }

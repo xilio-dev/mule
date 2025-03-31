@@ -71,4 +71,12 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             throw new BizException("素材不存在!");
         });
     }
+
+    @Override
+    public Page<Material> getSystemMaterialList(CommonPageQuery pageQuery) {
+        LambdaQueryWrapper<Material> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Material::getType, MaterialType.SYSTEM.getCode());
+        wrapper.eq(Material::getStatus, MaterialStatus.NORMAL.getCode());
+        return page(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), wrapper);
+    }
 }

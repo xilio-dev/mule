@@ -8,8 +8,6 @@ import com.stackoak.stackoak.common.data.material.Material;
 import com.stackoak.stackoak.common.data.material.UploadResultDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 /**
  * <p>
  *  服务类
@@ -28,4 +26,7 @@ public interface IMaterialService extends IService<Material> {
 
 
     void bindAsMaterial(String materialId, String userId);
+
+    Page<Material> getSystemMaterialList(CommonPageQuery pageQuery);
+
 }
