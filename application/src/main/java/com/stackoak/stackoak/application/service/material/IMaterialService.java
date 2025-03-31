@@ -3,6 +3,7 @@ package com.stackoak.stackoak.application.service.material;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.stackoak.stackoak.common.data.material.Material;
+import com.stackoak.stackoak.common.data.material.MaterialId;
 import com.stackoak.stackoak.common.data.material.UploadResultDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,4 +23,7 @@ public interface IMaterialService extends IService<Material> {
 
 
     UploadResultDTO uploadImage(MultipartFile file);
+
+
+    void bindAsMaterial(String materialId, String userId);
 }

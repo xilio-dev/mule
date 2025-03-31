@@ -1,4 +1,5 @@
 package com.stackoak.stackoak.application.controller.portal;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.material.IMaterialService;
 import com.stackoak.stackoak.common.data.material.Material;
@@ -31,10 +32,8 @@ public class PortalMaterialApi {
     }
     @PutMapping("bind")
     public Result bind(@RequestBody MaterialId materialId){
-        Material material =  materialService.getById(materialId.getId());
-        material.setSpice(1);
-        material.setUserId(StpKit.USER.getLoginIdAsString());
-        materialService.updateById(material);
+        String userId = StpKit.USER.getLoginIdAsString();
+        materialService.bindAsMaterial(materialId.getId(),userId);
         return Result.success();
     }
 

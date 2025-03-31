@@ -2,8 +2,11 @@ package com.stackoak.stackoak.application.service.material;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.stackoak.stackoak.application.actors.security.StpKit;
+import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.service.common.IUploadService;
 import com.stackoak.stackoak.common.data.material.Material;
+import com.stackoak.stackoak.common.data.material.MaterialType;
 import com.stackoak.stackoak.common.data.material.UploadResultDTO;
 import com.stackoak.stackoak.common.message.Result;
 import com.stackoak.stackoak.repository.material.MaterialMapper;
@@ -48,5 +51,21 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         material.setType(2);
         this.save(material);
         return uploadResult;
+    }
+
+    @Override
+    public void bindAsMaterial(String materialId, String userId) {
+        LambdaQueryWrapper<Material> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Material::getId, materialId);
+        wrapper.eq(Material::getUserId, userId);
+        wrapper.eq(Material::getType, MaterialType.USER.getCode());
+        getOneOpt(wrapper).ifPresentOrElse(material -> {
+            material.setSpice(1);/*作为素材*/
+            material.setUserId(userId);
+            updateById(material);
+        }, () -> {
+            throw new BizException("素材不存在!");
+        });
+
     }
 }
