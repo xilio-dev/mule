@@ -1,12 +1,35 @@
 <script setup lang="ts">
 
 import ImageUpload from "@/components/ImageUpload/index.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {bindMaterial, materialList} from "@/api/material.ts";
 import ImageSelect from "@/components/ImageSelect/index.vue";
-
 import {ImageUtils} from "@/utils/file.ts";
+import {Https} from "@/utils/request/https.ts";
+import {API} from "@/api/ApiConfig.ts";
+/*------------------------------------类型定义---------------------------------------------*/
 
+
+/*------------------------------------变量定义------------------------------------------*/
+const systemMaterialList=ref([])
+const userMaterialQuery=reactive({
+  current:1,
+  size:10
+})
+const sysMaterialQuery=reactive({
+  current:1,
+  size:10
+})
+/*------------------------------------生命周期-------------------------------------------*/
+
+
+/*------------------------------------数据加载--------------------------------------------*/
+
+
+/*------------------------------------核心业务--------------------------------------------*/
+
+
+/*------------------------------------ 工具函数 -------------------------------------------*/
 
 const emit = defineEmits(['confirm-select', 'close-drawer'])
 defineProps(['openDrawer'])
@@ -60,9 +83,10 @@ const materials = ref([]);
 const loadMaterialList = async () => {
   try {
     // 调用 API 获取素材列表
-    const rawMaterials = await materialList() || [];
-    if (rawMaterials) {
-      materials.value = rawMaterials.map(item => ({
+   const res= await Https.action(API.MATERIAL.user,userMaterialQuery)
+   // const rawMaterials = await materialList() || [];
+    if (res.records) {
+      materials.value = res.records.map(item => ({
         ...item,
         imgUrl: ImageUtils.getImgUrl(item.imgUrl)
       }));

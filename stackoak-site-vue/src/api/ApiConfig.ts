@@ -76,6 +76,10 @@ export const API = {
         list: {url: '/announcement/list', method: 'post'} as ApiConfig,
         type: {url: '/announcement/type', method: 'post'} as ApiConfig,
         detail: {url: '/announcement/detail/{type}', method: 'get', pathParams: ['type']} as ApiConfig,
+    },
+    MATERIAL: {
+        list: {url: '/material/list', method: 'post'},
+        user: {url: '/material/user', method: 'post'},
     }
 } as const;
 

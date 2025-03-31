@@ -26,12 +26,12 @@ public class PortalMaterialApi {
     @Autowired
     private IMaterialService materialService;
 
-    @GetMapping(value = "list", name = "获取系统素材列表")
+    @PostMapping(value = "list", name = "获取系统素材列表")
     public Result list(@RequestBody CommonPageQuery pageQuery) {
         return Result.success(this.materialService.getSystemMaterialList(pageQuery));
     }
 
-    @GetMapping(value = "user", name = "获取用户素材列表")
+    @PostMapping(value = "user", name = "获取用户素材列表")
     public Result getMaterialListByUser(@RequestBody CommonPageQuery pageQuery) {
         String userId = StpKit.USER.getLoginIdAsString();
         return Result.success(this.materialService.getMaterialListByUser(userId, pageQuery));
