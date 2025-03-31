@@ -591,4 +591,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return baseMapper.findComprehensiveRank(page, likeWeight, viewWeight, collectWeight, commentWeight, gravity);
 
     }
+
+    @Override
+    public SingleArticleStatisticsVo singleArticleStatistics(PageQuery pageQuery, Long start, Long end) {
+
+
+        return null;
+    }
 }
