@@ -22,6 +22,7 @@ export const API = {
         getColumnArticleList: {url: '/article/get_column_article_list', method: 'post'} as ApiConfig,
         getAuthorHotArticleList: {url: '/article/get_author_hot_article_list', method: 'post'} as ApiConfig,
         articleComprehensiveRank: {url: '/article/rank/comprehensive', method: 'post'} as ApiConfig,
+        singleArticleStatistics: {url: '/article/single_article_statistics', method: 'post'} as ApiConfig,
     },
     COMMENT: {
         digg: {url: '/comments/digg', method: 'post'} as ApiConfig,

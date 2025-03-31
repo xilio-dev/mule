@@ -7,6 +7,8 @@ import {CommonUtil} from "@/utils/common.ts";
 import {ARTICLE} from "@/constants/article.ts";
 import {message, Modal} from "ant-design-vue";
 import StackedLine from '@/views/creator/content/article/stackedline/index.vue'
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/utils/request/https.ts";
 
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
@@ -42,6 +44,7 @@ const loadArticle = async () => {
     articles.value = res.records
   })
 }
+
 /*------------------------------------核心业务--------------------------------------------*/
 //根据标签切换文章列表
 const onTagClick = (key: any) => {
@@ -69,9 +72,14 @@ const onRemoveArticle = (aid: string) => {
   });
 
 }
+const chartData=ref({})
+const dateList=ref([])
 //数据分析
-const onArticleAnalyse = (item: any) => {
+const onArticleAnalyse = async (item: any) => {
   analyseDrawerEnable.value = true
+  const res = await Https.action(API.ARTICLE.singleArticleStatistics, {id: item.id,current:1,size:10})
+  chartData.value = res.chartData;
+  dateList.value = res.dateList;
 }
 /*-------------------------------------其他函数-------------------------------------------*/
 
@@ -142,7 +150,7 @@ const onArticleAnalyse = (item: any) => {
       title="文章数据"
       placement="right">
 
-    <StackedLine  />
+    <StackedLine :dateList="dateList" :chartData="chartData"/>
 
   </a-drawer>
 </template>
