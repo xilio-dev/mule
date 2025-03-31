@@ -2,10 +2,13 @@ package com.stackoak.stackoak.application.service.material;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.exception.BizException;
 import com.stackoak.stackoak.application.service.common.IUploadService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.material.Material;
+import com.stackoak.stackoak.common.data.material.MaterialStatus;
 import com.stackoak.stackoak.common.data.material.MaterialType;
 import com.stackoak.stackoak.common.data.material.UploadResultDTO;
 import com.stackoak.stackoak.common.message.Result;
@@ -33,11 +36,11 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     private IUploadService uploadService;
 
     @Override
-    public List<Material> userMaterialList() {
+    public Page<Material> getMaterialListByUser(String userId, CommonPageQuery pageQuery) {
         LambdaQueryWrapper<Material> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Material::getSpice, 1);
-        wrapper.eq(Material::getUserId, "1");
-        return baseMapper.selectList(wrapper);
+        wrapper.eq(Material::getSpice, true);
+        wrapper.eq(Material::getUserId, userId);
+        return page(Page.of(pageQuery.getCurrent(), pageQuery.getSize()), wrapper);
     }
 
     @Override
@@ -46,9 +49,10 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         UploadResultDTO uploadResult = uploadService.uploadImage(file);
         Material material = new Material();
         material.setImgUrl(uploadResult.imgUrl());
-        material.setSpice(0);
+        material.setSpice(false);
         material.setTitle(uploadResult.originName());
-        material.setType(2);
+        material.setType(MaterialType.USER.getCode());
+        //todo material.setStatus(MaterialStatus.AUDIT.getCode());/*审核中*/
         this.save(material);
         return uploadResult;
     }
@@ -60,12 +64,11 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         wrapper.eq(Material::getUserId, userId);
         wrapper.eq(Material::getType, MaterialType.USER.getCode());
         getOneOpt(wrapper).ifPresentOrElse(material -> {
-            material.setSpice(1);/*作为素材*/
+            material.setSpice(true);/*作为素材*/
             material.setUserId(userId);
             updateById(material);
         }, () -> {
             throw new BizException("素材不存在!");
         });
-
     }
 }

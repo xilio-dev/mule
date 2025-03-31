@@ -68,5 +68,5 @@ public class Material implements Serializable {
     private Integer status;
 
     @TableField("spice")
-    private Integer spice;
+    private Boolean spice;
 }

@@ -1,9 +1,10 @@
 package com.stackoak.stackoak.application.service.material;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.material.Material;
-import com.stackoak.stackoak.common.data.material.MaterialId;
 import com.stackoak.stackoak.common.data.material.UploadResultDTO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +20,8 @@ import java.util.List;
  */
 public interface IMaterialService extends IService<Material> {
 
-    List<Material> userMaterialList();
+
+    Page<Material> getMaterialListByUser(String userId, CommonPageQuery pageQuery);
 
 
     UploadResultDTO uploadImage(MultipartFile file);

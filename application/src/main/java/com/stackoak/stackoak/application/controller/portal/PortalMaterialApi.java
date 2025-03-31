@@ -1,8 +1,7 @@
 package com.stackoak.stackoak.application.controller.portal;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.material.IMaterialService;
-import com.stackoak.stackoak.common.data.material.Material;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.material.MaterialId;
 import com.stackoak.stackoak.common.data.material.UploadResultDTO;
 import com.stackoak.stackoak.common.message.Result;
@@ -27,8 +26,9 @@ public class PortalMaterialApi {
     private IMaterialService materialService;
 
     @GetMapping("list")
-    public Result list(){
-        return Result.success(this.materialService.userMaterialList());
+    public Result list(@RequestBody CommonPageQuery pageQuery){
+        String userId = StpKit.USER.getLoginIdAsString();
+        return Result.success(this.materialService.getMaterialListByUser(userId,pageQuery));
     }
     @PutMapping("bind")
     public Result bind(@RequestBody MaterialId materialId){
