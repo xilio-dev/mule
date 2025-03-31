@@ -1,10 +1,15 @@
 <script setup lang="ts">
 
 import ImageSelect from "@/components/ImageSelect/index.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import {materialList} from "@/api/material.ts";
 import {ImageUtils} from "@/utils/file.ts";
-// 初始化 materials
+import {Https} from "@/utils/request/https.ts";
+import {API} from "@/api/ApiConfig.ts";
+const userMaterialQuery = reactive({
+  current: 1,
+  size: 10
+})
 const materials = ref([]);
 onMounted(() => {
   loadMaterialList();
@@ -13,9 +18,9 @@ onMounted(() => {
 const loadMaterialList = async () => {
   try {
     // 调用 API 获取素材列表
-    const rawMaterials = await materialList() || [];
-    if (rawMaterials) {
-      materials.value = rawMaterials.map(item => ({
+    const res = await Https.action(API.MATERIAL.user, userMaterialQuery)
+    if (res.records) {
+      materials.value = res.records.map(item => ({
         ...item,
         imgUrl: ImageUtils.getImgUrl(item.imgUrl)
       }));
