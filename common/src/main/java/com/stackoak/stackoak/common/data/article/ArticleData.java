@@ -11,5 +11,6 @@ public class ArticleData implements Serializable {
     private Integer commentCount;
     private Integer collectCount;
     private Integer viewCount;
-    private LocalDate date;
+    private Integer uvCount;
+    private LocalDate sDate;
 }

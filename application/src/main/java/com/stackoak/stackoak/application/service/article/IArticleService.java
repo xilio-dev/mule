@@ -90,5 +90,5 @@ public interface IArticleService extends IService<Article> {
 
     public Page<ArticleBriefVO> articleComprehensiveRank(PageQuery pageQuery);
 
-    SingleArticleStatisticsVo singleArticleStatistics(PageQuery pageQuery, Long start, Long end);
+    SingleArticleStatisticsVo singleArticleStatistics(CommonPageQuery pageQuery, Long start, Long end);
 }

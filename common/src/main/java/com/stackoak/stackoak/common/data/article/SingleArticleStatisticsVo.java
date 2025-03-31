@@ -13,4 +13,7 @@ public class SingleArticleStatisticsVo implements Serializable {
     private List<String> dateList;
     private ChartData chartData;
     private List<ArticleData>list;
+    private Long page;
+    private Long size;
+    private Long total;
 }

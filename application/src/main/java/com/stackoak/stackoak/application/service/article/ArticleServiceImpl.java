@@ -37,11 +37,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * <p>
@@ -593,9 +596,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public SingleArticleStatisticsVo singleArticleStatistics(PageQuery pageQuery, Long start, Long end) {
-
-
-        return null;
+    public SingleArticleStatisticsVo singleArticleStatistics(CommonPageQuery pageQuery, Long start, Long end) {
+        Page<Page> page = Page.of(pageQuery.getCurrent(), pageQuery.getSize());
+        List<ArticleData> pa = baseMapper.selectSingleArticleStatistics(pageQuery.getId(), start, end);
+        SingleArticleStatisticsVo vo = new SingleArticleStatisticsVo();
+        List<String> dates = pa.stream()
+                .map(ArticleData::getSDate)
+                .map(date -> date.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")))
+                .toList();
+        //设置数据列表
+        vo.setList(pa);
+        //设置日期列表
+        vo.setDateList(dates);
+        // 设置 chartData
+        ChartData chartData = new ChartData();
+        chartData.setView(pa.stream().map(ArticleData::getViewCount).toList());
+        chartData.setComment(pa.stream().map(ArticleData::getCommentCount).toList());
+        chartData.setCollect(pa.stream().map(ArticleData::getCollectCount).toList());
+        chartData.setLike(pa.stream().map(ArticleData::getLikeCount).toList());
+        vo.setChartData(chartData);
+        return vo;
     }
 }

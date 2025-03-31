@@ -26,33 +26,33 @@
     </select>
     <resultMap id="ArticleResultMap" type="com.stackoak.stackoak.common.data.article.Article">
         <!-- 主键字段 -->
-        <id column="id" property="id" />
+        <id column="id" property="id"/>
 
         <!-- 普通字段 -->
-        <result column="title" property="title" />
-        <result column="content" property="content" />
-        <result column="cover" property="cover" />
-        <result column="description" property="description" />
-        <result column="like_count" property="likeCount" />
-        <result column="view_count" property="viewCount" />
-        <result column="comment_count" property="commentCount" />
-        <result column="publish_time" property="publishTime" />
-        <result column="update_time" property="updateTime" />
-        <result column="create_time" property="createTime" />
-        <result column="zone" property="zone" />
-        <result column="collect_count" property="collectCount" />
-        <result column="content_count" property="contentCount" />
-        <result column="user_id" property="userId" />
-        <result column="category_id" property="categoryId" />
-        <result column="visible_status" property="visibleStatus" />
-        <result column="publish_status" property="publishStatus" />
-        <result column="is_deleted" property="deleted" />
-        <result column="column_id" property="columnId" />
-        <result column="creative_type" property="creativeType" />
-        <result column="visit_password" property="visitPassword" />
-        <result column="original_url" property="originalUrl" />
-        <result column="status" property="status" />
-        <result column="authorize_status" property="authorizeStatus" />
+        <result column="title" property="title"/>
+        <result column="content" property="content"/>
+        <result column="cover" property="cover"/>
+        <result column="description" property="description"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="zone" property="zone"/>
+        <result column="collect_count" property="collectCount"/>
+        <result column="content_count" property="contentCount"/>
+        <result column="user_id" property="userId"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="visible_status" property="visibleStatus"/>
+        <result column="publish_status" property="publishStatus"/>
+        <result column="is_deleted" property="deleted"/>
+        <result column="column_id" property="columnId"/>
+        <result column="creative_type" property="creativeType"/>
+        <result column="visit_password" property="visitPassword"/>
+        <result column="original_url" property="originalUrl"/>
+        <result column="status" property="status"/>
+        <result column="authorize_status" property="authorizeStatus"/>
     </resultMap>
     <resultMap id="ArticleDetailResultMap" type="com.stackoak.stackoak.common.data.article.ArticleDetailVO">
         <result property="articleInfo.id" column="articleId"/>
@@ -144,8 +144,16 @@
         order by a.create_time desc
     </select>
     <select id="selectByColumn" resultMap="ArticleResultMap">
-        SELECT a.id, a.title, a.publish_time, a.status, a.create_time,
-               a.cover,a.view_count, a.like_count, a.comment_count, a.collect_count
+        SELECT a.id,
+               a.title,
+               a.publish_time,
+               a.status,
+               a.create_time,
+               a.cover,
+               a.view_count,
+               a.like_count,
+               a.comment_count,
+               a.collect_count
         FROM article a
                  INNER JOIN article_column ac ON a.id = ac.article_id
         WHERE ac.column_id = #{cid}
@@ -160,7 +168,7 @@
           and visible_status!=2
         order by create_time desc
     </select>
-    <select id="selectAuthorArticleList"  resultMap="ArticleResultMap">
+    <select id="selectAuthorArticleList" resultMap="ArticleResultMap">
         SELECT a.*
         FROM article a
         WHERE a.user_id = #{userId}
@@ -168,18 +176,17 @@
     </select>
     <select id="selectArticleListByColumnId"
             resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
-        SELECT
-            a.id,
-            a.title,
-            a.cover,
-            a.like_count AS likeCount,
-            a.view_count AS viewCount,
-            a.collect_count AS collectCount,
-            a.description,
-            a.visible_status AS visibleStatus,
-            a.publish_time AS publishTime,
-            GROUP_CONCAT(t.id) AS tagIds,
-            GROUP_CONCAT(t.name) AS tagNames
+        SELECT a.id,
+               a.title,
+               a.cover,
+               a.like_count         AS likeCount,
+               a.view_count         AS viewCount,
+               a.collect_count      AS collectCount,
+               a.description,
+               a.visible_status     AS visibleStatus,
+               a.publish_time       AS publishTime,
+               GROUP_CONCAT(t.id)   AS tagIds,
+               GROUP_CONCAT(t.name) AS tagNames
         FROM article a
                  INNER JOIN article_column ac
                             ON ac.article_id = a.id
@@ -195,24 +202,24 @@
     </select>
     <select id="selectAuthorHotArticleList"
             resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
-        SELECT
-            a.id,
-            a.title,
-            a.cover,
-            a.like_count AS likeCount,
-            a.view_count AS viewCount,
-            a.collect_count AS collectCount,
-            a.description,
-            a.visible_status AS visibleStatus,
-            a.publish_time AS publishTime,
-            ROUND(
-                    ( (a.like_count * #{likeWeight} + a.view_count * #{viewWeight} +
-                       a.collect_count * #{collectWeight} + a.comment_count * #{commentWeight}) + u.power )
-                        / POW(DATEDIFF(NOW(), a.publish_time) + 1, #{gravity})
-            ) AS heat
+        SELECT a.id,
+               a.title,
+               a.cover,
+               a.like_count     AS likeCount,
+               a.view_count     AS viewCount,
+               a.collect_count  AS collectCount,
+               a.description,
+               a.visible_status AS visibleStatus,
+               a.publish_time   AS publishTime,
+               ROUND(
+                       ((a.like_count * #{likeWeight} + a.view_count * #{viewWeight} +
+                         a.collect_count * #{collectWeight} + a.comment_count * #{commentWeight}) + u.power)
+                           / POW(DATEDIFF(NOW(), a.publish_time) + 1, #{gravity})
+               )                AS heat
         FROM article a
                  join user u on a.user_id = u.id
-        WHERE a.user_id = #{userId}  and a.publish_status = 1
+        WHERE a.user_id = #{userId}
+          and a.publish_status = 1
         ORDER BY heat DESC
     </select>
     <select id="findComprehensiveRank" resultType="com.stackoak.stackoak.common.data.article.ArticleBriefVO">
@@ -236,16 +243,15 @@
         ORDER BY heat DESC
     </select>
     <select id="selectUserInteract" resultType="com.stackoak.stackoak.common.data.article.UserInteractDTO">
-        SELECT
-            CASE WHEN f.user_id IS NOT NULL THEN 1 ELSE 0 END AS isFollow,
-            CASE WHEN l.user_id IS NOT NULL THEN 1 ELSE 0 END AS isLike,
-            CASE WHEN EXISTS (
-                SELECT 1
-                FROM collect c
-                         JOIN article_collect ac ON c.id = ac.collect_id
-                WHERE c.user_id = #{visitUserId}
-                  AND ac.article_id = #{articleId}
-            ) THEN 1 ELSE 0 END AS isCollect
+        SELECT CASE WHEN f.user_id IS NOT NULL THEN 1 ELSE 0 END AS isFollow,
+               CASE WHEN l.user_id IS NOT NULL THEN 1 ELSE 0 END AS isLike,
+               CASE
+                   WHEN EXISTS (SELECT 1
+                                FROM collect c
+                                         JOIN article_collect ac ON c.id = ac.collect_id
+                                WHERE c.user_id = #{visitUserId}
+                                  AND ac.article_id = #{articleId}) THEN 1
+                   ELSE 0 END                                    AS isCollect
         FROM (SELECT 1) AS dummy
                  LEFT JOIN follows f
                            ON f.user_id = #{visitUserId}
@@ -255,4 +261,81 @@
                                AND l.target_id = #{articleId}
                                AND l.type = 1
     </select>
+    <select id="selectSingleArticleStatistics"
+            resultType="com.stackoak.stackoak.common.data.article.ArticleData">
+
+        -- 第一步：生成最近 7 天的日期列表
+        WITH dates AS (
+            SELECT DATE_SUB(CURDATE(), INTERVAL n DAY) AS stat_date
+            FROM (
+                     -- 用一个简单的数字表生成 0 到 6 的数字
+                     SELECT 0 AS n
+                     UNION SELECT 1
+                     UNION SELECT 2
+                     UNION SELECT 3
+                     UNION SELECT 4
+                     UNION SELECT 5
+                     UNION SELECT 6
+                 ) AS numbers
+        ),
+
+-- 第二步：统计每天的阅读量（PV 和 UV）
+             views AS (
+                 SELECT
+            DATE(created_at) AS stat_date,
+            COUNT(*) AS view_count, -- PV：总阅读次数
+            COUNT(DISTINCT COALESCE(user_id, visitor_id)) AS uv_count -- UV：独立访客数
+        FROM article_views
+        WHERE article_id = #{articleId}
+          AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(created_at)
+            ),
+
+-- 第三步：统计每天的点赞数
+            likes AS (
+        SELECT
+            DATE(created_at) AS stat_date,
+            COUNT(*) AS like_count
+        FROM likes
+        WHERE type = 1 -- 只看文章点赞
+          AND target_id =  #{articleId}
+          AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(created_at)
+            ),
+
+-- 第四步：统计总收藏数（不按天分）
+            collects AS (
+        SELECT COUNT(*) AS collect_count
+        FROM article_collect
+        WHERE article_id =  #{articleId}
+            ),
+
+-- 第五步：统计每天的评论数
+            comments AS (
+        SELECT
+            DATE(created_at) AS stat_date,
+            COUNT(*) AS comment_count
+        FROM comment
+        WHERE article_id =  #{articleId}
+          AND status = 1 -- 只算正常评论
+          AND created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+        GROUP BY DATE(created_at)
+            )
+
+-- 最后：把所有数据拼起来，补上没数据的部分
+        SELECT
+            d.stat_date AS sDate,
+            IFNULL(v.view_count, 0) AS viewCount, -- 没数据就填 0
+            IFNULL(v.uv_count, 0) AS uvCount,
+            IFNULL(l.like_count, 0) AS likeCount,
+            IF(d.stat_date = CURDATE(), IFNULL(c.collect_count, 0), 0) AS collectCount, -- 只在今天显示总收藏数
+            IFNULL(cm.comment_count, 0) AS commentCount
+        FROM dates d
+                 LEFT JOIN views v ON d.stat_date = v.stat_date
+                 LEFT JOIN likes l ON d.stat_date = l.stat_date
+                 LEFT JOIN comments cm ON d.stat_date = cm.stat_date
+                 CROSS JOIN collects c
+        ORDER BY d.stat_date ASC;
+    </select>
+
 </mapper>

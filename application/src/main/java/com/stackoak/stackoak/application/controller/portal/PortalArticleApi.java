@@ -176,7 +176,7 @@ public class PortalArticleApi {
     }
 
     @PostMapping(value = "single-article-statistics", name = "单篇文章数据分析")
-    public Result singleArticleStatistics(@RequestBody PageQuery pageQuery, @RequestParam Long start, @RequestParam Long end  ) {
+    public Result singleArticleStatistics(@RequestBody CommonPageQuery pageQuery, @RequestParam Long start, @RequestParam Long end  ) {
         return Result.success(articleService.singleArticleStatistics(pageQuery,start,end));
     }
 

@@ -4,9 +4,12 @@ package com.stackoak.stackoak.repository.article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.stackoak.stackoak.common.data.PageQuery;
 import com.stackoak.stackoak.common.data.article.*;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.SelectProvider;
+
+import java.util.List;
 
 
 /**
@@ -54,6 +57,16 @@ public interface ArticleMapper extends BaseMapper<Article> {
                                                @Param("gravity") double gravity);
 
     UserInteractDTO selectUserInteract(@Param("visitUserId") String visitUserId,@Param("authorId") String authorId,@Param("articleId") String articleId);
+
+    /**
+     * 根据文章id查询文章统计信息
+
+     * @param articleId 文章ID
+     * @param start 开始时间戳
+     * @param end 结束时间戳
+     * @return 文章统计信息列表
+     */
+    List<ArticleData> selectSingleArticleStatistics( @Param("articleId") String articleId, @Param("start") Long start, @Param("end") Long end);
 
 }
 
