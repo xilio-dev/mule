@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /*------------------------------------变量定义------------------------------------------*/
-import { onMounted, reactive } from "vue";
+import {onMounted, reactive} from "vue";
+
 const props = defineProps<{
   type: number
 }>();
@@ -13,13 +14,14 @@ const pageQuery = reactive({
 const photos = reactive<any[]>([]); // 添加类型注解，避免TS报错
 
 /*------------------------------------生命周期-------------------------------------------*/
-onMounted(() => {
-  loadThemePhoto();
+onMounted(async () => {
+  await loadThemePhoto();
 });
 
 /*------------------------------------数据加载--------------------------------------------*/
-import { Https } from "@/utils/request/https.ts";
-import { API } from "@/api/ApiConfig.ts";
+import {Https} from "@/utils/request/https.ts";
+import {API} from "@/api/ApiConfig.ts";
+
 const loadThemePhoto = async () => {
   const res = await Https.action(API.THEME_PHOTO.list, pageQuery);
   // @ts-ignore
@@ -32,7 +34,7 @@ const loadThemePhoto = async () => {
 <template>
   <div class="so-grid-container">
     <div class="so-grid-item" v-for="item in photos" :key="item.id">
-      <img :src="item.limg" :alt="item.name" />
+      <img :src="item.limg" :alt="item.name"/>
       <div class="overlay">
         <span class="photo-name">{{ item.name }}</span>
         <a-button type="primary" size="small" @click="emit('checkCover', item, type)">使用</a-button>

@@ -6,11 +6,13 @@ import SoList from '@/components/SoList/index.vue'
 import {CommonUtil} from "@/utils/common.ts";
 import {ARTICLE} from "@/constants/article.ts";
 import {message, Modal} from "ant-design-vue";
+import StackedLine from '@/views/creator/content/article/stackedline/index.vue'
 
 /*------------------------------------变量定义------------------------------------------*/
 const articles = ref([])
 const activeTab = ref('1');
 const activeArticleStatusTab = ref('-1');
+const analyseDrawerEnable = ref(false)
 /*------------------------------------生命周期-------------------------------------------*/
 onMounted(() => {
   loadArticle()
@@ -67,6 +69,10 @@ const onRemoveArticle = (aid: string) => {
   });
 
 }
+//数据分析
+const onArticleAnalyse = (item: any) => {
+  analyseDrawerEnable.value = true
+}
 /*-------------------------------------其他函数-------------------------------------------*/
 
 </script>
@@ -99,6 +105,7 @@ const onRemoveArticle = (aid: string) => {
                 <a-tag v-if="item.status==ARTICLE.StatusEnum.REJECTED" :bordered="false" color="error">未通过</a-tag>
               </template>
               <template #action="{item}">
+                <div @click="onArticleAnalyse(item)">数据</div>
                 <div @click="onCallEdit(item)">修改</div>
                 <a-dropdown>
                   <a class="ant-dropdown-link" @click.prevent>
@@ -129,7 +136,15 @@ const onRemoveArticle = (aid: string) => {
       </template>
     </a-tabs>
   </a-card>
+  <a-drawer
+      width="60%"
+      v-model:open="analyseDrawerEnable"
+      title="文章数据"
+      placement="right">
 
+    <StackedLine  />
+
+  </a-drawer>
 </template>
 
 <style scoped>
