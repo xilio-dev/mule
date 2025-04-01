@@ -29,31 +29,13 @@ public class PortalRecommendApi {
     //@FieldFilter(type = Article.class,include = {"id","userId","title"})
     // 根据用户是否登录，返回个性化推荐或默认推荐
     public Result getRecommendations(@RequestBody PageQuery pageQuery) {
-        try {
-            Page<Article> recommendations;
-            // 如果用户已登录，则返回个性化推荐
-            if (StpKit.USER.isLogin()) {
-                String userId = StpKit.USER.getLoginIdAsString();
-                recommendations = recommendService.getPersonalizedArticleRecommendations(userId, pageQuery);
-            } else {
-                // 如果用户未登录，则返回默认推荐
-                recommendations = recommendService.getDefaultArticleRecommendations(pageQuery);
-            }
-            return Result.success(recommendations);
-        } catch (Exception e) {
-            // 如果发生异常，则返回500错误
-            return Result.error(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-        }
+        return null;
     }
 
     @PostMapping("author")
     public Result recommendAuthors(
             @RequestBody PageQuery pageQuery) {
-        String userId = null;
-        if (StpKit.USER.isLogin()) {
-            userId = StpKit.USER.getLoginIdAsString();
-        }
-        return Result.success(recommendService.recommendAuthors(userId, pageQuery));
+      return null;
     }
 
 }
