@@ -30,6 +30,9 @@ public class RecommendServiceImpl implements IRecommendService {
         long start = (page - 1) * size;
         long end = start + size - 1;
         List<String> articleIds = redisTemplate.opsForList().range(key, start, end);
+        if (articleIds.size()<1){
+            return Page.of(page,size,0);
+        }
         List<Article> articles = articleService.listByIds(articleIds);
         List<ArticleBriefVO> articleBriefVOS = new ArrayList<>();
         for (Article article : articles) {

@@ -345,7 +345,7 @@ const loadHomeData = async () => {
 }
 //加载推荐文章
 const loadArticleRecommend = async () => {
-  const res = await getArticleRecommend({current: 0, size: 20})
+  const res = await getArticleRecommend({current: 1, size: 20,keyword:1001})
   //@ts-ignore
   recommendArticles.splice(0, recommendArticles.length, ...(res.records ?? []))
 }
