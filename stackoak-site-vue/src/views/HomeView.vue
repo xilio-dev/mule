@@ -344,8 +344,8 @@ const loadHomeData = async () => {
   }
 }
 //加载推荐文章
-const loadArticleRecommend = async () => {
-  const res = await getArticleRecommend({current: 1, size: 20,keyword:1001})
+const loadArticleRecommend = async (cate=null) => {
+  const res = await getArticleRecommend({current: 1, size: 20,keyword:cate})
   //@ts-ignore
   recommendArticles.splice(0, recommendArticles.length, ...(res.records ?? []))
 }
@@ -428,7 +428,13 @@ const handleClick: MenuProps['onClick'] = e => {
     openCategoryDrawer.value = false
     queryParam.value.categoryId = categoryId
     //筛选数据
-    loadHomeData()
+    if (activeKey.value=='3') {
+      loadHomeData()
+    }else if (activeKey.value=='2') {
+      loadArticleRecommend(categoryId)
+    }
+
+
   }
 };
 const onSelectCategory = (cat: any) => {
