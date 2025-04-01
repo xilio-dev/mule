@@ -1,22 +1,15 @@
 package com.stackoak.stackoak.application.controller.portal;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.stackoak.stackoak.application.actors.cut.FieldFilter;
 import com.stackoak.stackoak.application.actors.security.StpKit;
 import com.stackoak.stackoak.application.service.recommend.IRecommendService;
+import com.stackoak.stackoak.common.data.CommonPageQuery;
 import com.stackoak.stackoak.common.data.PageQuery;
-import com.stackoak.stackoak.common.data.article.Article;
-import com.stackoak.stackoak.common.data.recommend.RecommendByUserQuery;
-import com.stackoak.stackoak.common.data.user.User;
+import com.stackoak.stackoak.common.data.article.ArticleBriefVO;
 import com.stackoak.stackoak.common.message.Result;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "推荐接口")
 @RestController
@@ -28,11 +21,16 @@ public class PortalRecommendApi {
     @PostMapping("article")
     //@FieldFilter(type = Article.class,include = {"id","userId","title"})
     // 根据用户是否登录，返回个性化推荐或默认推荐
-    public Result getRecommendations(@RequestBody PageQuery pageQuery) {
-        return null;
+    public Result getRecommendations(@RequestBody CommonPageQuery pageQuery) {
+        String userId = null;
+        if (StpKit.USER.isLogin()){
+            userId=StpKit.USER.getLoginIdAsString();
+        }
+        Page<ArticleBriefVO>req=recommendService.getRecommendation(userId,pageQuery);
+        return Result.success(req);
     }
 
-    @PostMapping("author")
+    @PostMapping("user")
     public Result recommendAuthors(
             @RequestBody PageQuery pageQuery) {
       return null;
