@@ -58,6 +58,7 @@ export const API = {
     },
     RECOMMEND: {
         author: {url: '/recommend/author', method: 'post'},
+        similarityArticle: {url: '/recommend/similarity-article', method: 'post'},
     },
     REPORT: {
         createReport: {url: '/report/createReport', method: 'post'},

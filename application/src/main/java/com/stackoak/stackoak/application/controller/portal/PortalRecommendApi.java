@@ -29,6 +29,17 @@ public class PortalRecommendApi {
         Page<ArticleBriefVO>req=recommendService.getRecommendation(userId,pageQuery);
         return Result.success(req);
     }
+    @PostMapping("similarity-article")
+    public Result getArticleSimilarityRecommender(@RequestBody CommonPageQuery pageQuery) {
+        String userId = null;
+        if (StpKit.USER.isLogin()){
+            userId=StpKit.USER.getLoginIdAsString();
+        }
+        Page<ArticleBriefVO>req=recommendService.getArticleSimilarityRecommender(userId,pageQuery);
+        return Result.success(req);
+    }
+
+
 
     @PostMapping("user")
     public Result recommendAuthors(

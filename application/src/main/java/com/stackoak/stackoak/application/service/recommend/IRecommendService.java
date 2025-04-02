@@ -15,4 +15,8 @@ public interface IRecommendService {
 
 
     Page<ArticleBriefVO> getRecommendation(String userId, CommonPageQuery pageQuery);
+
+    Page<ArticleBriefVO> getArticleSimilarityRecommender(String userId, CommonPageQuery pageQuery);
+
+
 }

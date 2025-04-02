@@ -40,6 +40,7 @@ const openCollectModel = ref(false)/*打开收藏夹模态框*/
 const collectList = reactive([])/*访问者收藏夹列表*/
 const isLoading = ref(true); // 加载状态
 const comments = reactive([]);
+const similarityArticleList = ref([]);
 const commentValue = ref('')
 const parentCommentValue = ref('')
 const pid = ref("0")/*依赖的评论，0表示根评论*/
@@ -67,6 +68,7 @@ const newCollectRules: Record<string, Rule[]> = {
 onMounted(async () => {
   await loadArticleDetail()
   await loadComments()
+  await loadSimilarityArticle()
 });
 
 
@@ -138,6 +140,11 @@ const loadCollects = async (current: number = 1, size: number = 1) => {
   } finally {
     collectLoading.value = false
   }
+}
+//加载相似的文章推荐
+const loadSimilarityArticle=async ()=>{
+const res=await Https.action(API.RECOMMEND.similarityArticle,{id:articleInfo.value.id,current:1,size:6})
+  similarityArticleList.value=res.records
 }
 /*------------------------------------核心业务--------------------------------------------*/
 const clearVisitPassStore = () => {
@@ -335,7 +342,9 @@ const downloadChange = async () => {
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
         <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
-
+    <div v-for="item in similarityArticleList" :key="item.id">
+      {{item.title}}
+    </div>
         </a-card>
         <a-card title="精选内容" style="height: 260px; margin-top: 8px">
 
