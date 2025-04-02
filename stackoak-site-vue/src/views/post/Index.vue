@@ -142,9 +142,9 @@ const loadCollects = async (current: number = 1, size: number = 1) => {
   }
 }
 //加载相似的文章推荐
-const loadSimilarityArticle=async ()=>{
-const res=await Https.action(API.RECOMMEND.similarityArticle,{id:articleInfo.value.id,current:1,size:6})
-  similarityArticleList.value=res.records
+const loadSimilarityArticle = async () => {
+  const res = await Https.action(API.RECOMMEND.similarityArticle, {id: articleInfo.value.id, current: 1, size: 5})
+  similarityArticleList.value = res.records
 }
 /*------------------------------------核心业务--------------------------------------------*/
 const clearVisitPassStore = () => {
@@ -341,10 +341,12 @@ const downloadChange = async () => {
                       :is-follow="userInteract.isFollow"/>
       </a-card>
       <a-affix offset-bottom="bottom" :offset-top="45">
-        <a-card title="相关推荐" style="height: 260px; margin-top: 8px">
-    <div v-for="item in similarityArticleList" :key="item.id">
-      {{item.title}}
-    </div>
+        <a-card title="相关推荐" style=" margin-top: 8px">
+          <div v-for="(item,index) in similarityArticleList" :key="item.id" class="title-margin-bottom">
+            <router-link :to="`/post/${item.id}`" target="_blank" style="color: inherit; text-decoration: none; ">
+              <span class="so-no-wrap "> {{ index + 1 }}.{{ item.title }}</span>
+            </router-link>
+          </div>
         </a-card>
         <a-card title="精选内容" style="height: 260px; margin-top: 8px">
 
@@ -739,5 +741,18 @@ const downloadChange = async () => {
 
 .article-title {
   word-break: break-all;
+}
+
+:deep(.ant-card .ant-card-body ) {
+  padding: 8px;
+  border-radius: 0 0 8px 8px;
+}
+
+.title-margin-bottom {
+  margin-bottom: 8px
+}
+
+.title-margin-bottom:last-child {
+  margin-bottom: 0;
 }
 </style>
