@@ -3,7 +3,7 @@
 </script>
 
 <template>
-navbar
+dibu
 </template>
 
 <style scoped>

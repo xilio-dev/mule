@@ -1,17 +1,23 @@
 <script setup lang="ts">
+import {
+  UserOutlined,
+  BarChartOutlined,
+} from '@ant-design/icons-vue';
 
-import {UserOutlined} from "@ant-design/icons-vue";
+defineProps({
+  item: []
+})
 </script>
 
 <template>
   <a-menu-item key="1">
-    <desktop-outlined />
-    <span>Option 1</span>
+    <BarChartOutlined/>
+    <span>menu</span>
   </a-menu-item>
-  <a-sub-menu key="sub1">
+  <a-sub-menu key="sub1" popper-append-to-body>
     <template #title>
             <span>
-              <user-outlined />
+              <user-outlined/>
               <span>User</span>
             </span>
     </template>

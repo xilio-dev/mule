@@ -3,7 +3,9 @@
 </script>
 
 <template>
-  <main>
-     hello world
-  </main>
+
+    <a-card v-for="i in 4">
+      hello
+    </a-card>
+
 </template>
