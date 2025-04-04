@@ -7,5 +7,6 @@ store.use(createPersistedState());
 export { store };
 
 export * from './modules/permission';
+export * from './modules/user';
 
 export default store;

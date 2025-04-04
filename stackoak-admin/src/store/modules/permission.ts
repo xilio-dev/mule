@@ -46,10 +46,12 @@ export const usePermissionStore = defineStore('permission', () => {
                 accessedRoutes = constantRoutes.concat(accessedRoutes);
                 permission.value.addRoutes = accessedRoutes
                 permission.value.routes = constantRoutes.concat(accessedRoutes)
-                resolve(accessedRoutes);
+                resolve(permission.value.routes);
             })
         })
     }
 
     return {permission, generateRoutes}
+},{
+    persist: true // 启用持久化，默认存储到 localStorage
 });

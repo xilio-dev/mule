@@ -3,28 +3,30 @@ import {
   UserOutlined,
   BarChartOutlined,
 } from '@ant-design/icons-vue';
+import SidebarItem from "@/layout/Sidebar/SidebarItem.vue";
 
-defineProps({
+const props=defineProps({
   item: {type: Object, default: () => ({})},
+
 })
 </script>
 
 <template>
   <div v-if="!item.hidden">
     <a-menu-item :key="item.path">
-      <BarChartOutlined/>
+<!--      <BarChartOutlined/>-->
       <span>{{ item.name }}</span>
     </a-menu-item>
     <a-sub-menu key="sub1" popper-append-to-body>
       <template #title>
             <span>
-              <user-outlined/>
-              <span>User</span>
+<!--              <user-outlined/>-->
+              <span>{{item.name}}</span>
             </span>
       </template>
-      <a-menu-item key="3">Tom</a-menu-item>
-      <a-menu-item key="4">Bill</a-menu-item>
-      <a-menu-item key="5">Alex</a-menu-item>
+      <SidebarItem
+          v-for="child in item.children"
+          :key="child.path"/>
     </a-sub-menu>
   </div>
 </template>

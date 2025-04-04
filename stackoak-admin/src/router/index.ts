@@ -14,12 +14,14 @@ export const constantRoutes = [
             {
                 path: 'dashboard',
                 name: 'dashboard',
+                hidden:true,
                 component: () => import('@/views/dashboard.vue'),
             },]
     },
     {
         path: '/login',
         name: 'Login',
+        hidden:false,
         component: () => import('@/views/login/index.vue'),
 
     },
@@ -27,7 +29,28 @@ export const constantRoutes = [
 //异步路由 具备角色-权限控制
 export const asyncRoutes = [
     {
-
+        path: '/blog',
+        name: 'Blog',
+        component: DefaultLayout,
+        redirect: '/blog',
+        //@ts-ignore
+        hidden: false,
+        meta: {
+            title: '博客管理',
+            icon: 'lock',
+            roles: ['admin', 'editor'] // you can set roles in root nav
+        },
+        children: [
+            {
+                path: 'article',
+                name: 'Article',
+                component: () => import('@/views/dashboard.vue'),
+                meta: {
+                    title: '文章列表',
+                    icon: 'lock',
+                    roles: ['admin', 'editor'] // you can set roles in root nav
+                },
+            },]
     },
 ]
 const router = createRouter({

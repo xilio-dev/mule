@@ -30,4 +30,6 @@ export const useUserStore = defineStore('user', () => {
         })
     }
     return {user, loginAction}
+},{
+    persist: true // 启用持久化，默认存储到 localStorage
 });
