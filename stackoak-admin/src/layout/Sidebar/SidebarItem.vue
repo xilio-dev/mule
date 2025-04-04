@@ -5,7 +5,7 @@ import {
 } from '@ant-design/icons-vue';
 
 defineProps({
-  item: []
+  item: { type: Object, default: () => ({}) },
 })
 </script>
 
