@@ -13,15 +13,14 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Set;
-//@Service
+import java.util.Set;@Service
 public class DelayedMessageProcessor {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
     private RedisStreamUtil redisStreamUtil;
     private static final String DELAYED_QUEUE = "delayed_queue";
-    @Scheduled(fixedRate = 10000) // 每10秒执行一次
+    @Scheduled(fixedRate = 100000) // 每10秒执行一次
     public void processDelayedMessages() {
         System.out.println("Processing delayed messages...");
         Calendar calendar = Calendar.getInstance();

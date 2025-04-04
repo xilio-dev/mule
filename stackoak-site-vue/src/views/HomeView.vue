@@ -270,7 +270,7 @@ const items: ItemType[] = reactive([]);
 const openCategoryDrawer = ref(false)
 const friendLinks = ref()
 //获取用户搜索历史
-const searchHistory = ref()
+const searchHistory = ref([])
 const siteConfigInfo = ref({})
 //搜索
 const search_key = ref('')
