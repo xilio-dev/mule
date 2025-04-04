@@ -1,14 +1,17 @@
-import type {ApiConfig} from '@/utils/Https.ts';
-
-// 分组后的 API 配置
+/**
+ * @description: API统一配置
+ */
 export const API = {
-    SYS_USER: {
-        get: {url: '/user/get', method: 'get'} as ApiConfig,
+    USER: {
+        get: {url: '/user/get', method: 'get'},
+        login: {url: '/user/login', method: 'post'},
     },
     ROLE: {},
-    MENU: {},
     ARTICLE: {},
     REPORT: {},
+    MENU: {
+        getRoutes: {url: '/menu/get-routes', method: 'get'},
+    }
 } as const;
 
 export type ApiGroup = typeof API;

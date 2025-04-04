@@ -1,6 +1,9 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
 import {constantRoutes, asyncRoutes} from "@/router";
+import {API} from "@/api/ApiConfig.ts";
+import {Https} from "@/utils/Https.ts";
+
 //判断是否具有某个角色权限
 const hasPermission = (roles: any, route: any) => {
     if (route.meta && route.meta.roles) {
@@ -33,16 +36,18 @@ export const usePermissionStore = defineStore('permission', () => {
     //根据角色生成路由
     function generateRoutes(roles: string[]) {
         return new Promise(resolve => {
-            let accessedRoutes
-            if (roles.includes('admin')) {
-                accessedRoutes = asyncRoutes || []
-            } else {
-                accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-            }
-            accessedRoutes = constantRoutes.concat(accessedRoutes);
-            permission.value.addRoutes = accessedRoutes
-            permission.value.routes = constantRoutes.concat(accessedRoutes)
-            resolve(accessedRoutes);
+            Https.action(API.MENU.getRoutes).then(res=>{
+                let accessedRoutes
+                if (roles.includes('admin')) {
+                    accessedRoutes = asyncRoutes || []
+                } else {
+                    accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
+                }
+                accessedRoutes = constantRoutes.concat(accessedRoutes);
+                permission.value.addRoutes = accessedRoutes
+                permission.value.routes = constantRoutes.concat(accessedRoutes)
+                resolve(accessedRoutes);
+            })
         })
     }
 

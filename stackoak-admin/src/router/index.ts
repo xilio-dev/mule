@@ -16,6 +16,12 @@ export const constantRoutes = [
                 component: () => import('@/views/dashboard.vue'),
             },]
     },
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/login/index.vue'),
+
+    },
 ]
 //异步路由 具备角色-权限控制
 export const asyncRoutes = [
@@ -24,8 +30,6 @@ export const asyncRoutes = [
         name: 'System',
         component: DefaultLayout,
         redirect: '/system',
-        //@ts-ignore
-        hidden: fale,
         children: [
             {
                 path: 'dashboard',

@@ -27,11 +27,11 @@ export default defineConfig({
     port: 3002,
     host: '0.0.0.0',
     proxy: {
-      '/api': {
+      '/admin': {
         //target: "https://api.xilio.cn",
         target: "http://localhost:9856",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/admin/, 'admin'),
       },
     },
   },
