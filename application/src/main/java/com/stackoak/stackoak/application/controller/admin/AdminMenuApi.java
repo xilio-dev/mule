@@ -15,10 +15,16 @@ public class AdminMenuApi {
     @GetMapping("get-routes")
     public Result getRoutes() {
         Map<String, Object> systemMeta = new HashMap<>();
-        systemMeta.put("title", "系统管理");
+
+        systemMeta.put("path", "/sys");
+        systemMeta.put("meta",  Map.of("title", "系统管理","roles", new String[]{"admin"}));
+        systemMeta.put("hidden", false);
+        systemMeta.put("component", "DefaultLayout");
         systemMeta.put("icon", "system");
         systemMeta.put("noCache", false);
+        systemMeta.put("name", "System");
         systemMeta.put("link", null);
+        systemMeta.put("children", new ArrayList<>());
         ArrayList<Object> l = new ArrayList<>();
         l.add(systemMeta);
         return Result.success(l);

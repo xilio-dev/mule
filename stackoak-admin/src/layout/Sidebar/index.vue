@@ -10,8 +10,10 @@ const perm = usePermissionStore()
 
 <template>
   <div class="logo"/>
-  <a-menu class="sidebar-container" v-model:selectedKeys="selectedKeys" theme="dark" mode="inline">
-    <SidebarItem v-for="item in perm.permission.routes" :item="item"/>
+  <a-menu class="sidebar-container"
+          v-model:selectedKeys="selectedKeys"
+          theme="dark" mode="inline">
+    <SidebarItem   v-for="item in perm.permission.routes" :item="item" :base-path="item.path" :key="item.path"/>
   </a-menu>
 </template>
 

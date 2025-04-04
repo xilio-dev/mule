@@ -3,7 +3,49 @@ import {ref} from "vue";
 import {constantRoutes, asyncRoutes} from "@/router";
 import {API} from "@/api/ApiConfig.ts";
 import {Https} from "@/utils/Https.ts";
+import DefaultLayout from "@/layout/DefaultLayout.vue";
+export const loadView = (view:any) => {
+    if (process.env.NODE_ENV === 'development') {
+        return (resolve) => require([`@/views/${view}`], resolve)
+    } else {
+        return () => import(`@/views/${view}`)
+    }
+}
+// 遍历后台传来的路由字符串，转换为组件对象
+function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
+    return asyncRouterMap.filter(route => {
+        if (type && route.children) {
+            route.children = filterChildren(route.children)
+        }
+        if (route.component) {
+            if (route.component === 'DefaultLayout') {
+                route.component = DefaultLayout
+            }  else {
+                route.component = loadView(route.component)
+            }
+        }
+        if (route.children != null && route.children && route.children.length) {
+            route.children = filterAsyncRouter(route.children, route, type)
+        } else {
+            delete route['children']
+            delete route['redirect']
+        }
+        return true
+    })
+}
 
+function filterChildren(childrenMap, lastRouter = false) {
+    let children = []
+    childrenMap.forEach(el => {
+        el.path = lastRouter ? lastRouter.path + '/' + el.path : el.path
+        if (el.children && el.children.length && el.component === 'RootLayout') {
+            children = children.concat(filterChildren(el.children, el))
+        } else {
+            children.push(el)
+        }
+    })
+    return children
+}
 //判断是否具有某个角色权限
 const hasPermission = (roles: any, route: any) => {
     if (route.meta && route.meta.roles) {
@@ -43,7 +85,11 @@ export const usePermissionStore = defineStore('permission', () => {
                 } else {
                     accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
                 }
+
+                let cusRoutes= filterAsyncRoutes(res, roles)
                 accessedRoutes = constantRoutes.concat(accessedRoutes);
+                accessedRoutes= accessedRoutes.concat(cusRoutes)
+                accessedRoutes=filterAsyncRouter(accessedRoutes, false, true)
                 permission.value.addRoutes = accessedRoutes
                 permission.value.routes = constantRoutes.concat(accessedRoutes)
                 resolve(permission.value.routes);

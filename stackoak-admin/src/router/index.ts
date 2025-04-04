@@ -21,7 +21,7 @@ export const constantRoutes = [
     {
         path: '/login',
         name: 'Login',
-        hidden:false,
+        hidden:true,
         component: () => import('@/views/login/index.vue'),
 
     },
@@ -38,20 +38,35 @@ export const asyncRoutes = [
         meta: {
             title: '博客管理',
             icon: 'lock',
-            roles: ['admin', 'editor'] // you can set roles in root nav
+            roles: ['admin', 'editor']
         },
         children: [
             {
                 path: 'article',
                 name: 'Article',
+                hidden:false,
                 component: () => import('@/views/dashboard.vue'),
                 meta: {
                     title: '文章列表',
                     icon: 'lock',
                     roles: ['admin', 'editor'] // you can set roles in root nav
                 },
-            },]
+            },
+            {
+                path: 'user',
+                name: 'User',
+                hidden:false,
+                component: () => import('@/views/system/role/index.vue'),
+                meta: {
+                    title: '用户管理',
+                    icon: 'lock',
+                    roles: ['admin', 'editor'] // you can set roles in root nav
+                },
+            },
+
+        ]
     },
+
 ]
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),

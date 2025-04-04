@@ -19,6 +19,7 @@ export const useUserStore = defineStore('user', () => {
         return new Promise((resolve, reject) => {
             const {username, password} = loginParam
             Https.action(API.USER.login, {username:username, password:password}).then((res: any) => {
+
                 const {role} = res
                const usePermission = usePermissionStore()
                 usePermission.generateRoutes(role)// 生成路由
@@ -26,7 +27,6 @@ export const useUserStore = defineStore('user', () => {
             }).catch(err=>{
                 reject(err)
             })
-
         })
     }
     return {user, loginAction}
