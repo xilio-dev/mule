@@ -31,8 +31,8 @@ export const asyncRoutes = [
     {
         path: '/blog',
         name: 'Blog',
-        component: DefaultLayout,
-        redirect: '/blog',
+        component: "DefaultLayout",
+        redirect: '/article',
         //@ts-ignore
         hidden: false,
         meta: {
@@ -45,7 +45,7 @@ export const asyncRoutes = [
                 path: 'article',
                 name: 'Article',
                 hidden:false,
-                component: () => import('@/views/dashboard.vue'),
+                component: "system/role/index.vue",
                 meta: {
                     title: '文章列表',
                     icon: 'lock',
@@ -56,7 +56,7 @@ export const asyncRoutes = [
                 path: 'user',
                 name: 'User',
                 hidden:false,
-                component: () => import('@/views/system/role/index.vue'),
+                component: "system/role/index.vue",
                 meta: {
                     title: '用户管理',
                     icon: 'lock',

@@ -12,7 +12,7 @@ export const useUserStore = defineStore('user', () => {
         nickname: '',
         username: '',
         avatar: '',
-        role: [],
+        roles: [],
         permission: []
     });
     const loginAction = (loginParam:any) => {
