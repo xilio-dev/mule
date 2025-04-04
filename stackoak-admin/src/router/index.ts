@@ -18,7 +18,23 @@ export const constantRoutes = [
     },
 ]
 //异步路由 具备角色-权限控制
-export const asyncRoutes = []
+export const asyncRoutes = [
+    {
+        path: '/system',
+        name: 'System',
+        component: DefaultLayout,
+        redirect: '/system',
+        //@ts-ignore
+        hidden: fale,
+        children: [
+            {
+                path: 'dashboard',
+                name: 'dashboard',
+                roles:["admin"],
+                component: () => import('@/views/dashboard.vue'),
+            },]
+    },
+]
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: constantRoutes
