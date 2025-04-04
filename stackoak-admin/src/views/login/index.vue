@@ -53,7 +53,7 @@ import {reactive, computed} from 'vue';
 import {UserOutlined, LockOutlined} from '@ant-design/icons-vue';
 import {useUserStore} from "@/store/modules/user.ts";
 import router from "@/router";
-import {usePermissionStore} from "@/store";
+
 
 const userStore = useUserStore()
 
@@ -69,7 +69,6 @@ const formState = reactive<FormState>({
   remember: true,
 });
 const onFinish = (values: any) => {
-  usePermissionStore().generateRoutes(["admin"])
   userStore.loginAction({...values}).then(res=>{
     router.push({path:"/"})
   })

@@ -3,8 +3,9 @@
 import SidebarItem from "@/layout/Sidebar/SidebarItem.vue";
 import {ref} from "vue";
 import {usePermissionStore} from "@/store";
+
 const selectedKeys = ref<string[]>(['1']);
-const  perm=usePermissionStore()
+const perm = usePermissionStore()
 </script>
 
 <template>
@@ -15,9 +16,10 @@ const  perm=usePermissionStore()
 </template>
 
 <style scoped>
-.sidebar-container{
+.sidebar-container {
 
 }
+
 .logo {
   height: 32px;
   background: rgba(255, 255, 255, 0.2);

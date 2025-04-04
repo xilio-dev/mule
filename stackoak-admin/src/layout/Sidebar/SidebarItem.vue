@@ -5,26 +5,28 @@ import {
 } from '@ant-design/icons-vue';
 
 defineProps({
-  item: { type: Object, default: () => ({}) },
+  item: {type: Object, default: () => ({})},
 })
 </script>
 
 <template>
-  <a-menu-item key="1">
-    <BarChartOutlined/>
-    <span>menu</span>
-  </a-menu-item>
-  <a-sub-menu key="sub1" popper-append-to-body>
-    <template #title>
+  <div v-if="!item.hidden">
+    <a-menu-item :key="item.path">
+      <BarChartOutlined/>
+      <span>{{ item.name }}</span>
+    </a-menu-item>
+    <a-sub-menu key="sub1" popper-append-to-body>
+      <template #title>
             <span>
               <user-outlined/>
               <span>User</span>
             </span>
-    </template>
-    <a-menu-item key="3">Tom</a-menu-item>
-    <a-menu-item key="4">Bill</a-menu-item>
-    <a-menu-item key="5">Alex</a-menu-item>
-  </a-sub-menu>
+      </template>
+      <a-menu-item key="3">Tom</a-menu-item>
+      <a-menu-item key="4">Bill</a-menu-item>
+      <a-menu-item key="5">Alex</a-menu-item>
+    </a-sub-menu>
+  </div>
 </template>
 
 <style scoped>

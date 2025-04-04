@@ -9,6 +9,7 @@ export const constantRoutes = [
         redirect: '/dashboard',
         //@ts-ignore
         hidden: true,
+
         children: [
             {
                 path: 'dashboard',
@@ -26,17 +27,7 @@ export const constantRoutes = [
 //异步路由 具备角色-权限控制
 export const asyncRoutes = [
     {
-        path: '/system',
-        name: 'System',
-        component: DefaultLayout,
-        redirect: '/system',
-        children: [
-            {
-                path: 'dashboard',
-                name: 'dashboard',
-                roles:["admin"],
-                component: () => import('@/views/dashboard.vue'),
-            },]
+
     },
 ]
 const router = createRouter({
